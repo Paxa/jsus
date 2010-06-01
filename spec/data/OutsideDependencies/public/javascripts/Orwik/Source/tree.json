@@ -1,0 +1,28 @@
+{
+  "Library": {
+    "Color": {
+      "desc": "...",
+      "provides": ["Color"]
+    }
+  },
+
+  "Widget": {
+    "Widget": {
+      "desc": "...",
+      "requires": ["core/Hash"],
+      "provides": ["Widget"]
+    },
+    "Input": {
+      "Input": {
+        "desc": "...",
+        "requires": ["Widget"],
+        "provides": ["Input"]
+      },
+      "Input.Color": {
+        "desc": "...",
+        "requires": ["Input", "Color"],
+        "provides": ["Input.Color"]
+      }
+    }
+  }
+}

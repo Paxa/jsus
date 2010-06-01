@@ -1,0 +1,10 @@
+SUMMARY:
+  A basic example of packing up a single package.
+
+LOGIC:
+  Everything compiles into one file. 
+  Two additional files are created: scripts.json (contains information about packed file) and tree.json (full per-file description)
+  
+SYNTAX:
+  bundle Orwik -i app/javascripts/ -o public/javascripts
+  #=> [public/javascripts/Orwik/Source/orwik.js, public/javascripts/Orwik/Source/scripts.js, public/javascripts/Orwik/Source/tree.js]

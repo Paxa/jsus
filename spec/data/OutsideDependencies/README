@@ -1,0 +1,24 @@
+SUMMARY:
+  Example of a package having dependencies in another package.
+  Includes sample results for two ways of handling the situation:
+
+SEPARATE PACKAGES
+  SYNTAX: 
+    bundle Orwik -i app/javascripts/ -o public/javascripts
+    #=> [public/javascripts/Orwik/Source/orwik.js, public/javascripts/Orwik/Source/tree.json, public/javascripts/Orwik/Source/scripts.json]
+  
+    bundle Core -i app/javascripts/ -o public/javascripts
+    #=> [public/javascripts/Core/Source/orwik.js, public/javascripts/Core/Source/tree.json, public/javascripts/Core/Source/scripts.json]
+  
+  LOGIC:
+    Each of the packages gets compiled in its own directory.
+    Resulting file of orwik package retains all dependencies to Core package.
+  
+ONE-FILE COMPILATION
+  SYNTAX:
+    bundle Orwik -i app/javascripts/ -o public/javascripts --with-dependencies
+    #=> [public/javascripts/Orwik/Compiled/orwik.js, public/javascripts/Orwik/Compiled/tree.json, public/javascripts/Orwik/Compiled/scripts.json]
+  
+  LOGIC:
+    All files from Core that Orwik needs are compiled into resulting file.
+    Dependencies are resolved and removed from the tree.

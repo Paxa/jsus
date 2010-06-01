@@ -1,0 +1,6 @@
+{
+  "core": {
+    "desc": "...",
+    "provides": ["Hash", "Class", "Chain", "Events", "Options"]
+  }
+}

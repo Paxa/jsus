@@ -1,0 +1,6 @@
+= What is it?
+Ruby implementation of javascript bundler / dependency resolver.
+More info at: http://github.com/Inviz/Javascript-bundler
+
+= License
+MIT

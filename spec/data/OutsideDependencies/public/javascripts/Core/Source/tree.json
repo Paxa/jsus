@@ -1,0 +1,20 @@
+{
+  "Class": {
+    "Class": {
+      "desc": "...",
+      "requires": ["Hash"],
+      "provides": ["Class"],
+    },
+    "Class.Extras": {
+      "desc": "...",
+      "requires": ["Class"],
+      "provides": ["Chain", "Events", "Options"]
+    }
+  },
+  "Native": {
+    "Hash": {
+      "desc": "...",
+      "provides": ["Hash"]
+    }
+  }
+}
