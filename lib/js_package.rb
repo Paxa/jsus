@@ -1,9 +1,11 @@
 require 'js_source_file'
 require 'rgl/topsort'
 require 'pp'
+require 'active_support/ordered_hash'
 class JsPackage
    # Constructors
   def initialize(directory)
+    self.directory = directory
     self.header = YAML.load_file(File.join(directory, 'package.yml'))
     Dir.chdir(directory) do
       files.each do |source|
@@ -15,6 +17,8 @@ class JsPackage
 
 
   # Public API
+  attr_accessor :directory
+
   attr_writer :header
   def header
     @header ||= {}
@@ -48,7 +52,55 @@ class JsPackage
     source_files.map {|source| source.dependencies }.flatten.compact.uniq - provides!
   end
 
+  def description
+    header["description"] ||= ""
+  end
+
   attr_accessor :required_files
+
+  def compile(directory = ".")
+    FileUtils.mkdir_p directory
+    Dir.chdir(directory) do
+      File.open(filename, "w") do |resulting_file|
+        required_files.each do |required_file|
+          resulting_file.puts(IO.read(required_file))
+        end
+      end
+      generate_scripts_info(".")
+    end
+  end
+
+  def generate_tree(directory = ".", filename = "tree.json")
+    FileUtils.mkdir_p(directory)
+    result = ActiveSupport::OrderedHash.new
+    source_files.each do |source|
+      components = File.dirname(source.relative_filename).split(File::SEPARATOR)
+      components.delete("Source")
+      components << File.basename(source.filename, ".js")
+      node = result
+      components.each do |component|
+        node[component] ||= ActiveSupport::OrderedHash.new
+        node = node[component]
+      end
+      node["desc"] = source.description
+      node["requires"] = source.dependencies
+      node["provides"] = source.provides
+    end
+    Dir.chdir(directory) do
+      File.open(filename, "w") { |resulting_file| resulting_file << result.to_json}
+    end
+  end
+
+  def generate_scripts_info(directory = ".", filename = "scripts.json")
+    Dir.chdir(directory) do
+      result = {}
+      result[name] = {}
+      result[name]["desc"] = description
+      result[name]["requires"] = dependencies
+      result[name]["provides"] = provides
+      File.open(filename, "w") { |resulting_file| resulting_file << result.to_json}
+    end
+  end
 
   protected
 
@@ -60,28 +112,9 @@ class JsPackage
   end
 
   def calculate_requirement_order
-    graph = RGL::DirectedAdjacencyGraph.new
-    provides_hash = {}
-    # init vertices
-    source_files.each do |source|
-      graph.add_vertex(source)
-      source.provides.each do |provides|
-        provides_hash[provides] = source
-      end
-    end
-    # init edges
-    source_files.each do |source|
-      source.dependencies.each do |dependency|
-        if required_source = provides_hash[dependency]
-          graph.add_edge(required_source, source)
-        end
-      end
-    end
-    @required_files = []
-    graph.topsort_iterator.each do |vertex|
-      @required_files << vertex.filename
-    end
-
+    self.source_files = JsBundler.topsort(source_files)
+    self.required_files = source_files.map {|f| f.filename}
   end
+
 
 end
