@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 unless ARGV.length == 2
   puts "SYNOPSYS: ruby js-bundle.rb <input_directory_with_packages> <output_directory_for_packages>"
   exit

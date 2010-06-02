@@ -1,40 +1,20 @@
-require 'rubygems'
-require 'rgl/adjacency'
-require 'json'
-require 'js_source_file'
-require 'js_package'
+require 'yaml'
 require 'pathname'
-class JsBundler
+require 'rubygems'
+require 'json'
+require 'active_support/ordered_hash'
+require 'rgl/adjacency'
+require 'rgl/topsort'
 
-  def initialize(directory)
-    Dir[File.join(directory, "**", "package.yml")].each do |package_name|
-      path = Pathname.new(package_name)
-      Dir.chdir path.parent.parent.to_s do
-        package = JsPackage.new(path.parent.relative_path_from(path.parent.parent).to_s)
-        self.packages << package
-      end
-    end
-    calculate_requirement_order
+require 'js_bundler/source_file'
+require 'js_bundler/package'
+require 'js_bundler/bundler'
+
+module JsBundler
+  # Shortcut for Bundler.new
+  def self.new(*args, &block)
+    Bundler.new(*args, &block)
   end
-
-
-  attr_writer :packages
-  def packages
-    @packages ||= []
-  end
-
-  attr_accessor :required_files
-
-  def compile(directory)
-    FileUtils.mkdir_p(directory)
-    Dir.chdir directory do
-      packages.each do |package|
-        package.compile(package.relative_directory)
-        package.generate_tree(package.relative_directory)
-      end
-    end
-  end
-
 
   # Topological sort for packages and source files
   def self.topsort(items)
@@ -60,9 +40,4 @@ class JsBundler
     result
   end
 
-  protected
-  def calculate_requirement_order
-    @packages = JsBundler.topsort(packages)
-    @required_files = @packages.map {|p| p.required_files }.flatten
-  end
 end

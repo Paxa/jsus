@@ -1,8 +1,8 @@
 require 'spec/spec_helper'
 require 'json'
 
-describe JsPackage do
-  subject { JsPackage.new(input_dir) }
+describe JsBundler::Package do
+  subject { JsBundler::Package.new(input_dir) }
   let(:input_dir) { "spec/data/Basic/app/javascripts/Orwik"}
   let(:output_dir) { "spec/data/Basic/public/javascripts/Orwik" }
   before(:each) { cleanup }

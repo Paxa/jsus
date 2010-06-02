@@ -1,14 +1,14 @@
 require 'spec/spec_helper'
 
-describe JsBundler do
-  subject { JsBundler.new(input_dir) }
+describe JsBundler::Bundler do
+  subject { JsBundler::Bundler.new(input_dir) }
   let(:input_dir) { "spec/data/Basic/app/javascripts" }
   let(:output_dir) { "spec/data/Basic/public/javascripts" }
   before(:each) { cleanup }
   after(:all) { cleanup }
   context "initialization" do
     context "from a directory" do
-      subject { JsBundler.new("spec/data/Basic/") }
+      subject { JsBundler::Bundler.new("spec/data/Basic/") }
       it "should load packages" do
         subject.packages.map {|p| p.name}.should == ["orwik"]
         subject.packages.map {|p| p.relative_directory }.should == ["Orwik"]
