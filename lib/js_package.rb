@@ -10,7 +10,7 @@ class JsPackage
     self.directory = File.expand_path(directory)
     self.header = YAML.load_file(File.join(directory, 'package.yml'))
     Dir.chdir(directory) do
-      files.each do |source|
+      files.each do |source|        
         source_files << JsSourceFile.from_file(source)
       end      
     end
@@ -44,8 +44,10 @@ class JsPackage
   end
 
   def files
-    header["files"] ||= []
+    header["files"] = header["sources"] || header["files"] || []
   end
+
+  alias_method :sources, :files
 
   def dependencies
     @dependencies ||= dependencies!
@@ -90,7 +92,7 @@ class JsPackage
       node["provides"] = source.provides
     end
     Dir.chdir(directory) do
-      File.open(filename, "w") { |resulting_file| resulting_file << result.to_json}
+      File.open(filename, "w") { |resulting_file| resulting_file << JSON.pretty_generate(result) }
     end
   end
 
@@ -101,7 +103,7 @@ class JsPackage
       result[name]["desc"] = description
       result[name]["requires"] = dependencies
       result[name]["provides"] = provides
-      File.open(filename, "w") { |resulting_file| resulting_file << result.to_json}
+      File.open(filename, "w") { |resulting_file| resulting_file << JSON.pretty_generate(result) }
     end
   end
 

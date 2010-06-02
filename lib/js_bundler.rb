@@ -62,7 +62,7 @@ class JsBundler
 
   protected
   def calculate_requirement_order
-    @packages = JsBundler.topsort(@packages)
+    @packages = JsBundler.topsort(packages)
     @required_files = @packages.map {|p| p.required_files }.flatten
   end
 end
