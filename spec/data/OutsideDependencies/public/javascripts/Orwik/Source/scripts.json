@@ -1,7 +1,0 @@
-{  
-  "orwik": {
-    "desc": "...",
-    "requires": ["core/Hash"],
-    "provides": ["Widget", "Input", "Color", "Input.Color"]
-  }
-}

@@ -1,6 +1,0 @@
-{
-  "orwik": {
-    "desc": "...",
-    "provides": ["Hash", "Class", "Chain", "Events", "Options", "Widget", "Input", "Color", "Input.Color"]
-  }
-}

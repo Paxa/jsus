@@ -2,7 +2,8 @@ require 'spec/spec_helper'
 
 describe JsPackage do
   subject { JsPackage.new("spec/data/Basic/app/javascripts/Orwik") }
-
+  before(:each) { cleanup }
+  after(:all) { cleanup }
   context "initialization" do
     subject { JsPackage.new("spec/data/OutsideDependencies/app/javascripts/Orwik") }
     context "from a directory" do
@@ -28,6 +29,12 @@ describe JsPackage do
         input_index.should < input_color_index
         color_index.should < input_color_index
       end
+    end
+  end
+
+  describe "#compile" do
+    it "should create a merged js package from given files" do
+
     end
   end
 end

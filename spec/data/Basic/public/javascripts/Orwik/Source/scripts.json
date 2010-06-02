@@ -1,6 +1,0 @@
-{
-  "orwik": {
-    "desc": "...",
-    "provides": ["Widget", "Input", "Color", "Input.Color"]
-  }
-}

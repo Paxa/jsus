@@ -2,7 +2,8 @@ require 'spec/spec_helper'
 
 describe JsBundler do
   subject { JsBundler.new("spec/data/Basic/") }
-
+  before(:each) { cleanup }
+  after(:all) { cleanup }
   context "initialization" do
     context "from a directory" do
       subject { JsBundler.new("spec/data/Basic/") }

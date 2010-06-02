@@ -1,6 +1,8 @@
 require 'spec/spec_helper'
 
 describe JsSourceFile do
+  before(:each) { cleanup }
+  after(:all) { cleanup }
   context "initialization" do
     context "from file" do
       subject { JsSourceFile.from_file('spec/data/test_source_one.js') }
