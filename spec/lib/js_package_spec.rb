@@ -8,7 +8,8 @@ describe JsPackage do
   before(:each) { cleanup }
   after(:all) { cleanup }
   context "initialization" do
-    subject { JsPackage.new("spec/data/OutsideDependencies/app/javascripts/Orwik") }
+    let(:input_dir) { "spec/data/OutsideDependencies/app/javascripts/Orwik" }
+    let(:output_dir) { "spec/data/OutsideDependencies/public/javascripts/Orwik" }
     context "from a directory" do
       it "should load header from package.yml" do
         subject.name.should == "orwik"
@@ -22,6 +23,11 @@ describe JsPackage do
 
       it "should set up outside dependencies" do
         subject.dependencies.should == ['core/Class']
+      end
+
+      it "should set directory and relative directory fields" do
+        subject.directory.should == File.expand_path(input_dir)
+        subject.relative_directory.should == input_dir
       end
 
       it "should set up required files in correct order" do

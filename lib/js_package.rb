@@ -2,21 +2,24 @@ require 'js_source_file'
 require 'rgl/topsort'
 require 'pp'
 require 'active_support/ordered_hash'
+require 'pathname'
 class JsPackage
    # Constructors
   def initialize(directory)
-    self.directory = directory
+    self.relative_directory = Pathname.new(directory).relative_path_from(Pathname.new(".")).to_s
+    self.directory = File.expand_path(directory)
     self.header = YAML.load_file(File.join(directory, 'package.yml'))
     Dir.chdir(directory) do
       files.each do |source|
         source_files << JsSourceFile.from_file(source)
-      end
-      calculate_requirement_order
+      end      
     end
+    calculate_requirement_order
   end
 
 
   # Public API
+  attr_accessor :relative_directory
   attr_accessor :directory
 
   attr_writer :header
