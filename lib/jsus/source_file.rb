@@ -1,4 +1,4 @@
-module JsBundler
+module Jsus
   class SourceFile
     attr_accessor :header
     attr_accessor :relative_filename

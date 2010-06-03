@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'jsus'
+
+unless ARGV.length == 2
+  puts "SYNOPSYS: jsus <input_directory_with_packages> <output_directory_for_packages>"
+  exit
+else
+  Jsus::Bundler.new(ARGV[0]).compile(ARGV[1])
+end

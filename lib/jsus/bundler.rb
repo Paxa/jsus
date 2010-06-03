@@ -1,10 +1,10 @@
-module JsBundler
+module Jsus
   class Bundler
     def initialize(directory)
       Dir[File.join(directory, "**", "package.yml")].each do |package_name|
         path = Pathname.new(package_name)
         Dir.chdir path.parent.parent.to_s do
-          package = JsBundler::Package.new(path.parent.relative_path_from(path.parent.parent).to_s)
+          package = Package.new(path.parent.relative_path_from(path.parent.parent).to_s)
           self.packages << package
         end
       end
@@ -32,7 +32,7 @@ module JsBundler
 
     protected
     def calculate_requirement_order
-      @packages = JsBundler.topsort(packages)
+      @packages = Jsus.topsort(packages)
       @required_files = @packages.map {|p| p.required_files }.flatten
     end
   end

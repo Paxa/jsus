@@ -1,4 +1,4 @@
-require 'lib/js_bundler'
+require 'lib/jsus'
 
 # cleanup compiled stuff
 def cleanup

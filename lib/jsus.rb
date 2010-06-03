@@ -6,11 +6,11 @@ require 'active_support/ordered_hash'
 require 'rgl/adjacency'
 require 'rgl/topsort'
 
-require 'js_bundler/source_file'
-require 'js_bundler/package'
-require 'js_bundler/bundler'
+require 'jsus/source_file'
+require 'jsus/package'
+require 'jsus/bundler'
 
-module JsBundler
+module Jsus
   # Shortcut for Bundler.new
   def self.new(*args, &block)
     Bundler.new(*args, &block)

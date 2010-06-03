@@ -1,11 +1,11 @@
 require 'spec/spec_helper'
 
-describe JsBundler::SourceFile do
+describe Jsus::SourceFile do
   before(:each) { cleanup }
   after(:all) { cleanup }
   context "initialization" do
     context "from file" do
-      subject { JsBundler::SourceFile.from_file('spec/data/test_source_one.js') }
+      subject { Jsus::SourceFile.from_file('spec/data/test_source_one.js') }
       it "should parse json header" do
         subject.dependencies.should == []
         subject.provides.should == ["Color"]
@@ -18,14 +18,14 @@ describe JsBundler::SourceFile do
 
       context "when format is invalid" do
         it "should return nil" do
-          JsBundler::SourceFile.from_file('spec/data/bad_test_source_one.js').should == nil
-          JsBundler::SourceFile.from_file('spec/data/bad_test_source_two.js').should == nil
+          Jsus::SourceFile.from_file('spec/data/bad_test_source_one.js').should == nil
+          Jsus::SourceFile.from_file('spec/data/bad_test_source_two.js').should == nil
         end
       end
 
       context "when file does not exist" do
         it "should return nil" do
-          JsBundler::SourceFile.from_file('spec/data/non-existant-file.js').should == nil
+          Jsus::SourceFile.from_file('spec/data/non-existant-file.js').should == nil
         end
       end
     end

@@ -1,4 +1,4 @@
-module JsBundler
+module Jsus
   class Package
      # Constructors
     def initialize(directory)
@@ -113,7 +113,7 @@ module JsBundler
     end
 
     def calculate_requirement_order
-      self.source_files = JsBundler.topsort(source_files)
+      self.source_files = Jsus.topsort(source_files)
       self.required_files = source_files.map {|f| f.filename}
     end
 
