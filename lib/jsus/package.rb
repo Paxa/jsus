@@ -2,9 +2,6 @@ module Jsus
   class Package
     attr_accessor :relative_directory
     attr_accessor :directory
-    attr_accessor :required_files
-
-    include Topsortable
 
      # Constructors
     def initialize(directory)
@@ -16,7 +13,6 @@ module Jsus
           source_files << SourceFile.from_file(source)
         end
       end
-      calculate_requirement_order
     end
 
 
@@ -64,14 +60,7 @@ module Jsus
     end    
 
     def compile(directory = ".")
-      FileUtils.mkdir_p directory
-      Dir.chdir(directory) do
-        File.open(filename, "w") do |resulting_file|
-          required_files.each do |required_file|
-            resulting_file.puts(IO.read(required_file))
-          end
-        end
-      end
+      Packager.new(*source_files).pack(File.join(directory, filename))
     end
 
     def generate_tree(directory = ".", filename = "tree.json")
@@ -107,6 +96,10 @@ module Jsus
       end
     end
 
+
+    def required_files
+      Container.new(*source_files).map {|s| s.filename }
+    end
     protected
 
 
@@ -117,16 +110,6 @@ module Jsus
 
     def source_files=(new_value)
       @source_files = new_value.compact
-    end
-
-
-    def items
-      source_files
-    end
-
-    def calculate_requirement_order
-      self.source_files = topsort_items
-      self.required_files = source_files.map {|f| f.filename}
     end
   end
 end

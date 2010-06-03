@@ -29,15 +29,6 @@ describe Jsus::Package do
         subject.directory.should == File.expand_path(input_dir)
         subject.relative_directory.should == input_dir
       end
-
-      it "should set up required files in correct order" do
-        required_files = subject.required_files
-        input_index = required_files.index {|s| s=~ /\/Input.js$/}
-        color_index = required_files.index {|s| s=~ /\/Color.js$/}
-        input_color_index = required_files.index {|s| s=~ /\/Input.Color.js$/}
-        input_index.should < input_color_index
-        color_index.should < input_color_index
-      end
     end
   end
 

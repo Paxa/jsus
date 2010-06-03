@@ -18,7 +18,7 @@ end
 describe Jsus::Topsortable do
   subject { SortableClass.new }
   let(:items) { (0..5).map {|i| SortableItem.new(i) } }
-  let(:topsorted_values) { subject.topsort_items.map {|item| item.value } }
+  let(:topsorted_values) { subject.topsort(:items).map {|item| item.value } }
   before(:each) do
     subject.items = items
   end

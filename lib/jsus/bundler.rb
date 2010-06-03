@@ -23,10 +23,6 @@ module Jsus
       @packages = new_value.compact
     end
 
-    def items
-      packages
-    end
-
     def compile(directory)
       FileUtils.mkdir_p(directory)
       Dir.chdir directory do
@@ -42,7 +38,7 @@ module Jsus
 
     protected
     def calculate_requirement_order
-      @packages = topsort_items
+      @packages = topsort(:packages)
       @required_files = @packages.map {|p| p.required_files }.flatten
     end
   end

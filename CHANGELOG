@@ -1,4 +1,8 @@
-= JsBundler Changelog
+= Jsus Changelog
+
+== Version 0.1.1
+* Massive refactoring
+* Moved out packing logic to brand new Packager and Container classes
 
 == Version 0.1.0
 * Initial release

@@ -1,10 +1,11 @@
 module Jsus
   module Topsortable
     # Topological sort for packages and source files
-    def topsort_items
+    def topsort(to_sort = :items)
       graph = RGL::DirectedAdjacencyGraph.new
       provides_hash = {}
       # init vertices
+      items = self.send(to_sort)
       items.each do |item|
         graph.add_vertex(item)
         item.provides.each do |provides|
