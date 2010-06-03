@@ -1,5 +1,11 @@
 module Jsus
   class Package
+    attr_accessor :relative_directory
+    attr_accessor :directory
+    attr_accessor :required_files
+
+    include Topsortable
+
      # Constructors
     def initialize(directory)
       self.relative_directory = Pathname.new(directory).relative_path_from(Pathname.new(".")).to_s
@@ -15,12 +21,12 @@ module Jsus
 
 
     # Public API
-    attr_accessor :relative_directory
-    attr_accessor :directory
-
-    attr_writer :header
     def header
       @header ||= {}
+    end
+
+    def header=(new_header)
+      @header = new_header
     end
 
     def name
@@ -40,7 +46,7 @@ module Jsus
     end
 
     def files
-      header["files"] = header["sources"] || header["files"] || []
+      header["files"] = header["files"] || header["sources"] || []
     end
 
     alias_method :sources, :files
@@ -55,9 +61,7 @@ module Jsus
 
     def description
       header["description"] ||= ""
-    end
-
-    attr_accessor :required_files
+    end    
 
     def compile(directory = ".")
       FileUtils.mkdir_p directory
@@ -67,7 +71,6 @@ module Jsus
             resulting_file.puts(IO.read(required_file))
           end
         end
-        generate_scripts_info(".")
       end
     end
 
@@ -93,6 +96,7 @@ module Jsus
     end
 
     def generate_scripts_info(directory = ".", filename = "scripts.json")
+      FileUtils.mkdir_p directory
       Dir.chdir(directory) do
         result = {}
         result[name] = {}
@@ -105,18 +109,24 @@ module Jsus
 
     protected
 
-    attr_writer :source_files
+
     def source_files
       @source_files ||= []
-      @source_files.compact!
       @source_files
     end
 
-    def calculate_requirement_order
-      self.source_files = Jsus.topsort(source_files)
-      self.required_files = source_files.map {|f| f.filename}
+    def source_files=(new_value)
+      @source_files = new_value.compact
     end
 
 
+    def items
+      source_files
+    end
+
+    def calculate_requirement_order
+      self.source_files = topsort_items
+      self.required_files = source_files.map {|f| f.filename}
+    end
   end
 end

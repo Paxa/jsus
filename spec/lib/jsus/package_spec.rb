@@ -49,9 +49,11 @@ describe Jsus::Package do
       required_files = Dir["#{input_dir}/**/*.js"].map {|f| IO.read(f) }
       required_files.each {|f| compiled_content.should include(f)}
     end
+  end
 
+  describe "#generate_scripts_info" do
     it "should create scripts.json file containing all the info about the package" do
-      subject.compile(output_dir)
+      subject.generate_scripts_info(output_dir)
       File.exists?("#{output_dir}/scripts.json").should be_true
       info = JSON.parse(IO.read("#{output_dir}/scripts.json"))
       info = info["orwik"]

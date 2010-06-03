@@ -1,5 +1,9 @@
 module Jsus
   class Bundler
+    include Topsortable
+
+    attr_accessor :required_files
+
     def initialize(directory)
       Dir[File.join(directory, "**", "package.yml")].each do |package_name|
         path = Pathname.new(package_name)
@@ -11,20 +15,26 @@ module Jsus
       calculate_requirement_order
     end
 
-
-    attr_writer :packages
     def packages
       @packages ||= []
     end
 
-    attr_accessor :required_files
+    def packages=(new_value)
+      @packages = new_value.compact
+    end
+
+    def items
+      packages
+    end
 
     def compile(directory)
       FileUtils.mkdir_p(directory)
       Dir.chdir directory do
         packages.each do |package|
-          package.compile(package.relative_directory)
-          package.generate_tree(package.relative_directory)
+          output_dir = package.relative_directory
+          package.compile(output_dir)
+          package.generate_tree(output_dir)
+          package.generate_scripts_info(output_dir)
         end
       end
     end
@@ -32,7 +42,7 @@ module Jsus
 
     protected
     def calculate_requirement_order
-      @packages = Jsus.topsort(packages)
+      @packages = topsort_items
       @required_files = @packages.map {|p| p.required_files }.flatten
     end
   end

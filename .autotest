@@ -11,7 +11,9 @@ Autotest.add_hook :initialize do |at|
 
   at.add_mapping %r%^lib/(.*)\.rb% do |_, m|
     possible = File.basename(m[1])
-    at.files_matching %r%spec/lib/#{possible}_spec\.rb%
+    dirname  = File.dirname(m[1])
+    at.files_matching(%r%spec/lib/#{possible}_spec\.rb%) + 
+       at.files_matching(%r%spec/lib/#{dirname}/#{possible}_spec\.rb%)
   end
   
 
