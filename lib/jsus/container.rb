@@ -1,8 +1,6 @@
 module Jsus
   class Container
-    include Topsortable
-
-    Enumerable.instance_methods.each {|m| delegate m, :to => :sources }
+    include Topsortable        
 
     def initialize(*sources)
       sources.each do |source|
@@ -27,5 +25,8 @@ module Jsus
     def sort!
       self.sources = topsort(:sources)
     end
+
+    # delegate undefined methods to #sources
+    (Array.instance_methods - self.instance_methods).each {|m| delegate m, :to => :sources }
   end
 end

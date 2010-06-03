@@ -74,4 +74,15 @@ describe Jsus::Package do
       tree["Library"]["Color"]["provides"].should == ["Color"]
     end
   end
+  
+  describe "#required_files" do
+   it "should list required files in correct order" do
+     required_files = subject.required_files
+     input_index = required_files.index {|s| s=~ /\/Input.js$/}
+     color_index = required_files.index {|s| s=~ /\/Color.js$/}
+     input_color_index = required_files.index {|s| s=~ /\/Input.Color.js$/}
+     input_index.should < input_color_index
+     color_index.should < input_color_index
+   end
+  end
 end

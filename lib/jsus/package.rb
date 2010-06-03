@@ -68,48 +68,44 @@ module Jsus
       result = ActiveSupport::OrderedHash.new
       source_files.each do |source|
         components = File.dirname(source.relative_filename).split(File::SEPARATOR)
+        # deleting source dir by convention
         components.delete("Source")
-        components << File.basename(source.filename, ".js")
         node = result
         components.each do |component|
           node[component] ||= ActiveSupport::OrderedHash.new
           node = node[component]
         end
-        node["desc"] = source.description
-        node["requires"] = source.dependencies
-        node["provides"] = source.provides
+        node[File.basename(source.filename, ".js")] = source.to_hash
       end
-      Dir.chdir(directory) do
-        File.open(filename, "w") { |resulting_file| resulting_file << JSON.pretty_generate(result) }
-      end
+      File.open(File.join(directory, filename), "w") { |resulting_file| resulting_file << JSON.pretty_generate(result) }
+      result
     end
 
     def generate_scripts_info(directory = ".", filename = "scripts.json")
       FileUtils.mkdir_p directory
-      Dir.chdir(directory) do
-        result = {}
-        result[name] = {}
-        result[name]["desc"] = description
-        result[name]["requires"] = dependencies
-        result[name]["provides"] = provides
-        File.open(filename, "w") { |resulting_file| resulting_file << JSON.pretty_generate(result) }
-      end
+      File.open(File.join(directory, filename), "w") { |resulting_file| resulting_file << JSON.pretty_generate(self.to_hash) }
+      self.to_hash
     end
 
 
     def required_files
-      Container.new(*source_files).map {|s| s.filename }
+      source_files.map {|s| s.filename }
     end
+
+    def to_hash
+      {
+        name => {
+          :desc => description,
+          :provides => provides,
+          :requires => dependencies
+        }
+      }
+    end
+
     protected
 
-
     def source_files
-      @source_files ||= []
-      @source_files
-    end
-
-    def source_files=(new_value)
-      @source_files = new_value.compact
+      @source_files ||= Container.new
     end
   end
 end

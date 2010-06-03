@@ -40,5 +40,13 @@ module Jsus
       header["description"] ||= ""
     end
 
+    def to_hash
+      {
+        "desc"     => description,
+        "requires" => dependencies,
+        "provides" => provides
+      }
+    end
+
   end
 end
