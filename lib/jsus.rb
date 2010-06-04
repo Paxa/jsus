@@ -11,8 +11,8 @@ require 'jsus/topsortable'
 require 'jsus/source_file'
 require 'jsus/container'
 require 'jsus/packager'
+require 'jsus/pool'
 require 'jsus/package'
-require 'jsus/bundler'
 
 module Jsus
   # Shortcut for Bundler.new

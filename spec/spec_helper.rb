@@ -1,4 +1,5 @@
 require 'lib/jsus'
+Dir["spec/shared/*.rb"].each {|f| require f}
 
 # cleanup compiled stuff
 def cleanup

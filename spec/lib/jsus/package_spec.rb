@@ -16,6 +16,11 @@ describe Jsus::Package do
         subject.filename.should == "orwik.js"
       end
 
+      it "should pass pool in options" do
+        pool = Object.new
+        Jsus::Package.new(input_dir, :pool => pool).pool.should == pool
+      end
+
       it "should set provided modules from source files" do
         subject.provides.should have_exactly(4).items
         subject.provides.should include("Color", "Input", "Input.Color", "Widget")

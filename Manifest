@@ -7,10 +7,10 @@ TODO
 bin/jsus
 jsus.gemspec
 lib/jsus.rb
-lib/jsus/bundler.rb
 lib/jsus/container.rb
 lib/jsus/package.rb
 lib/jsus/packager.rb
+lib/jsus/pool.rb
 lib/jsus/source_file.rb
 lib/jsus/topsortable.rb
 spec/data/Basic/README
@@ -32,11 +32,12 @@ spec/data/OutsideDependencies/app/javascripts/Orwik/package.yml
 spec/data/bad_test_source_one.js
 spec/data/bad_test_source_two.js
 spec/data/test_source_one.js
-spec/lib/jsus/bundler_spec.rb
 spec/lib/jsus/container_spec.rb
 spec/lib/jsus/package_spec.rb
 spec/lib/jsus/packager_spec.rb
+spec/lib/jsus/pool_spec.rb
 spec/lib/jsus/source_file_spec.rb
 spec/lib/jsus/topsortable_spec.rb
+spec/shared/class_stubs.rb
 spec/spec.opts
 spec/spec_helper.rb

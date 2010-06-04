@@ -1,6 +1,12 @@
 = Jsus Changelog
 
-== Version 0.1.1
+== Version 0.1.2
+* Removed Bundler class which seemed like totally unneccessary
+* jsus command-line utility now works in single-project mode
+* Some major refactoring, introduced new concepts: Pool, Packager and Container
+* Inserted license text to LICENSE, updated TODO
+
+== Version 0.1.1 (not released)
 * Massive refactoring
 * Moved out packing logic to brand new Packager and Container classes
 

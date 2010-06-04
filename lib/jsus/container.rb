@@ -9,8 +9,14 @@ module Jsus
     end
 
     def <<(source)
-      sources << source
-      sort!
+      if source
+        if source.kind_of?(Array) || source.kind_of?(Container)
+          source.each {|s| self << s }
+        else
+          sources << source
+          sort!
+        end
+      end
       self
     end
 
@@ -24,6 +30,10 @@ module Jsus
 
     def sort!
       self.sources = topsort(:sources)
+    end
+
+    def inspect
+      "#<#{self.class.name}:#{self.object_id} #{self.sources.inspect}>"
     end
 
     # delegate undefined methods to #sources

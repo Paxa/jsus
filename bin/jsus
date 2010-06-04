@@ -3,8 +3,11 @@ require 'rubygems'
 require 'jsus'
 
 unless ARGV.length == 2
-  puts "SYNOPSYS: jsus <input_directory_with_packages> <output_directory_for_packages>"
+  puts "SYNOPSYS: jsus <input_directory_with_package> <output_directory_for_package>"
   exit
 else
-  Jsus::Bundler.new(ARGV[0]).compile(ARGV[1])
+  package = Jsus::Package.new(ARGV[0])
+  package.compile(ARGV[1])
+  package.generate_scripts_info(ARGV[1])
+  package.generate_tree(ARGV[1])
 end

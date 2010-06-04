@@ -2,15 +2,16 @@ module Jsus
   class Package
     attr_accessor :relative_directory
     attr_accessor :directory
-
+    attr_accessor :pool
      # Constructors
-    def initialize(directory)
-      self.relative_directory = Pathname.new(directory).relative_path_from(Pathname.new(".")).to_s
+    def initialize(directory, options = {})
+      self.relative_directory = directory #Pathname.new(directory).relative_path_from(Pathname.new(".")).to_s
       self.directory = File.expand_path(directory)
       self.header = YAML.load_file(File.join(directory, 'package.yml'))
+      self.pool = options[:pool]
       Dir.chdir(directory) do
         files.each do |source|
-          source_files << SourceFile.from_file(source)
+          source_files << SourceFile.from_file(source, :package => self)
         end
       end
     end
@@ -102,10 +103,11 @@ module Jsus
       }
     end
 
-    protected
 
     def source_files
       @source_files ||= Container.new
     end
+
+    protected
   end
 end

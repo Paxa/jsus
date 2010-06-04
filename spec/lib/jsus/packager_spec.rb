@@ -1,17 +1,5 @@
 require 'spec/spec_helper'
 
-class Source
-  attr_accessor :provides
-  attr_accessor :dependencies
-  attr_accessor :content
-
-  def initialize(options = {})
-    options.each do |attr, value|
-      send("#{attr}=", value)
-    end
-  end
-end
-
 
 describe Jsus::Packager do 
   let(:simple_source)         { Source.new(:provides => [0], :dependencies => [],  :content => "// simple") }

@@ -1,0 +1,5 @@
+* External dependencies mechanism
+* Disallow circular dependencies
+* Package extensions (e.g. package Core.ext that would be able to extend package Core)
+* Rails integration
+* Documentation, RDocs
