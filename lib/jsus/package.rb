@@ -5,7 +5,7 @@ module Jsus
     attr_accessor :pool
      # Constructors
     def initialize(directory, options = {})
-      self.relative_directory = directory #Pathname.new(directory).relative_path_from(Pathname.new(".")).to_s
+      self.relative_directory = directory
       self.directory = File.expand_path(directory)
       self.header = YAML.load_file(File.join(directory, 'package.yml'))
       self.pool = options[:pool]
@@ -39,7 +39,7 @@ module Jsus
     end
 
     def provides!
-      source_files.map {|source| source.provides }.flatten
+      source_files.map {|source| source.provides(:short => true) }.flatten
     end
 
     def files
@@ -53,7 +53,7 @@ module Jsus
     end
 
     def dependencies!
-      source_files.map {|source| source.dependencies }.flatten.compact.uniq - provides!
+      source_files.map {|source| source.dependencies(:short => true) }.flatten.compact.uniq - provides!
     end
 
     def description

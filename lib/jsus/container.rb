@@ -8,16 +8,31 @@ module Jsus
       end
     end
 
+
+    # PRO TIP: #<< sorts upon every invokation
+    # #push doesn't
     def <<(source)
+      push(source)
+      sort!
+    end
+
+    def push(source)
       if source
         if source.kind_of?(Array) || source.kind_of?(Container)
-          source.each {|s| self << s }
+          source.each {|s| self.push(s) }
         else
-          sources << source
-          sort!
+          sources.push(source)
         end
       end
       self
+    end
+
+    def flatten      
+      map {|item| item.respond_to?(:flatten) ? item.flatten : item }.flatten
+    end
+
+    def to_a
+      sources
     end
 
     def sources
@@ -30,6 +45,7 @@ module Jsus
 
     def sort!
       self.sources = topsort(:sources)
+      self
     end
 
     def inspect
@@ -37,6 +53,11 @@ module Jsus
     end
 
     # delegate undefined methods to #sources
-    (Array.instance_methods - self.instance_methods).each {|m| delegate m, :to => :sources }
+    DELEGATED_METHODS = [
+                          "==", "map", "map!", "each", "inject", "reject",
+                          "detect", "size", "length", "[]", "empty?",
+                          "index", "include?"
+                        ]
+    (DELEGATED_METHODS).each {|m| delegate m, :to => :sources }
   end
 end

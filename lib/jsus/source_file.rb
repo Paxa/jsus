@@ -38,8 +38,8 @@ module Jsus
     def dependencies(options = {})
       header["requires"] = [header["requires"] || []].flatten
       header["requires"].map! {|r| r.gsub(/^\//, "") }
-      if options[:full] && package
-        header["requires"].map {|r| "#{package.name}/#{r}"}
+      if !options[:short] && package
+        header["requires"].map {|r| r.index("/") ? r : "#{package.name}/#{r}"}
       else
         header["requires"]
       end
@@ -48,7 +48,7 @@ module Jsus
 
     def provides(options = {})
       header["provides"] = [header["provides"] || []].flatten
-      if options[:full] && package
+      if !options[:short] && package
         header["provides"].map {|p| "#{package.name}/#{p}"}
       else
         header["provides"]
@@ -62,8 +62,8 @@ module Jsus
     def to_hash
       {
         "desc"     => description,
-        "requires" => dependencies,
-        "provides" => provides
+        "requires" => dependencies(:short => true),
+        "provides" => provides(:short => true)
       }
     end
 

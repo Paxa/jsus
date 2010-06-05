@@ -52,32 +52,42 @@ describe Jsus::SourceFile do
   end
 
   describe "#provides" do
-    it "should return the stuff it provides" do
-      subject.provides.should == ["Chain", "Events", "Options"]
+    it "should return the stuff it provides in full form" do
+      subject.provides.should == ["Core/Chain", "Core/Events", "Core/Options"]
     end
 
-    it "should prepend package prefix if asked for fully formed provides" do
-      subject.provides(:full => true).should == ["Core/Chain", "Core/Events", "Core/Options"]
+    it "should cut package prefix if asked for short-formed provides" do
+      subject.provides(:short => true).should == ["Chain", "Events", "Options"]
     end
 
     it "should work well when given single string instead of array" do
       subject.header["provides"] = "Mash"
-      subject.provides.should == ["Mash"]
+      subject.provides.should == ["Core/Mash"]
     end
   end
 
   describe "#dependencies" do
     it "should truncate leading slash" do
-      subject.dependencies.should == ["Class"]
+      subject.dependencies.should == ["Core/Class"]
     end
 
-    it "should prepend package prefix if asked for fully formed dependencies" do
-      subject.dependencies(:full => true).should == ["Core/Class"]
+    it "should cut package prefix if asked for short-formed dependencies" do
+      subject.dependencies(:short => true).should == ["Class"]
     end
 
     it "should work well when given single string instead of array" do
       subject.header["requires"] = "Class"
-      subject.dependencies.should == ["Class"]
+      subject.dependencies.should == ["Core/Class"]
+    end
+
+    it "should not truncate package name in short form for external dependencies" do
+      subject.header["requires"] = "Mash/Mash"
+      subject.dependencies(:short => true).should == ["Mash/Mash"]
+    end
+
+    it "should not prepend package name in full form for external dependencies" do
+      subject.header["requires"] = "Mash/Mash"
+      subject.dependencies.should == ["Mash/Mash"]
     end
   end
 end
