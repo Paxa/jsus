@@ -38,8 +38,7 @@ module Jsus
     end
 
     def provides
-      source_files.map {|source| source.provides(:short => true) }.flatten +
-        external_dependencies.map {|d| d.provides }.flatten
+      (source_files.map {|source| source.provides(:short => true) } + linked_external_dependencies.map {|d| d.provides }).flatten
     end
 
     def files
@@ -53,11 +52,15 @@ module Jsus
     end
 
     def external_dependencies
-      @external_dependencies ||= Container.new
+      source_files.map {|source| source.external_dependencies }
     end
 
-    def external_dependencies=(new_value)
-      @external_dependencies = new_value
+    def linked_external_dependencies
+      @linked_external_dependencies ||= Container.new
+    end
+
+    def linked_external_dependencies=(new_value)
+      @linked_external_dependencies = new_value
     end
 
     def description
@@ -65,7 +68,7 @@ module Jsus
     end    
 
     def compile(directory = ".")
-      Packager.new(*(source_files.to_a + external_dependencies.to_a)).pack(File.join(directory, filename))
+      Packager.new(*(source_files.to_a + linked_external_dependencies.to_a)).pack(File.join(directory, filename))
     end
 
     def generate_tree(directory = ".", filename = "tree.json")
@@ -94,7 +97,7 @@ module Jsus
 
     def include_dependencies!
       source_files.each do |source|
-        self.external_dependencies << pool.lookup_dependencies(source)
+        linked_external_dependencies << pool.lookup_dependencies(source)
       end
     end
 

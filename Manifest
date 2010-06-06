@@ -5,7 +5,6 @@ README
 Rakefile
 TODO
 bin/jsus
-jsus.gemspec
 lib/jsus.rb
 lib/jsus/container.rb
 lib/jsus/package.rb

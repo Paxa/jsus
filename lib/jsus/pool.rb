@@ -26,23 +26,24 @@ module Jsus
       when Jsus::SourceFile
         source_or_key
       else
-        raise "Illegal lookup query. Expected String or SourceFile, given #{source_or_key.class.name}."
+        raise "Illegal lookup query. Expected String or SourceFile, " <<
+              "given #{source_or_key.inspect}, an instance of #{source_or_key.class.name}."
       end
     end
 
     def lookup_direct_dependencies(source_or_source_key)
       source = lookup(source_or_source_key)
-      result = source.dependencies(:short => true).select {|d| d =~ %r(/)}.map {|d| lookup(d)}
+      result = source.external_dependencies.map {|d| lookup(d)}
       Container.new(*result)
     end
 
     def lookup_dependencies(source_or_source_key)
       source = lookup(source_or_source_key)
       result = Container.new
-      dependencies = lookup_direct_dependencies(source).to_a
+      dependencies = lookup_direct_dependencies(source)
       while !dependencies.empty?
         dependencies.each { |d| result.push(d) }
-        dependencies = dependencies.map {|d| lookup_direct_dependencies(d).to_a }.flatten.compact.uniq
+        dependencies = dependencies.map {|d| lookup_direct_dependencies(d).to_a }.flatten.uniq
       end
       result.sort!
     end

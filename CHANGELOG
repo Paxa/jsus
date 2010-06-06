@@ -1,5 +1,9 @@
 = Jsus Changelog
 
+== Version 0.1.4
+* Switched from OptiFlag to Choice for command-line parsing in jsus utility
+* Miscellanous changes here and there
+
 == Version 0.1.3
 * Updated Pool class with dependency resolvers
 * Added Package#include_external_dependencies!

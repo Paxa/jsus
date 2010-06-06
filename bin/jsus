@@ -1,47 +1,50 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'jsus'
-require 'optiflag'
+require 'choice'
 
-module JsusCL
-  extend OptiFlagSet
 
-  flag "input_directory" do
-    alternate_forms "i"
-    description "Path to directory containing your package to compile."
+Choice.options do
+  option 'input_directory', :required => true do
+    short "-i"
+    long "--input-directory=DIRECTORY"
+    desc "Path to directory containing your package to compile."
   end
 
-  flag "output_directory" do
-    alternate_forms "o"
-    description "Path to directory to output the compiled package."
+  option 'output_directory', :required => true do
+    short "-o"
+    long "--output-directory=DIRECTORY"
+    desc "Path to directory to output the compiled package."
+  end
+  
+  option "dependencies", :required => false do
+    short "-d"
+    long  "--with-dependencies=DIRECTORY"
+    desc "Path to directory containing packages this package relies on. " <<
+         "If set, all the packages will be compiled into a single file."
   end
 
-  optional_flag "dependencies" do
-    alternate_forms "d"
-    description "Path to directory containing packages this package relies on. " <<
-                "If set, all the packages will be compiled into a single file"
+  option "without_scripts_info", :required => false do
+    long "--without-scripts-info"
+    desc "When this flag is set, jsus doesn't generate scripts.json" <<
+         "file with general info about your package."
   end
 
-  optional_flag "scripts_info" do
-    default "yes"
-    description "Generates scripts.json file with general info about your package"
-    value_in_set ["yes", "no"]
+  option "without_tree", :required => false do
+    long "--without-tree"
+    desc "When this flag is set, jsus doesn't generate tree.json file" <<
+         "with tree structure of your package."
   end
 
-  optional_flag "tree_info" do
-    default "yes"
-    description "Generates scripts.json file with tree structure of your package"
-    value_in_set ["yes", "no"]
-  end
-
-  and_process!
 end
 
-pool = if JsusCL.flags.dependencies?
-  Jsus::Pool.new(JsusCL.flags.dependencies)
+
+pool = if Choice.choices[:dependencies]
+  Jsus::Pool.new(Choice.choices[:dependencies])
 end
-package = Jsus::Package.new(JsusCL.flags.input_directory, :pool => pool)
-package.include_dependencies! if JsusCL.flags.dependencies?
-package.compile(JsusCL.flags.output_directory)
-package.generate_scripts_info(JsusCL.flags.output_directory) if JsusCL.flags.scripts_info == "yes"
-package.generate_tree(JsusCL.flags.output_directory) if JsusCL.flags.scripts_info == "yes"
+package = Jsus::Package.new(Choice.choices[:input_directory], :pool => pool)
+package.include_dependencies! if Choice.choices[:dependencies]
+output_directory = Choice.choices[:output_directory]
+package.compile(output_directory)
+package.generate_scripts_info(output_directory) unless Choice.choices[:without_scripts_info]
+package.generate_tree(output_directory) unless Choice.choices[:without_tree]

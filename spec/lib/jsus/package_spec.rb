@@ -123,8 +123,8 @@ describe Jsus::Package do
 
     it "should include external dependencies into self" do
       subject.include_dependencies!
-      subject.should have(3).external_dependencies
-      compiled = subject.compile
+      subject.should have(3).linked_external_dependencies
+      compiled = subject.compile(output_dir)
       ["Class", "Hash", "Mash"].each do |name|
         compiled.should include(IO.read("#{lib_dir}/#{name}/Source/#{name}.js"))
       end

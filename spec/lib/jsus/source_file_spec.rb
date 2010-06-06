@@ -34,13 +34,16 @@ describe Jsus::SourceFile do
     end
 
     it "should set all available fields from constructor" do
-      source = Jsus::SourceFile.new(:package => 1, :content => 2, :filename => 3,
-                                    :relative_filename => 4, :header => 5)
-      source.package.should == 1
-      source.content.should == 2
-      source.filename.should == 3
-      source.relative_filename.should == 4
-      source.header.should == 5
+      source = Jsus::SourceFile.new(:package           => package,
+                                    :content           => subject.content,
+                                    :filename          => subject.filename,
+                                    :relative_filename => subject.relative_filename,
+                                    :header            => subject.header)
+      source.package.should           == package
+      source.content.should           == subject.content
+      source.filename.should          == subject.filename
+      source.relative_filename.should == subject.relative_filename
+      source.header.should            == subject.header
     end
 
     it "should register package in pool from constructor" do
@@ -61,7 +64,7 @@ describe Jsus::SourceFile do
     end
 
     it "should work well when given single string instead of array" do
-      subject.header["provides"] = "Mash"
+      subject.header = {"provides" => "Mash"}
       subject.provides.should == ["Core/Mash"]
     end
   end
@@ -76,17 +79,17 @@ describe Jsus::SourceFile do
     end
 
     it "should work well when given single string instead of array" do
-      subject.header["requires"] = "Class"
+      subject.header = { "requires" => "Class" }
       subject.dependencies.should == ["Core/Class"]
     end
 
     it "should not truncate package name in short form for external dependencies" do
-      subject.header["requires"] = "Mash/Mash"
+      subject.header = { "requires" => "Mash/Mash" }
       subject.dependencies(:short => true).should == ["Mash/Mash"]
     end
 
     it "should not prepend package name in full form for external dependencies" do
-      subject.header["requires"] = "Mash/Mash"
+      subject.header = { "requires" => "Mash/Mash" }
       subject.dependencies.should == ["Mash/Mash"]
     end
   end

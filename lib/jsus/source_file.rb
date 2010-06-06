@@ -1,6 +1,5 @@
 module Jsus
   class SourceFile
-    attr_accessor :header
     attr_accessor :relative_filename
     attr_accessor :filename
     attr_accessor :content
@@ -35,9 +34,21 @@ module Jsus
     end
 
     # Public API
-    def dependencies(options = {})
-      header["requires"] = [header["requires"] || []].flatten
-      header["requires"].map! {|r| r.gsub(/^\//, "") }
+    def header=(new_header)
+      @header = new_header
+      # prepare defaults
+      @header["description"] ||= ""
+      @header["requires"] = [@header["requires"] || []].flatten
+      @header["requires"].map! {|r| r.gsub(/^(\.)?\//, "") }
+      @header["provides"] = [@header["provides"] || []].flatten
+    end
+
+    def header
+      self.header = {} unless @header
+      @header
+    end
+
+    def dependencies(options = {})            
       if !options[:short] && package
         header["requires"].map {|r| r.index("/") ? r : "#{package.name}/#{r}"}
       else
@@ -46,8 +57,15 @@ module Jsus
     end
     alias_method :requires, :dependencies
 
-    def provides(options = {})
-      header["provides"] = [header["provides"] || []].flatten
+    def external_dependencies
+      dependencies(:short => true).select {|d| d.index("/") }
+    end
+
+    def internal_dependencies
+      dependencies(:short => true) - external_dependencies
+    end
+
+    def provides(options = {})      
       if !options[:short] && package
         header["provides"].map {|p| "#{package.name}/#{p}"}
       else
@@ -56,7 +74,7 @@ module Jsus
     end
 
     def description
-      header["description"] ||= ""
+      header["description"]
     end
 
     def to_hash
