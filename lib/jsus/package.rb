@@ -8,11 +8,14 @@ module Jsus
       self.relative_directory = directory
       self.directory = File.expand_path(directory)
       self.header = YAML.load_file(File.join(directory, 'package.yml'))
-      self.pool = options[:pool]
       Dir.chdir(directory) do
         files.each do |source|
           source_files << SourceFile.from_file(source, :package => self)
         end
+      end
+      if options[:pool]
+        self.pool = options[:pool]
+        self.pool << self
       end
     end
 
@@ -35,11 +38,8 @@ module Jsus
     end
 
     def provides
-      @provides ||= provides!
-    end
-
-    def provides!
-      source_files.map {|source| source.provides(:short => true) }.flatten
+      source_files.map {|source| source.provides(:short => true) }.flatten +
+        external_dependencies.map {|d| d.provides }.flatten
     end
 
     def files
@@ -49,11 +49,15 @@ module Jsus
     alias_method :sources, :files
 
     def dependencies
-      @dependencies ||= dependencies!
+      source_files.map {|source| source.dependencies(:short => true) }.flatten.compact.uniq - provides
     end
 
-    def dependencies!
-      source_files.map {|source| source.dependencies(:short => true) }.flatten.compact.uniq - provides!
+    def external_dependencies
+      @external_dependencies ||= Container.new
+    end
+
+    def external_dependencies=(new_value)
+      @external_dependencies = new_value
     end
 
     def description
@@ -61,7 +65,7 @@ module Jsus
     end    
 
     def compile(directory = ".")
-      Packager.new(*source_files).pack(File.join(directory, filename))
+      Packager.new(*(source_files.to_a + external_dependencies.to_a)).pack(File.join(directory, filename))
     end
 
     def generate_tree(directory = ".", filename = "tree.json")
@@ -86,6 +90,12 @@ module Jsus
       FileUtils.mkdir_p directory
       File.open(File.join(directory, filename), "w") { |resulting_file| resulting_file << JSON.pretty_generate(self.to_hash) }
       self.to_hash
+    end
+
+    def include_dependencies!
+      source_files.each do |source|
+        self.external_dependencies << pool.lookup_dependencies(source)
+      end
     end
 
 

@@ -19,6 +19,14 @@ spec/data/Basic/app/javascripts/Orwik/Source/Widget/Input/Input.Color.js
 spec/data/Basic/app/javascripts/Orwik/Source/Widget/Input/Input.js
 spec/data/Basic/app/javascripts/Orwik/Source/Widget/Widget.js
 spec/data/Basic/app/javascripts/Orwik/package.yml
+spec/data/ChainDependencies/app/javascripts/Class/Source/Class.js
+spec/data/ChainDependencies/app/javascripts/Class/package.yml
+spec/data/ChainDependencies/app/javascripts/Hash/Source/Hash.js
+spec/data/ChainDependencies/app/javascripts/Hash/package.yml
+spec/data/ChainDependencies/app/javascripts/Mash/Source/Mash.js
+spec/data/ChainDependencies/app/javascripts/Mash/package.yml
+spec/data/ExternalDependencies/app/javascripts/Orwik/Source/Test.js
+spec/data/ExternalDependencies/app/javascripts/Orwik/package.yml
 spec/data/OutsideDependencies/README
 spec/data/OutsideDependencies/app/javascripts/Core/Source/Class/Class.Extras.js
 spec/data/OutsideDependencies/app/javascripts/Core/Source/Class/Class.js

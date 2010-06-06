@@ -1,13 +1,47 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'jsus'
+require 'optiflag'
 
-unless ARGV.length == 2
-  puts "SYNOPSYS: jsus <input_directory_with_package> <output_directory_for_package>"
-  exit
-else
-  package = Jsus::Package.new(ARGV[0])
-  package.compile(ARGV[1])
-  package.generate_scripts_info(ARGV[1])
-  package.generate_tree(ARGV[1])
+module JsusCL
+  extend OptiFlagSet
+
+  flag "input_directory" do
+    alternate_forms "i"
+    description "Path to directory containing your package to compile."
+  end
+
+  flag "output_directory" do
+    alternate_forms "o"
+    description "Path to directory to output the compiled package."
+  end
+
+  optional_flag "dependencies" do
+    alternate_forms "d"
+    description "Path to directory containing packages this package relies on. " <<
+                "If set, all the packages will be compiled into a single file"
+  end
+
+  optional_flag "scripts_info" do
+    default "yes"
+    description "Generates scripts.json file with general info about your package"
+    value_in_set ["yes", "no"]
+  end
+
+  optional_flag "tree_info" do
+    default "yes"
+    description "Generates scripts.json file with tree structure of your package"
+    value_in_set ["yes", "no"]
+  end
+
+  and_process!
 end
+
+pool = if JsusCL.flags.dependencies?
+  Jsus::Pool.new(JsusCL.flags.dependencies)
+end
+package = Jsus::Package.new(JsusCL.flags.input_directory, :pool => pool)
+package.include_dependencies! if JsusCL.flags.dependencies?
+package.compile(JsusCL.flags.output_directory)
+package.generate_scripts_info(JsusCL.flags.output_directory) if JsusCL.flags.scripts_info == "yes"
+package.generate_tree(JsusCL.flags.output_directory) if JsusCL.flags.scripts_info == "yes"

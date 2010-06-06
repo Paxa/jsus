@@ -1,5 +1,14 @@
 = Jsus Changelog
 
+== Version 0.1.3
+* Updated Pool class with dependency resolvers
+* Added Package#include_external_dependencies!
+  * Included external dependencies won't show in its Package#dependencies
+  * Same for external provides
+
+* Revamped command-line interface for jsus utility
+  * Added dependencies compilation
+
 == Version 0.1.2
 * Removed Bundler class which seemed like totally unneccessary
 * jsus command-line utility now works in single-project mode

@@ -11,13 +11,8 @@ require 'jsus/topsortable'
 require 'jsus/source_file'
 require 'jsus/container'
 require 'jsus/packager'
-require 'jsus/pool'
 require 'jsus/package'
+require 'jsus/pool'
 
 module Jsus
-  # Shortcut for Bundler.new
-  def self.new(*args, &block)
-    Bundler.new(*args, &block)
-  end
-
 end

@@ -16,9 +16,11 @@ describe Jsus::Package do
         subject.filename.should == "orwik.js"
       end
 
-      it "should pass pool in options" do
-        pool = Object.new
-        Jsus::Package.new(input_dir, :pool => pool).pool.should == pool
+      it "should pass pool in options and register itself in the pool" do
+        pool = Jsus::Pool.new
+        package = Jsus::Package.new(input_dir, :pool => pool)
+        package.pool.should == pool
+        pool.packages.should include(package)
       end
 
       it "should set provided modules from source files" do
@@ -56,6 +58,29 @@ describe Jsus::Package do
       info["provides"].should have_exactly(4).items
       info["provides"].should include("Color", "Widget", "Input", "Input.Color")
     end
+    
+    context "when external dependencies are included" do
+      let(:lib_dir) { "spec/data/ChainDependencies/app/javascripts" }
+      let(:pool) { Jsus::Pool.new(lib_dir) }
+      subject { Jsus::Package.new("spec/data/ExternalDependencies/app/javascripts/Orwik", :pool => pool) }
+
+      it "should show included external dependencies as provided" do
+        subject.include_dependencies!
+        subject.generate_scripts_info(output_dir)
+        info = JSON.parse(IO.read("#{output_dir}/scripts.json"))
+        info = info["orwik"]
+        info["provides"].should have_exactly(4).items
+        info["provides"].should include("Test", "Hash/Hash", "Class/Class", 'Mash/Mash')
+      end
+
+      it "should not show included external dependencies as required" do
+        subject.include_dependencies!
+        subject.generate_scripts_info(output_dir)
+        info = JSON.parse(IO.read("#{output_dir}/scripts.json"))
+        info = info["orwik"]
+        info["requires"].should == []
+      end
+    end
   end
 
   describe "#generate_tree" do
@@ -89,5 +114,20 @@ describe Jsus::Package do
      input_index.should < input_color_index
      color_index.should < input_color_index
    end
+  end
+
+  describe "#include_dependencies!" do
+    let(:lib_dir) { "spec/data/ChainDependencies/app/javascripts" }
+    let(:pool) { Jsus::Pool.new(lib_dir) }
+    subject { Jsus::Package.new("spec/data/ExternalDependencies/app/javascripts/Orwik", :pool => pool) }
+
+    it "should include external dependencies into self" do
+      subject.include_dependencies!
+      subject.should have(3).external_dependencies
+      compiled = subject.compile
+      ["Class", "Hash", "Mash"].each do |name|
+        compiled.should include(IO.read("#{lib_dir}/#{name}/Source/#{name}.js"))
+      end
+    end
   end
 end
