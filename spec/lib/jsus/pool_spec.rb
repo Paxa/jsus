@@ -34,7 +34,7 @@ describe Jsus::Pool do
 
       it "should add all the source files to pool" do
         subject.should have_exactly(3).sources
-        subject.sources.map {|s| s.provides }.flatten.should include("Mash/Mash", "Hash/Hash", "Class/Class")
+        subject.sources.map {|s| s.provides_names }.flatten.should include("Mash/Mash", "Hash/Hash", "Class/Class")
       end
     end
   end
@@ -52,6 +52,10 @@ describe Jsus::Pool do
     it "should return nil if nothing could be found" do
       subject.lookup("Core/WTF").should be_nil
     end
+
+    it "should allow tags" do
+      subject.lookup(Jsus::Tag["Class/Class"]).should == sources[1]
+    end
   end
 
   describe "#lookup_direct_dependencies" do
@@ -63,6 +67,10 @@ describe Jsus::Pool do
       subject.lookup_direct_dependencies("Mash/Mash").should be_a(Jsus::Container)
       subject.lookup_direct_dependencies("Mash/Mash").should == [sources[2]]
     end
+
+    it "should return empty array if pool doesn't contain given source" do
+      subject.lookup_direct_dependencies("Lol/Wtf").should == []
+    end
   end
 
   describe "#lookup_dependencies" do
@@ -72,6 +80,10 @@ describe Jsus::Pool do
 
     it "should return a container with files and dependencies" do
       subject.lookup_dependencies("Mash/Mash").should == [sources[1], sources[2]]
+    end
+
+    it "should return empty array if pool doesn't contain given source" do
+      subject.lookup_dependencies("Lol/Wtf").should == []
     end
   end
 end

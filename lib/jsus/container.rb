@@ -1,7 +1,5 @@
 module Jsus
   class Container
-    include Topsortable        
-
     def initialize(*sources)
       sources.each do |source|
         self << source
@@ -44,12 +42,36 @@ module Jsus
     end
 
     def sort!
-      self.sources = topsort(:sources)
+      self.sources = topsort
       self
     end
 
     def inspect
       "#<#{self.class.name}:#{self.object_id} #{self.sources.inspect}>"
+    end
+
+    def topsort
+      graph = RGL::DirectedAdjacencyGraph.new
+      provides_map = {}
+      # init vertices
+      items = self.sources
+      items.each do |item|
+        graph.add_vertex(item)
+        item.provides.each do |provides|
+          provides_map[provides] = item
+        end
+      end
+      # init edges
+      items.each do |item|
+        item.dependencies.each do |dependency|
+          if required_item = provides_map[dependency]
+            graph.add_edge(required_item, item)
+          end
+        end
+      end
+      result = []
+      graph.topsort_iterator.each { |item| result << item }
+      result
     end
 
     # delegate undefined methods to #sources

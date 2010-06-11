@@ -7,7 +7,7 @@ module Jsus
     # constructors
 
     def initialize(options = {})
-      [:header, :relative_filename, :filename, :content, :package].each do |field|
+      [:package, :header, :relative_filename, :filename, :content].each do |field|
         send("#{field}=", options[field]) if options[field]
       end
       options[:pool] << self if options[:pool]
@@ -38,9 +38,10 @@ module Jsus
       @header = new_header
       # prepare defaults
       @header["description"] ||= ""
-      @header["requires"] = [@header["requires"] || []].flatten
-      @header["requires"].map! {|r| r.gsub(/^(\.)?\//, "") }
-      @header["provides"] = [@header["provides"] || []].flatten
+      @dependencies = [@header["requires"] || []].flatten
+      @dependencies.map! {|tag_name| Tag.new(tag_name, :package => package) }
+      @provides = [@header["provides"] || []].flatten
+      @provides.map! {|tag_name| Tag.new(tag_name, :package => package) }
     end
 
     def header
@@ -48,29 +49,26 @@ module Jsus
       @header
     end
 
-    def dependencies(options = {})            
-      if !options[:short] && package
-        header["requires"].map {|r| r.index("/") ? r : "#{package.name}/#{r}"}
-      else
-        header["requires"]
-      end
+    def dependencies
+      @dependencies
     end
     alias_method :requires, :dependencies
 
+    def dependencies_names(options = {})
+      dependencies.map {|d| d.name(options) }
+    end    
+    alias_method :requires_names, :dependencies_names
+
     def external_dependencies
-      dependencies(:short => true).select {|d| d.index("/") }
+      dependencies.select {|d| d.external? }
     end
 
-    def internal_dependencies
-      dependencies(:short => true) - external_dependencies
+    def provides
+      @provides ||= []
     end
 
-    def provides(options = {})      
-      if !options[:short] && package
-        header["provides"].map {|p| "#{package.name}/#{p}"}
-      else
-        header["provides"]
-      end
+    def provides_names(options = {})
+      provides.map {|p| p.name(options)}
     end
 
     def description
@@ -80,8 +78,8 @@ module Jsus
     def to_hash
       {
         "desc"     => description,
-        "requires" => dependencies(:short => true),
-        "provides" => provides(:short => true)
+        "requires" => dependencies_names(:short => true),
+        "provides" => provides_names(:short => true)
       }
     end
 

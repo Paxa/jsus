@@ -37,22 +37,38 @@ module Jsus
       header["filename"] ||= name + ".js"
     end
 
-    def provides
-      (source_files.map {|source| source.provides(:short => true) } + linked_external_dependencies.map {|d| d.provides }).flatten
-    end
-
     def files
       header["files"] = header["files"] || header["sources"] || []
     end
 
     alias_method :sources, :files
 
+    def provides
+      source_files.map {|s| s.provides }.flatten | linked_external_dependencies.map {|d| d.provides }.flatten
+    end
+
+    def provides_names
+      source_files.map {|s| s.provides_names(:short => true) }.flatten |
+      linked_external_dependencies.map {|d| d.provides_names }.flatten
+    end
+
     def dependencies
-      source_files.map {|source| source.dependencies(:short => true) }.flatten.compact.uniq - provides
+      result = source_files.map {|source| source.dependencies }.flatten
+      result |= linked_external_dependencies.map {|d| d.dependencies}.flatten
+      result -= provides
+      result
+    end
+
+    def dependencies_names
+      dependencies.map {|d| d.name(:short => true) }
     end
 
     def external_dependencies
-      source_files.map {|source| source.external_dependencies }
+      source_files.map {|s| s.external_dependencies }.flatten
+    end
+
+    def external_dependencies_names
+      external_dependencies.map {|d| d.name }
     end
 
     def linked_external_dependencies
@@ -103,15 +119,15 @@ module Jsus
 
 
     def required_files
-      source_files.map {|s| s.filename }
+      source_files.map {|s| s.filename } 
     end
 
     def to_hash
       {
         name => {
           :desc => description,
-          :provides => provides,
-          :requires => dependencies
+          :provides => provides_names,
+          :requires => dependencies_names
         }
       }
     end

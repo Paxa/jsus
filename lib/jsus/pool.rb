@@ -22,8 +22,10 @@ module Jsus
     def lookup(source_or_key)
       case source_or_key
       when String
+        provides_map[Tag[source_or_key]]
+      when Tag
         provides_map[source_or_key]
-      when Jsus::SourceFile
+      when SourceFile
         source_or_key
       else
         raise "Illegal lookup query. Expected String or SourceFile, " <<
@@ -31,21 +33,24 @@ module Jsus
       end
     end
 
-    def lookup_direct_dependencies(source_or_source_key)
+    def lookup_direct_dependencies(source_or_source_key)      
       source = lookup(source_or_source_key)
-      result = source.external_dependencies.map {|d| lookup(d)}
+      result = source ? source.external_dependencies.map {|d| lookup(d)} : []
       Container.new(*result)
     end
 
-    def lookup_dependencies(source_or_source_key)
+    def lookup_dependencies(source_or_source_key)      
       source = lookup(source_or_source_key)
       result = Container.new
-      dependencies = lookup_direct_dependencies(source)
-      while !dependencies.empty?
-        dependencies.each { |d| result.push(d) }
-        dependencies = dependencies.map {|d| lookup_direct_dependencies(d).to_a }.flatten.uniq
+      if source
+        dependencies = lookup_direct_dependencies(source)
+        while !dependencies.empty?
+          dependencies.each { |d| result.push(d) }
+          dependencies = dependencies.map {|d| lookup_direct_dependencies(d).to_a }.flatten.uniq
+        end
+        result.sort!
       end
-      result.sort!
+      result
     end
 
     def <<(source_or_sources_or_package)

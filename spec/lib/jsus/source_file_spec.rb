@@ -9,8 +9,8 @@ describe Jsus::SourceFile do
     context "from file" do
       subject { Jsus::SourceFile.from_file('spec/data/test_source_one.js') }
       it "should parse json header" do
-        subject.dependencies.should == []
-        subject.provides.should == ["Color"]
+        subject.dependencies_names.should == []
+        subject.provides_names.should == ["Color"]
         subject.description.should == "A library to work with colors"
       end
 
@@ -54,43 +54,43 @@ describe Jsus::SourceFile do
 
   end
 
-  describe "#provides" do
-    it "should return the stuff it provides in full form" do
-      subject.provides.should == ["Core/Chain", "Core/Events", "Core/Options"]
+  describe "#provides_names" do
+    it "should return the names of stuff it provides in full form" do
+      subject.provides_names.should == ["Core/Chain", "Core/Events", "Core/Options"]
     end
 
     it "should cut package prefix if asked for short-formed provides" do
-      subject.provides(:short => true).should == ["Chain", "Events", "Options"]
+      subject.provides_names(:short => true).should == ["Chain", "Events", "Options"]
     end
 
     it "should work well when given single string instead of array" do
       subject.header = {"provides" => "Mash"}
-      subject.provides.should == ["Core/Mash"]
+      subject.provides_names.should == ["Core/Mash"]
     end
   end
 
-  describe "#dependencies" do
+  describe "#dependencies_names" do
     it "should truncate leading slash" do
-      subject.dependencies.should == ["Core/Class"]
+      subject.dependencies_names.should == ["Core/Class"]
     end
 
     it "should cut package prefix if asked for short-formed dependencies" do
-      subject.dependencies(:short => true).should == ["Class"]
+      subject.dependencies_names(:short => true).should == ["Class"]
     end
 
     it "should work well when given single string instead of array" do
       subject.header = { "requires" => "Class" }
-      subject.dependencies.should == ["Core/Class"]
+      subject.dependencies_names.should == ["Core/Class"]
     end
 
     it "should not truncate package name in short form for external dependencies" do
       subject.header = { "requires" => "Mash/Mash" }
-      subject.dependencies(:short => true).should == ["Mash/Mash"]
+      subject.dependencies_names(:short => true).should == ["Mash/Mash"]
     end
 
     it "should not prepend package name in full form for external dependencies" do
       subject.header = { "requires" => "Mash/Mash" }
-      subject.dependencies.should == ["Mash/Mash"]
+      subject.dependencies_names.should == ["Mash/Mash"]
     end
   end
 end

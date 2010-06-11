@@ -24,12 +24,12 @@ describe Jsus::Package do
       end
 
       it "should set provided modules from source files" do
-        subject.provides.should have_exactly(4).items
-        subject.provides.should include("Color", "Input", "Input.Color", "Widget")
+        subject.provides.should have_exactly(4).items        
+        subject.provides_names.should include("Color", "Input", "Input.Color", "Widget")
       end
 
       it "should set up outside dependencies" do
-        subject.dependencies.should == ['core/Class']
+        subject.dependencies_names.should == ['core/Class']
       end
 
       it "should set directory and relative directory fields" do
