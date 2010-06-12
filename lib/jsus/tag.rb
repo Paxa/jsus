@@ -11,6 +11,14 @@ module Jsus
       end
     end
 
+    def self.new(tag_or_name, *args, &block)
+      if tag_or_name.kind_of?(Tag)
+        tag_or_name
+      else
+        super
+      end
+    end
+
     def self.normalize_name_and_options(name, options = {})
       result = {}
       name.gsub!(%r(^(\.)?/), "")
@@ -68,6 +76,11 @@ module Jsus
       @package_name = new_value
     end
 
+    def empty?
+      @name.empty?
+    end
+
+
     def ==(other)
       if other.kind_of?(Tag)
         self.name == other.name
@@ -83,7 +96,6 @@ module Jsus
     def hash
       self.name.hash
     end
-
 
     def inspect
       "<Jsus::Tag: #{name}>"

@@ -78,7 +78,7 @@ module Jsus
     DELEGATED_METHODS = [
                           "==", "map", "map!", "each", "inject", "reject",
                           "detect", "size", "length", "[]", "empty?",
-                          "index", "include?"
+                          "index", "include?", "select", "-", "+", "|", "&"
                         ]
     (DELEGATED_METHODS).each {|m| delegate m, :to => :sources }
   end

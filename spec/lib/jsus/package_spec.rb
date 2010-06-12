@@ -114,6 +114,11 @@ describe Jsus::Package do
      input_index.should < input_color_index
      color_index.should < input_color_index
    end
+
+    it "should not include extensions" do
+      required_files = Jsus::Package.new("spec/data/Extensions/app/javascripts/Orwik").required_files
+      required_files.should be_empty
+    end
   end
 
   describe "#include_dependencies!" do
@@ -129,5 +134,18 @@ describe Jsus::Package do
         compiled.should include(IO.read("#{lib_dir}/#{name}/Source/#{name}.js"))
       end
     end
+  end
+
+  describe "#include_extensions!" do
+    let(:lib_dir) { "spec/data/Extensions/app/javascripts" }
+    let(:pool) { Jsus::Pool.new(lib_dir) }
+    subject { Jsus::Package.new("spec/data/Extensions/app/javascripts/Core", :pool => pool) }
+
+    it "should include extensions into source files" do
+      subject.source_files[0].extensions.should be_empty
+      subject.include_extensions!
+      subject.source_files[0].extensions.should have_exactly(1).item
+    end
+
   end
 end

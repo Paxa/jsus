@@ -5,13 +5,14 @@ README
 Rakefile
 TODO
 bin/jsus
+jsus.gemspec
 lib/jsus.rb
 lib/jsus/container.rb
 lib/jsus/package.rb
 lib/jsus/packager.rb
 lib/jsus/pool.rb
 lib/jsus/source_file.rb
-lib/jsus/topsortable.rb
+lib/jsus/tag.rb
 spec/data/Basic/README
 spec/data/Basic/app/javascripts/Orwik/Source/Library/Color.js
 spec/data/Basic/app/javascripts/Orwik/Source/Widget/Input/Input.Color.js
@@ -24,6 +25,10 @@ spec/data/ChainDependencies/app/javascripts/Hash/Source/Hash.js
 spec/data/ChainDependencies/app/javascripts/Hash/package.yml
 spec/data/ChainDependencies/app/javascripts/Mash/Source/Mash.js
 spec/data/ChainDependencies/app/javascripts/Mash/package.yml
+spec/data/Extensions/app/javascripts/Core/Source/Class.js
+spec/data/Extensions/app/javascripts/Core/package.yml
+spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js
+spec/data/Extensions/app/javascripts/Orwik/package.yml
 spec/data/ExternalDependencies/app/javascripts/Orwik/Source/Test.js
 spec/data/ExternalDependencies/app/javascripts/Orwik/package.yml
 spec/data/OutsideDependencies/README
@@ -44,7 +49,7 @@ spec/lib/jsus/package_spec.rb
 spec/lib/jsus/packager_spec.rb
 spec/lib/jsus/pool_spec.rb
 spec/lib/jsus/source_file_spec.rb
-spec/lib/jsus/topsortable_spec.rb
+spec/lib/jsus/tag_spec.rb
 spec/shared/class_stubs.rb
 spec/spec.opts
 spec/spec_helper.rb

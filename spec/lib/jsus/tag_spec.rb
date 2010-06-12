@@ -41,6 +41,10 @@ describe Jsus::Tag do
     it "should use implcit package setting whenever possible" do
       Jsus::Tag.new("Class/Wtf", :package => Package.new(:name => "Core")).name.should == "Class/Wtf"
     end
+
+    it "should return a given tag if given a tag" do
+      Jsus::Tag.new(subject).should == subject
+    end
   end
 
   describe "#name" do
@@ -95,6 +99,16 @@ describe Jsus::Tag do
 
     it "should work with array operations" do
       ([Jsus::Tag.new("Core/Wtf")] - [Jsus::Tag.new("Core/Wtf")]).should == []
+    end
+  end
+
+  describe "#empty?" do
+    it "should return true when tag is empty" do
+      Jsus::Tag.new("").should be_empty
+    end
+    
+    it "should return false when tag is not empty" do
+      Jsus::Tag.new("Core/Mash").should_not be_empty
     end
   end
 

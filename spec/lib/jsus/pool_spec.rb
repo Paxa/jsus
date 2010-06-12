@@ -36,6 +36,11 @@ describe Jsus::Pool do
         subject.should have_exactly(3).sources
         subject.sources.map {|s| s.provides_names }.flatten.should include("Mash/Mash", "Hash/Hash", "Class/Class")
       end
+
+      it "should keep track of extensions" do
+        pool = Jsus::Pool.new("spec/data/Extensions/app/javascripts")
+        pool.send(:extensions_map).keys.should include(Jsus::Tag["Core/Class"])
+      end
     end
   end
 
@@ -84,6 +89,19 @@ describe Jsus::Pool do
 
     it "should return empty array if pool doesn't contain given source" do
       subject.lookup_dependencies("Lol/Wtf").should == []
+    end
+  end
+
+  describe "#lookup_extensions" do
+    let(:input_dir) { "spec/Data/Extensions/app/javascripts" }
+    subject { Jsus::Pool.new(input_dir) }
+
+    it "should return empty array if there's not a single extension for given tag" do
+      subject.lookup_extensions(Jsus::Tag["Core/WTF"]).should be_empty
+    end
+
+    it "should return an array with extensions if there are extensions for given tag" do
+      subject.lookup_extensions(Jsus::Tag["Core/Class"]).should have_exactly(1).item
     end
   end
 end

@@ -10,7 +10,12 @@ module Jsus
       self.header = YAML.load_file(File.join(directory, 'package.yml'))
       Dir.chdir(directory) do
         files.each do |source|
-          source_files << SourceFile.from_file(source, :package => self)
+          source_file = SourceFile.from_file(source, :package => self)
+          if source_file.extension?
+            extensions << source_file
+          else
+            source_files << source_file
+          end
         end
       end
       if options[:pool]
@@ -117,9 +122,14 @@ module Jsus
       end
     end
 
+    def include_extensions!
+      source_files.each do |source|
+        source.include_extensions!
+      end
+    end
 
     def required_files
-      source_files.map {|s| s.filename } 
+      source_files.map {|s| s.required_files }.flatten
     end
 
     def to_hash
@@ -135,6 +145,10 @@ module Jsus
 
     def source_files
       @source_files ||= Container.new
+    end
+
+    def extensions
+      @extensions ||= Container.new
     end
 
     protected

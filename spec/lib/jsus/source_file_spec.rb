@@ -93,4 +93,72 @@ describe Jsus::SourceFile do
       subject.dependencies_names.should == ["Mash/Mash"]
     end
   end
+
+  describe "#required_files" do
+    let(:input_dir) { "spec/data/Extensions/app/javascripts" }
+    subject { Jsus::SourceFile.from_file("#{input_dir}/Core/Source/Class.js")}
+    let(:extension) { Jsus::SourceFile.from_file("#{input_dir}/Orwik/Extensions/Class.js") }
+    
+    it "should include source_file filename itself" do
+      subject.required_files.should include(subject.filename)
+    end
+
+    it "should include extensions filenames" do
+      subject.extensions << extension
+      subject.required_files.should include(extension.filename)
+    end
+
+  end
+
+  context "when there are extensions, " do
+    let(:input_dir) { "spec/data/Extensions/app/javascripts" }
+    subject { Jsus::SourceFile.from_file("#{input_dir}/Core/Source/Class.js", :package => Package.new(:name => "Core"))}
+    let(:extension) { Jsus::SourceFile.from_file("#{input_dir}/Orwik/Extensions/Class.js") }
+
+    it "their presence should be recognized from source file" do
+      extension.extends.should == Jsus::Tag["Core/Class"]
+    end
+
+    it "extensions should have #extension? return true" do
+      extension.should be_an_extension
+    end
+
+    it "non-extensions should have #extension? return false" do
+      subject.should_not be_an_extension
+    end
+
+    it "extensions should be appended to content" do
+      initial_content = subject.content
+      subject.extensions << extension
+      subject.content.index(initial_content).should_not be_nil
+      subject.content.index(extension.content).should_not be_nil
+      subject.content.index(initial_content).should < subject.content.index(extension.content)
+    end
+
+    describe "#include_extensions!" do
+      let(:pool) { Jsus::Pool.new }
+      before(:each) { pool << extension }
+
+      it "should do nothing if there's no pool assigned" do
+        lambda {
+          subject.include_extensions!
+        }.should_not change(subject, :extensions)
+      end
+      
+      it "should do nothing if there's no extensions for any provided tag" do
+        lambda {
+          subject.include_extensions!
+        }.should_not change(subject, :extensions)
+      end
+
+      it "should add extensions to the source fle if there is an extension for any provided tag" do
+        subject.pool = pool
+        subject.include_extensions!
+        subject.extensions.should have_exactly(1).item
+        subject.extensions.should include(extension)
+      end
+    end
+
+
+  end
 end

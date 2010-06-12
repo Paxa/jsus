@@ -11,7 +11,6 @@ module Jsus
 
     def packages
       @packages ||= []
-      @packages.uniq!
       @packages
     end
 
@@ -53,16 +52,27 @@ module Jsus
       result
     end
 
+    def lookup_extensions(tag_or_tag_key)
+      tag = Tag[tag_or_tag_key]
+      extensions_map[tag]
+    end
+
     def <<(source_or_sources_or_package)
-      case 
+      case
       when source_or_sources_or_package.kind_of?(SourceFile)
-        source = source_or_sources_or_package
+        source = source_or_sources_or_package        
         sources << source
-        source.provides.each {|p| provides_map[p] = source }
+        if source.extends
+          extensions_map[source.extends] ||= []
+          extensions_map[source.extends] << source
+        else
+          source.provides.each {|p| provides_map[p] = source }
+        end
       when source_or_sources_or_package.kind_of?(Package)
         package = source_or_sources_or_package
         packages << package
-        package.source_files.each {|s| self << s}
+        package.source_files.each {|s| s.pool = self }
+        package.extensions.each {|e| e.pool = self }
       when source_or_sources_or_package.kind_of?(Array) || source_or_sources_or_package.kind_of?(Container)
         sources = source_or_sources_or_package
         sources.each {|s| self << s}
@@ -76,6 +86,10 @@ module Jsus
 
     def provides_map
       @provides_map ||= {}
+    end
+
+    def extensions_map
+      @extensions_map ||= Hash.new{|hash, key| hash[key] = [] }
     end
   end
 end

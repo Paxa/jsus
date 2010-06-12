@@ -1,0 +1,8 @@
+name: Orwik
+filename: orwik.js
+description: Framework extensions
+license: MIT-Style License, http://mootools.net/license
+copyright: Somebody
+authors: Someone
+sources:
+  - Extensions/Class.js

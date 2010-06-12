@@ -2,6 +2,7 @@
 == Version 0.1.5
 * Introduced new concept, Tag, which is going to be used instead of 
   provides/requires strings
+* Introduced source extensions (monkey-patching, actually)
 
 == Version 0.1.4
 * Switched from OptiFlag to Choice for command-line parsing in jsus utility
