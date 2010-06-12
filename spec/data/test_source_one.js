@@ -10,8 +10,11 @@ license: MIT-style license
 authors:
 - Valerio Proietti
 
-provides: [Color]
-
+provides: 
+  - ./Color
+requires: 
+  - ./Class
+extends: Core
 ...
 */
 

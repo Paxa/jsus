@@ -71,10 +71,13 @@ describe Jsus::Pool do
     it "should return a container with direct dependencies" do
       subject.lookup_direct_dependencies("Mash/Mash").should be_a(Jsus::Container)
       subject.lookup_direct_dependencies("Mash/Mash").should == [sources[2]]
+      subject.lookup_direct_dependencies(Jsus::Tag["Mash/Mash"]).should be_a(Jsus::Container)
+      subject.lookup_direct_dependencies(Jsus::Tag["Mash/Mash"]).should == [sources[2]]
     end
 
     it "should return empty array if pool doesn't contain given source" do
       subject.lookup_direct_dependencies("Lol/Wtf").should == []
+      subject.lookup_direct_dependencies(Jsus::Tag["Lol/Wtf"]).should == []
     end
   end
 
@@ -85,10 +88,12 @@ describe Jsus::Pool do
 
     it "should return a container with files and dependencies" do
       subject.lookup_dependencies("Mash/Mash").should == [sources[1], sources[2]]
+      subject.lookup_dependencies(Jsus::Tag["Mash/Mash"]).should == [sources[1], sources[2]]
     end
 
     it "should return empty array if pool doesn't contain given source" do
       subject.lookup_dependencies("Lol/Wtf").should == []
+      subject.lookup_dependencies(Jsus::Tag["Caught/Mosh"]).should == []
     end
   end
 
@@ -97,10 +102,12 @@ describe Jsus::Pool do
     subject { Jsus::Pool.new(input_dir) }
 
     it "should return empty array if there's not a single extension for given tag" do
+      subject.lookup_extensions("Core/WTF").should be_empty
       subject.lookup_extensions(Jsus::Tag["Core/WTF"]).should be_empty
     end
 
     it "should return an array with extensions if there are extensions for given tag" do
+      subject.lookup_extensions("Core/Class").should have_exactly(1).item
       subject.lookup_extensions(Jsus::Tag["Core/Class"]).should have_exactly(1).item
     end
   end

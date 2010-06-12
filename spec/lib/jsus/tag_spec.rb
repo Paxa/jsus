@@ -112,5 +112,11 @@ describe Jsus::Tag do
     end
   end
 
+  describe ".[]" do
+    it "should be an alias to .new" do
+      Jsus::Tag["Yo/Rap"].should == Jsus::Tag.new("Yo/Rap")
+    end
+  end
+
 
 end

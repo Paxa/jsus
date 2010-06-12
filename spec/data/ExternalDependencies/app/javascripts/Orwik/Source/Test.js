@@ -11,6 +11,7 @@ authors:
 - Valerio Proietti
 requires:
   - Mash/Mash
+  - Class
 provides: [Test]
  
 ...

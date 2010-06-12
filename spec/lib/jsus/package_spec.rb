@@ -54,7 +54,7 @@ describe Jsus::Package do
       subject.generate_scripts_info(output_dir)
       File.exists?("#{output_dir}/scripts.json").should be_true
       info = JSON.parse(IO.read("#{output_dir}/scripts.json"))
-      info = info["orwik"]
+      info = info["Orwik"]
       info["provides"].should have_exactly(4).items
       info["provides"].should include("Color", "Widget", "Input", "Input.Color")
     end
@@ -68,7 +68,7 @@ describe Jsus::Package do
         subject.include_dependencies!
         subject.generate_scripts_info(output_dir)
         info = JSON.parse(IO.read("#{output_dir}/scripts.json"))
-        info = info["orwik"]
+        info = info["Orwik"]
         info["provides"].should have_exactly(4).items
         info["provides"].should include("Test", "Hash/Hash", "Class/Class", 'Mash/Mash')
       end
@@ -77,8 +77,8 @@ describe Jsus::Package do
         subject.include_dependencies!
         subject.generate_scripts_info(output_dir)
         info = JSON.parse(IO.read("#{output_dir}/scripts.json"))
-        info = info["orwik"]
-        info["requires"].should == []
+        info = info["Orwik"]
+        info["requires"].should == ["Class"]
       end
     end
   end

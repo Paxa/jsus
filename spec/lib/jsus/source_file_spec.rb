@@ -9,7 +9,7 @@ describe Jsus::SourceFile do
     context "from file" do
       subject { Jsus::SourceFile.from_file('spec/data/test_source_one.js') }
       it "should parse json header" do
-        subject.dependencies_names.should == []
+        subject.dependencies_names.should == ["Class"]
         subject.provides_names.should == ["Color"]
         subject.description.should == "A library to work with colors"
       end
@@ -24,7 +24,6 @@ describe Jsus::SourceFile do
           Jsus::SourceFile.from_file('spec/data/bad_test_source_two.js').should == nil
         end
       end
-
 
       context "when file does not exist" do
         it "should return nil" do
@@ -46,119 +45,173 @@ describe Jsus::SourceFile do
       source.header.should            == subject.header
     end
 
-    it "should register package in pool from constructor" do
-      pool = mock("Pool")
-      pool.should_receive("<<").with(instance_of(Jsus::SourceFile))
-      Jsus::SourceFile.new(:pool => pool)
-    end
-
   end
 
-  describe "#provides_names" do
-    it "should return the names of stuff it provides in full form" do
-      subject.provides_names.should == ["Core/Chain", "Core/Events", "Core/Options"]
+  context "when no package set, " do
+    subject { Jsus::SourceFile.from_file("spec/data/test_source_one.js") }
+    describe "#package" do
+      it "should return nil" do
+        subject.package.should be_nil
+      end
     end
 
-    it "should cut package prefix if asked for short-formed provides" do
-      subject.provides_names(:short => true).should == ["Chain", "Events", "Options"]
+    describe "#provides_names" do
+      it "should return names without leading slash in both forms" do
+        subject.provides_names.should == ["Color"]
+        subject.provides_names(:short => true).should == ["Color"]
+      end
     end
 
-    it "should work well when given single string instead of array" do
-      subject.header = {"provides" => "Mash"}
-      subject.provides_names.should == ["Core/Mash"]
-    end
-  end
-
-  describe "#dependencies_names" do
-    it "should truncate leading slash" do
-      subject.dependencies_names.should == ["Core/Class"]
-    end
-
-    it "should cut package prefix if asked for short-formed dependencies" do
-      subject.dependencies_names(:short => true).should == ["Class"]
-    end
-
-    it "should work well when given single string instead of array" do
-      subject.header = { "requires" => "Class" }
-      subject.dependencies_names.should == ["Core/Class"]
-    end
-
-    it "should not truncate package name in short form for external dependencies" do
-      subject.header = { "requires" => "Mash/Mash" }
-      subject.dependencies_names(:short => true).should == ["Mash/Mash"]
-    end
-
-    it "should not prepend package name in full form for external dependencies" do
-      subject.header = { "requires" => "Mash/Mash" }
-      subject.dependencies_names.should == ["Mash/Mash"]
+    describe "#dependencies_names" do
+      it "should return names without leading slash in both forms" do
+        subject.dependencies_names.should == ["Class"]
+        subject.dependencies_names(:short => true).should == ["Class"]
+      end
     end
   end
 
-  describe "#required_files" do
+  context "when it is in package, " do
+    let(:package) { Jsus::Package.new("spec/data/ExternalDependencies/app/javascripts/Orwik") }
+    subject { package.source_files[0] }
+    describe "#package" do
+      it "should return the package" do
+        subject.package.should == package
+      end
+    end
+
+    describe "#provides_names" do
+      it "should prepend package name by default and when explicitly asked for long form" do
+        subject.provides_names.should == ["Orwik/Test"]
+        subject.provides_names(:short => false).should == ["Orwik/Test"]
+      end
+
+      it "shouldn't prepend package name in short form" do
+        subject.provides_names(:short => true).should == ["Test"]
+      end
+    end
+
+    describe "#dependencies_names" do
+      it "should prepend package names to inner dependencies by default and when explicitly asked for long form" do
+        subject.should have_exactly(2).dependencies_names
+        subject.dependencies_names.should include("Orwik/Class", "Mash/Mash")
+        subject.should have_exactly(2).dependencies_names(:short => false)
+        subject.dependencies_names(:short => false).should include("Orwik/Class", "Mash/Mash")
+      end
+
+      it "should not prepend package names to inner dependencies in short form" do
+        subject.should have_exactly(2).dependencies_names(:short => true)
+        subject.dependencies_names(:short => true).should include("Class", "Mash/Mash")
+      end
+    end
+  end
+
+  context "when pool is not set, " do
+    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Core/Source/Class.js", :package => Package.new(:name => "Core")) }
+    describe "#pool" do
+      it "should return nil" do
+        subject.pool.should be_nil
+      end
+    end
+
+    describe "#include_extensions!" do
+      it "should do nothing" do
+        lambda {
+          subject.include_extensions!
+        }.should_not change(subject, :extensions)
+      end
+    end
+  end
+
+  context "when pool is set, " do
+    let(:pool) { Jsus::Pool.new("spec/data/Extensions/app/javascripts") }
+    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Core/Source/Class.js", :pool => pool, :package => Package.new(:name => "Core")) }
+    describe "#pool" do
+      it "should return the pool" do
+        subject.pool.should == pool
+      end
+    end
+
+    context "and there are extensions for subject in its pool, " do
+      describe "#include_extensions!" do
+        it "should add all extensions to @extensions" do
+          subject.extensions.should be_empty
+          subject.include_extensions!
+          subject.extensions.should have_exactly(1).item
+        end
+      end
+    end
+
+    context "and there are no extensions for subject in its pool, " do
+      let(:pool) { Jsus::Pool.new }
+      describe "#include_extensions!" do
+        it "should add all extensions to @extensions" do
+          lambda {
+            subject.include_extensions!
+          }.should_not change(subject, :extensions)
+        end
+      end
+    end
+  end
+
+  context "when it is not an extension, " do
+    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Core/Source/Class.js") }
+
+    describe "#extension?" do
+      it "should return false" do
+        subject.should_not be_an_extension
+      end
+    end
+  end
+
+  context "when it is an extension, " do
+    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js") }
+
+    describe "#extension?" do
+      it "should return true" do
+        subject.should be_an_extension
+      end
+    end
+  end
+
+  context "when there are no extensions, " do
     let(:input_dir) { "spec/data/Extensions/app/javascripts" }
     subject { Jsus::SourceFile.from_file("#{input_dir}/Core/Source/Class.js")}
-    let(:extension) { Jsus::SourceFile.from_file("#{input_dir}/Orwik/Extensions/Class.js") }
-    
-    it "should include source_file filename itself" do
-      subject.required_files.should include(subject.filename)
-    end
 
-    it "should include extensions filenames" do
-      subject.extensions << extension
-      subject.required_files.should include(extension.filename)
+    describe "#required_files" do
+      it "should have only the filename itself" do
+        subject.required_files.should == [subject.filename]
+      end
     end
-
   end
 
   context "when there are extensions, " do
     let(:input_dir) { "spec/data/Extensions/app/javascripts" }
-    subject { Jsus::SourceFile.from_file("#{input_dir}/Core/Source/Class.js", :package => Package.new(:name => "Core"))}
     let(:extension) { Jsus::SourceFile.from_file("#{input_dir}/Orwik/Extensions/Class.js") }
+    subject { Jsus::SourceFile.from_file("#{input_dir}/Core/Source/Class.js")}
+    let(:initial_content) { subject.content }
+    before(:each) { initial_content; subject.extensions << extension }
 
-    it "their presence should be recognized from source file" do
-      extension.extends.should == Jsus::Tag["Core/Class"]
-    end
-
-    it "extensions should have #extension? return true" do
-      extension.should be_an_extension
-    end
-
-    it "non-extensions should have #extension? return false" do
-      subject.should_not be_an_extension
-    end
-
-    it "extensions should be appended to content" do
-      initial_content = subject.content
-      subject.extensions << extension
-      subject.content.index(initial_content).should_not be_nil
-      subject.content.index(extension.content).should_not be_nil
-      subject.content.index(initial_content).should < subject.content.index(extension.content)
-    end
-
-    describe "#include_extensions!" do
-      let(:pool) { Jsus::Pool.new }
-      before(:each) { pool << extension }
-
-      it "should do nothing if there's no pool assigned" do
-        lambda {
-          subject.include_extensions!
-        }.should_not change(subject, :extensions)
-      end
-      
-      it "should do nothing if there's no extensions for any provided tag" do
-        lambda {
-          subject.include_extensions!
-        }.should_not change(subject, :extensions)
+    describe "#required_files" do
+      it "should include source_file filename itself" do
+        subject.required_files.should include(subject.filename)
       end
 
-      it "should add extensions to the source fle if there is an extension for any provided tag" do
-        subject.pool = pool
-        subject.include_extensions!
-        subject.extensions.should have_exactly(1).item
-        subject.extensions.should include(extension)
+      it "should include extensions filenames" do
+        subject.required_files.should include(extension.filename)
+      end
+
+      it "should put the subject's filename first" do
+        subject.required_files[0].should == subject.filename
       end
     end
 
-
+    describe "#content" do
+      it "should have extensions applied to the initial file content" do
+        subject.content.should_not == initial_content
+        subject.content.index(initial_content).should_not be_nil
+        subject.content.index(extension.content).should_not be_nil
+        subject.content.index(initial_content).should < subject.content.index(extension.content)
+      end
+    end
   end
 end

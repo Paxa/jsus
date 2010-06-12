@@ -36,7 +36,7 @@ module Jsus
       @header = new_header
       # prepare defaults
       @header["description"] ||= ""
-      # handle 
+      # handle tags
       @dependencies = [@header["requires"] || []].flatten
       @dependencies.map! {|tag_name| Tag.new(tag_name, :package => package) }
       @provides = [@header["provides"] || []].flatten
