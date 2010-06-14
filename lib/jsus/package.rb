@@ -1,13 +1,26 @@
+#
+# Package is basically a list of source files with some meta info.
+#
+
+
 module Jsus
   class Package
-    attr_accessor :relative_directory
-    attr_accessor :directory
-    attr_accessor :pool
-     # Constructors
+    attr_accessor :directory # directory which this package resides in (full path)
+    attr_accessor :pool      # an instance of Pool
+    # Constructors
+     
+    #
+    # Creates a package from given directory.
+    #
+    # Accepts options:
+    # * +:pool:+ — which pool the package should belong to.
+    #
+    # Raises an error when the given directory doesn't contain a package.yml
+    # file with meta info.
+    #
     def initialize(directory, options = {})
-      self.relative_directory = directory
-      self.directory = File.expand_path(directory)
-      self.header = YAML.load_file(File.join(directory, 'package.yml'))
+      self.directory          = File.expand_path(directory)
+      self.header             = YAML.load_file(File.join(directory, 'package.yml'))
       Dir.chdir(directory) do
         files.each do |source|
           source_file = SourceFile.from_file(source, :package => self)
@@ -26,37 +39,45 @@ module Jsus
 
 
     # Public API
+    
+    # Returns a package.yml header.
     def header
       @header ||= {}
     end
 
-    def header=(new_header)
-      @header = new_header
-    end
-
+    # Returns a package name.
     def name
       header["name"] ||= ""
     end
+    
+    # Returns a package description.
+    def description
+      header["description"] ||= ""
+    end    
 
+    # Returns a filename for compiled package.
     def filename
       header["filename"] ||= name + ".js"
     end
 
+    # Returns a list of sources filenames.
     def files
       header["files"] = header["files"] || header["sources"] || []
     end
-
     alias_method :sources, :files
 
+    # Returns an array of provided tags including those provided by linked external dependencies.
     def provides
       source_files.map {|s| s.provides }.flatten | linked_external_dependencies.map {|d| d.provides }.flatten
     end
 
+    # Returns an array of provided tags names including those provided by linked external dependencies.
     def provides_names
       source_files.map {|s| s.provides_names(:short => true) }.flatten |
       linked_external_dependencies.map {|d| d.provides_names }.flatten
     end
 
+    # Returns an array of unresolved dependencies' tags for the package.
     def dependencies
       result = source_files.map {|source| source.dependencies }.flatten
       result |= linked_external_dependencies.map {|d| d.dependencies}.flatten
@@ -64,34 +85,32 @@ module Jsus
       result
     end
 
+    # Returns an array of unresolved dependencies' names.
     def dependencies_names
       dependencies.map {|d| d.name(:short => true) }
     end
 
+    # Returns an array of external dependencies' tags (including resolved ones).
     def external_dependencies
       source_files.map {|s| s.external_dependencies }.flatten
     end
-
+    
+    # Returns an array of external dependencies' names (including resolved ones).
     def external_dependencies_names
       external_dependencies.map {|d| d.name }
     end
 
+    # Returns source files with external dependencies in correct order.
     def linked_external_dependencies
       @linked_external_dependencies ||= Container.new
     end
-
-    def linked_external_dependencies=(new_value)
-      @linked_external_dependencies = new_value
-    end
-
-    def description
-      header["description"] ||= ""
-    end    
-
+    
+    # Compiles source files and linked external source files into a given category.
     def compile(directory = ".")
       Packager.new(*(source_files.to_a + linked_external_dependencies.to_a)).pack(File.join(directory, filename))
     end
 
+    # Generates tree structure for files in package into a json file.
     def generate_tree(directory = ".", filename = "tree.json")
       FileUtils.mkdir_p(directory)
       result = ActiveSupport::OrderedHash.new
@@ -110,29 +129,33 @@ module Jsus
       result
     end
 
+    # Generates info about resulting compiled package into a json file.
     def generate_scripts_info(directory = ".", filename = "scripts.json")
       FileUtils.mkdir_p directory
       File.open(File.join(directory, filename), "w") { |resulting_file| resulting_file << JSON.pretty_generate(self.to_hash) }
       self.to_hash
     end
 
+    # Looks up all the external dependencies in the pool.
     def include_dependencies!
       source_files.each do |source|
         linked_external_dependencies << pool.lookup_dependencies(source)
       end
     end
 
+    # Executes #include_extensions for all the source files.
     def include_extensions!
       source_files.each do |source|
         source.include_extensions!
       end
     end
 
-    def required_files
+    # Lists the required files for the package.
+    def required_files      
       source_files.map {|s| s.required_files }.flatten
     end
 
-    def to_hash
+    def to_hash # :nodoc:
       {
         name => {
           :desc => description,
@@ -142,13 +165,24 @@ module Jsus
       }
     end
 
-
+    # Container with source files
     def source_files
       @source_files ||= Container.new
     end
 
+    # Container with extensions (they aren't compiled or included into #reqired_files list)
     def extensions
       @extensions ||= Container.new
+    end
+
+    # Private API
+    
+    def header=(new_header) # :nodoc:
+      @header = new_header
+    end
+
+    def linked_external_dependencies=(new_value) # :nodoc:
+      @linked_external_dependencies = new_value
     end
 
     protected

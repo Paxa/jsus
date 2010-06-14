@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Markiz, idea by Inviz (http://github.com/Inviz)"]
-  s.date = %q{2010-06-12}
+  s.date = %q{2010-06-14}
   s.default_executable = %q{jsus}
   s.description = %q{Packager/compiler for js-files that resolves dependencies and can compile everything into one file, providing all the neccessary meta-info.}
   s.email = %q{markizko@gmail.com}

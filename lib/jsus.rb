@@ -14,5 +14,13 @@ require 'jsus/container'
 require 'jsus/packager'
 require 'jsus/pool'
 
+#
+# Jsus — a library for packaging up your source files.
+#
+# For better understanding of jsus ideas start with http://github.com/Markiz/jsus-examples
+#
+#
+
+
 module Jsus
 end

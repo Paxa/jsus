@@ -68,6 +68,18 @@ describe Jsus::SourceFile do
         subject.dependencies_names(:short => true).should == ["Class"]
       end
     end
+    
+    describe "#external_dependencies" do
+      it "should be empty" do
+        subject.external_dependencies.should be_empty
+      end
+    end
+    
+    describe "#external_dependencies_names" do
+      it "should be empty" do
+        subject.external_dependencies_names.should be_empty
+      end
+    end
   end
 
   context "when it is in package, " do
@@ -103,6 +115,28 @@ describe Jsus::SourceFile do
         subject.dependencies_names(:short => true).should include("Class", "Mash/Mash")
       end
     end
+    
+    describe "#external_dependencies" do
+      it "should include external dependencies" do 
+        subject.should have_exactly(1).external_dependencies
+        subject.external_dependencies.should include(Jsus::Tag["Mash/Mash"])
+      end
+      
+      it "should not include internal dependencies" do
+        subject.external_dependencies.should_not include(Jsus::Tag["Orwik/Class"])
+      end
+    end
+    
+    describe "#external_dependencies_names" do
+      it "should include names of external dependencies" do
+        subject.external_dependencies_names.should include("Mash/Mash")
+      end
+
+      it "should not include names of internal dependencies" do
+        subject.external_dependencies_names.should_not include("Orwik/Class")
+      end
+    end
+    
   end
 
   context "when pool is not set, " do

@@ -32,9 +32,8 @@ describe Jsus::Package do
         subject.dependencies_names.should == ['core/Class']
       end
 
-      it "should set directory and relative directory fields" do
+      it "should set directory field" do
         subject.directory.should == File.expand_path(input_dir)
-        subject.relative_directory.should == input_dir
       end
     end
   end

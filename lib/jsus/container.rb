@@ -1,19 +1,32 @@
+#
+# Container is an array which contains source files. Main difference
+# between it and array is the fact that container maintains topological
+# sort for the source files.
+#
 module Jsus
   class Container
+    #
+    # Every argument for initializer is pushed into the container.
+    #
     def initialize(*sources)
       sources.each do |source|
         self << source
       end
     end
+    
+    # Public API
 
-
-    # PRO TIP: #<< sorts upon every invokation
-    # #push doesn't
+    #
+    # Pushes an item to container and sorts container. 
+    #
+    # When given an array or another container, enumerates its contents.
+    #
     def <<(source)
       push(source)
       sort!
     end
 
+    # Pushes an item to container *without sorting it*. Use with care.
     def push(source)
       if source
         if source.kind_of?(Array) || source.kind_of?(Container)
@@ -25,32 +38,34 @@ module Jsus
       self
     end
 
-    def flatten      
+    # Flattens the container items.
+    def flatten
       map {|item| item.respond_to?(:flatten) ? item.flatten : item }.flatten
     end
 
-    def to_a
-      sources
-    end
-
+    # Contains the source files in the correct order.
     def sources
       @sources ||= []
     end
-
-    def sources=(new_value)
+    alias_method :to_a, :sources
+    
+    def sources=(new_value) # :nodoc:
       @sources = new_value
     end
 
+    # Performs a sort and returns self. Executed automatically by #<< .
     def sort!
       self.sources = topsort
       self
     end
 
-    def inspect
+    def inspect # :nodoc:
       "#<#{self.class.name}:#{self.object_id} #{self.sources.inspect}>"
     end
 
-    def topsort
+    # Private API
+    
+    def topsort # :nodoc:
       graph = RGL::DirectedAdjacencyGraph.new
       provides_map = {}
       # init vertices
@@ -74,12 +89,12 @@ module Jsus
       result
     end
 
-    # delegate undefined methods to #sources
     DELEGATED_METHODS = [
-                          "==", "map", "map!", "each", "inject", "reject",
-                          "detect", "size", "length", "[]", "empty?",
-                          "index", "include?", "select", "-", "+", "|", "&"
-                        ]
+                          "==", "map", "map!", "each", "inject", "inject!",
+                          "reject", "reject!", "detect", "size", "length", "[]", 
+                          "empty?", "index", "include?", "select", "-", "+", "|", "&"
+                        ] # :nodoc:
+    # delegates most Enumerable methods to #sources
     (DELEGATED_METHODS).each {|m| delegate m, :to => :sources }
   end
 end

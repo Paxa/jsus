@@ -1,23 +1,54 @@
+#
+# Pool class is designed for three purposes:
+# * Maintain connections between SourceFiles and/or Packages
+# * Resolve dependencies
+# * Look up extensions
+#
+# 
+
+
 module Jsus
   class Pool
 
+    # Constructors
+
+    #
+    # Basic constructor.
+    #
+    # Accepts an optional directory argument, when it is set, it looks up for 
+    # packages from the given directory and if it finds any, adds them to the pool.
+    #
+    # Directory is considered a Package directory if it contains +package.yml+ file.
+    #
     def initialize(dir = nil)
       if dir
         Dir[File.join(dir, '**', 'package.yml')].each do |package_path|
-          Package.new(Pathname.new(package_path).parent.to_s, :pool => self)
+          Package.new(File.dirname(package_path), :pool => self)
         end
       end
     end
-
+    
+    
+    # 
+    # An array containing all the packages in the pool. Unordered.
+    #
     def packages
       @packages ||= []
-      @packages
     end
 
+    #
+    # Container with all the sources in the pool. It is actually ordered in case you 
+    # want to include ALL the source files from the pool.
+    #
     def sources
       @sources ||= Container.new
     end
 
+    #
+    # Looks up for a file providing given tag or tag key. 
+    #
+    # If given a source file, returns the input.
+    #
     def lookup(source_or_key)
       case source_or_key
       when String
@@ -27,17 +58,17 @@ module Jsus
       when SourceFile
         source_or_key
       else
-        raise "Illegal lookup query. Expected String or SourceFile, " <<
+        raise "Illegal lookup query. Expected String, Tag or SourceFile, " <<
               "given #{source_or_key.inspect}, an instance of #{source_or_key.class.name}."
       end
     end
+  
 
-    def lookup_direct_dependencies(source_or_source_key)      
-      source = lookup(source_or_source_key)
-      result = source ? source.external_dependencies.map {|d| lookup(d)} : []
-      Container.new(*result)
-    end
-
+    #
+    # Looks up for dependencies for given file recursively.
+    #
+    # Returns an instance of Container which contains needed files sorted.
+    #
     def lookup_dependencies(source_or_source_key)      
       source = lookup(source_or_source_key)
       result = Container.new
@@ -52,11 +83,23 @@ module Jsus
       result
     end
 
+    #
+    # Returns an array with SourceFile-s with extensions for given tag.
+    #
     def lookup_extensions(tag_or_tag_key)
       tag = Tag[tag_or_tag_key]
       extensions_map[tag]
     end
 
+    #
+    # Pushes an item into a pool.
+    #
+    # Can be given:
+    # * SourceFile
+    # * Package (pushing all the child source files into the pool)
+    # * Array or Container (pushing all the contained source files into the pool)
+    #
+    # returns self.
     def <<(source_or_sources_or_package)
       case
       when source_or_sources_or_package.kind_of?(SourceFile)
@@ -81,14 +124,25 @@ module Jsus
     end
 
     (Array.instance_methods - self.instance_methods).each {|m| delegate m, :to => :sources }
+    # Private API
+    
+    # 
+    # Looks up direct dependencies for the given source_file or provides tag.
+    # You probably will find yourself using #include_dependencies instead.
+    #
+    def lookup_direct_dependencies(source_or_source_key)      
+      source = lookup(source_or_source_key)
+      result = source ? source.external_dependencies.map {|d| lookup(d)} : []
+      Container.new(*result)
+    end
 
     protected
 
-    def provides_map
+    def provides_map # :nodoc:
       @provides_map ||= {}
     end
 
-    def extensions_map
+    def extensions_map # :nodoc:
       @extensions_map ||= Hash.new{|hash, key| hash[key] = [] }
     end
   end
