@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require 'spec_helper'
 describe Jsus::Pool do
   let(:input_dir) { "spec/data/ChainDependencies/app/javascripts" }
   let(:packages) {
@@ -98,7 +98,7 @@ describe Jsus::Pool do
   end
 
   describe "#lookup_extensions" do
-    let(:input_dir) { "spec/Data/Extensions/app/javascripts" }
+    let(:input_dir) { "spec/data/Extensions/app/javascripts" }
     subject { Jsus::Pool.new(input_dir) }
 
     it "should return empty array if there's not a single extension for given tag" do
