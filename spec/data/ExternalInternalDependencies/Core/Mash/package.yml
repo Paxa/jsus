@@ -1,0 +1,8 @@
+name: Mash
+filename: mash.js
+description: Mash class
+license: MIT-Style License, http://mootools.net/license
+copyright: Somebody
+authors: Someone
+sources:
+  - Source/Mash.js

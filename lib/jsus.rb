@@ -7,6 +7,8 @@ require 'active_support/core_ext/module/delegation'
 require 'rgl/adjacency'
 require 'rgl/topsort'
 
+require 'fileutils'
+
 require 'jsus/source_file'
 require 'jsus/package'
 require 'jsus/tag'

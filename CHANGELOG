@@ -1,4 +1,8 @@
 = Jsus Changelog
+== Version 0.1.6
+* Fixed an issue with jsus not including internal dependencies for external dependencies.
+  First robust solution handles this via Pool and eager dependency load.
+
 == Version 0.1.5
 * Introduced new concept, Tag, which is going to be used instead of 
   provides/requires strings

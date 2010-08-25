@@ -5,7 +5,6 @@ README
 Rakefile
 TODO
 bin/jsus
-jsus.gemspec
 lib/jsus.rb
 lib/jsus/container.rb
 lib/jsus/package.rb
@@ -31,6 +30,18 @@ spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js
 spec/data/Extensions/app/javascripts/Orwik/package.yml
 spec/data/ExternalDependencies/app/javascripts/Orwik/Source/Test.js
 spec/data/ExternalDependencies/app/javascripts/Orwik/package.yml
+spec/data/ExternalInternalDependencies/Core/Class/Source/Class.js
+spec/data/ExternalInternalDependencies/Core/Class/Source/Type.js
+spec/data/ExternalInternalDependencies/Core/Class/package.yml
+spec/data/ExternalInternalDependencies/Core/Hash/Source/Hash.js
+spec/data/ExternalInternalDependencies/Core/Hash/package.yml
+spec/data/ExternalInternalDependencies/Core/Mash/Source/Mash.js
+spec/data/ExternalInternalDependencies/Core/Mash/package.yml
+spec/data/ExternalInternalDependencies/Test/Source/Library/Color.js
+spec/data/ExternalInternalDependencies/Test/Source/Widget/Input/Input.Color.js
+spec/data/ExternalInternalDependencies/Test/Source/Widget/Input/Input.js
+spec/data/ExternalInternalDependencies/Test/Source/Widget/Widget.js
+spec/data/ExternalInternalDependencies/Test/package.yml
 spec/data/OutsideDependencies/README
 spec/data/OutsideDependencies/app/javascripts/Core/Source/Class/Class.Extras.js
 spec/data/OutsideDependencies/app/javascripts/Core/Source/Class/Class.js

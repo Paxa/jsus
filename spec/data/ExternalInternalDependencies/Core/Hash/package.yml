@@ -1,0 +1,8 @@
+name: Hash
+filename: hash.js
+description: Hash class
+license: MIT-Style License, http://mootools.net/license
+copyright: Somebody
+authors: Someone
+sources:
+  - Source/Hash.js

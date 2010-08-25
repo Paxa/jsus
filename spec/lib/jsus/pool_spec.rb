@@ -97,6 +97,16 @@ describe Jsus::Pool do
     end
   end
 
+
+  context "when external dependencies have internal dependencies" do
+    let(:input_dir) { "spec/data/ExternalInternalDependencies" }
+    subject { Jsus::Pool.new(input_dir) }
+    it "#lookup_dependencies should include them" do
+      subject.lookup_dependencies("Class/Class").should have_exactly(1).element
+    end
+  end
+
+
   describe "#lookup_extensions" do
     let(:input_dir) { "spec/data/Extensions/app/javascripts" }
     subject { Jsus::Pool.new(input_dir) }

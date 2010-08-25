@@ -132,7 +132,7 @@ module Jsus
     #
     def lookup_direct_dependencies(source_or_source_key)      
       source = lookup(source_or_source_key)
-      result = source ? source.external_dependencies.map {|d| lookup(d)} : []
+      result = source ? (source.dependencies + source.external_dependencies).map {|d| lookup(d)} : []
       Container.new(*result)
     end
 
