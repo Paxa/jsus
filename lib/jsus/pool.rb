@@ -26,6 +26,7 @@ module Jsus
           Package.new(File.dirname(package_path), :pool => self)
         end
       end
+      flush_cache!
     end
     
     
@@ -123,15 +124,30 @@ module Jsus
       self
     end
 
+    #
+    # Drops any cached info
+    #
+    def flush_cache!
+      @cached_dependencies = {}
+    end
+
     (Array.instance_methods - self.instance_methods).each {|m| delegate m, :to => :sources }
     # Private API
     
     # 
     # Looks up direct dependencies for the given source_file or provides tag.
     # You probably will find yourself using #include_dependencies instead.
+    # This method caches results locally, use flush_cache! to drop.
     #
     def lookup_direct_dependencies(source_or_source_key)      
       source = lookup(source_or_source_key)
+      @cached_dependencies[source] ||= lookup_direct_dependencies!(source)
+    end
+
+    #
+    # Performs the actual lookup for #lookup_direct_dependencies
+    #
+    def lookup_direct_dependencies!(source)
       result = source ? (source.dependencies + source.external_dependencies).map {|d| lookup(d)} : []
       Container.new(*result)
     end

@@ -62,5 +62,4 @@ spec/lib/jsus/pool_spec.rb
 spec/lib/jsus/source_file_spec.rb
 spec/lib/jsus/tag_spec.rb
 spec/shared/class_stubs.rb
-spec/spec.opts
 spec/spec_helper.rb

@@ -59,6 +59,17 @@ module Jsus
       self
     end
 
+    # Lists all the required files (dependencies and extensions) for
+    # the sources in the container.    
+    def required_files(root = nil)
+      files = sources.map {|s| s.required_files }.flatten
+      if root
+        root = Pathname.new(File.expand_path(root))
+        files = files.map {|f| Pathname.new(File.expand_path(f)).relative_path_from(root).to_s }
+      end
+      files
+    end
+
     def inspect # :nodoc:
       "#<#{self.class.name}:#{self.object_id} #{self.sources.inspect}>"
     end

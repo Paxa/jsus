@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'jsus'
+start_time = Time.now
 require 'choice'
 
 
@@ -36,12 +37,27 @@ Choice.options do
          "with tree structure of your package."
   end
 
+  option "generate_includes", :required => false do
+    short "-g"
+    long  "--generate-includes=[ROOT]"
+    desc  "Generates includes.js file that you may use for ad-hoc requiring" <<
+          "of the needed javascripts. Defaults to output_directory."
+  end
+
+  option "benchmark", :required => false do
+    long "--benchmark"
+    short "-b"
+    desc "Performs a benchmark, indicating how much time you needed to" <<
+         "compile the package"
+  end
+
 end
 
 
 pool = if Choice.choices[:dependencies]
   Jsus::Pool.new(Choice.choices[:dependencies])
 end
+compile_start_time = Time.now
 package = Jsus::Package.new(Choice.choices[:input_directory], :pool => pool)
 package.include_dependencies! if Choice.choices[:dependencies]
 package.include_extensions! if Choice.choices[:dependencies]
@@ -49,3 +65,27 @@ output_directory = Choice.choices[:output_directory]
 package.compile(output_directory)
 package.generate_scripts_info(output_directory) unless Choice.choices[:without_scripts_info]
 package.generate_tree(output_directory) unless Choice.choices[:without_tree]
+
+
+# Hack, hack, hack :[
+if Choice.choices[:generate_includes]
+  root = Choice.choices[:generate_includes] == true ? Choice.choices[:output_directory] : Choice.choices[:generate_includes]
+  File.open(File.join(Choice.choices[:output_directory], "includes.js"), "w") do |f|
+    c = Jsus::Container.new(*(package.source_files.to_a + package.linked_external_dependencies.to_a))
+    script = %{(function(prefix) {
+      var sources = %sources%;
+      for (var i = 0, j = sources.length; i < j; i++) document.write('<scr' + 'ipt src="' + (prefix || '') + sources[i] + "></script>");
+    })(window.prefix);}.sub("%sources%", JSON.pretty_generate(c.required_files(root)))
+    f.puts script
+  end
+end
+
+
+
+finish_time = Time.now
+
+
+if Choice.choices[:benchmark]
+  puts "Total execution time:   #{(finish_time - start_time).round(3)}s"
+  puts "Total compilation time: #{(finish_time - compile_start_time).round(3)}s"
+end

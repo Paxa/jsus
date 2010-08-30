@@ -169,7 +169,7 @@ module Jsus
     # 
     # Returns an array of files required by this files including all the filenames for extensions.
     # SourceFile filename always goes first, all the extensions are unordered.
-    # 
+    #
     def required_files
       [filename, extensions.map {|e| e.filename}].flatten
     end

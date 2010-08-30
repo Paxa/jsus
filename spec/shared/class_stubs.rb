@@ -5,11 +5,16 @@ class Source
   attr_accessor :provides
   attr_accessor :dependencies
   attr_accessor :content
+  attr_accessor :filename
 
   def initialize(options = {})
     options.each do |attr, value|
       send("#{attr}=", value)
     end
+  end
+
+  def required_files
+    [filename]
   end
 end
 

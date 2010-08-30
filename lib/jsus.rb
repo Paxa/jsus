@@ -8,6 +8,7 @@ require 'rgl/adjacency'
 require 'rgl/topsort'
 
 require 'fileutils'
+require 'pathname'
 
 require 'jsus/source_file'
 require 'jsus/package'

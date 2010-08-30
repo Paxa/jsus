@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'rake'
 require 'echoe'
-Echoe.new('jsus', '0.1.6') do |g|
+Echoe.new('jsus', '0.1.7') do |g|
   g.description    = "Packager/compiler for js-files that resolves dependencies and can compile everything into one file, providing all the neccessary meta-info."
   g.url            = "http://github.com/markiz/jsus"
   g.author         = "Markiz, idea by Inviz (http://github.com/Inviz)"

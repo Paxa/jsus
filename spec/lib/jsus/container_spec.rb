@@ -2,9 +2,9 @@ require 'spec_helper'
 
 
 describe Jsus::Container do
-  let(:simple_source)         { Source.new(:provides => [0], :dependencies => [],  :content => "// simple") }
-  let(:another_simple_source) { Source.new(:provides => [1], :dependencies => [],  :content => "// simple 2") }
-  let(:dependant_source)      { Source.new(:provides => [3], :dependencies => [0], :content => "// simple 3") }
+  let(:simple_source)         { Source.new(:provides => [0], :dependencies => [],  :content => "// simple",   :filename => "/home/jsus/simple.js") }
+  let(:another_simple_source) { Source.new(:provides => [1], :dependencies => [],  :content => "// simple 2", :filename => "/home/jsus/other/simple2.js") }
+  let(:dependant_source)      { Source.new(:provides => [3], :dependencies => [0], :content => "// simple 3", :filename => "/home/dependencies/simple3.js") }
 
   let(:simple_container)        { Jsus::Container.new(simple_source, another_simple_source) }
   let(:container_with_dependency) { Jsus::Container.new(dependant_source, simple_source) }
@@ -51,6 +51,17 @@ describe Jsus::Container do
       lambda {
         subject << nil
       }.should_not raise_error
+    end
+  end
+
+  describe "#required_files" do
+    subject { container_with_dependency }
+    it "should return includes for all the sources" do
+      subject.required_files.should == [simple_source.filename, dependant_source.filename]
+    end
+
+    it "should generate routes from given root" do
+      subject.required_files("/home/jsus").should == ["simple.js", "../dependencies/simple3.js"]
     end
   end
 end

@@ -1,4 +1,10 @@
 = Jsus Changelog
+== Version 0.1.7
+* Added caching to Jsus::Pool#lookup_direct_dependencies. This addresses some performance
+  issues appeared in 0.1.6
+* Added --benchmark flag to jsus which shows total compile and total execution time
+* Added --generate-includes option to jsus. If enabled, generates a set of includes into
+  includes.js file.
 == Version 0.1.6
 * Fixed an issue with jsus not including internal dependencies for external dependencies.
   First robust solution handles this via Pool and eager dependency load.
