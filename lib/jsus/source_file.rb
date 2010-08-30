@@ -157,8 +157,13 @@ module Jsus
     #
     # Looks up for extensions in the #pool and then includes
     # extensions for all the provides tag this source file has.
+    # Caches the result.
     #
-    def include_extensions!
+    def include_extensions
+      @included_extensions ||= include_extensions!
+    end
+
+    def include_extensions! # :nodoc:
       if pool        
         provides.each do |p|
           extensions << pool.lookup_extensions(p)
@@ -171,6 +176,7 @@ module Jsus
     # SourceFile filename always goes first, all the extensions are unordered.
     #
     def required_files
+      include_extensions
       [filename, extensions.map {|e| e.filename}].flatten
     end
 
@@ -208,6 +214,7 @@ module Jsus
     end
 
     def content # :nodoc:
+      include_extensions
       [@content, extensions.map {|e| e.content}].flatten.compact.join("\n")
     end 
     

@@ -60,7 +60,6 @@ end
 compile_start_time = Time.now
 package = Jsus::Package.new(Choice.choices[:input_directory], :pool => pool)
 package.include_dependencies! if Choice.choices[:dependencies]
-package.include_extensions! if Choice.choices[:dependencies]
 output_directory = Choice.choices[:output_directory]
 package.compile(output_directory)
 package.generate_scripts_info(output_directory) unless Choice.choices[:without_scripts_info]

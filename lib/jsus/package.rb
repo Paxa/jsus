@@ -139,7 +139,7 @@ module Jsus
     # Looks up all the external dependencies in the pool.
     def include_dependencies!
       source_files.each do |source|
-        linked_external_dependencies << pool.lookup_dependencies(source)
+        linked_external_dependencies << pool.lookup_dependencies(source) if pool
       end
     end
 
