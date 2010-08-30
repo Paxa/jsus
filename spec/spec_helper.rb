@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'spec'
+require 'rspec'
 # require 'ruby-debug'
 
 $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), ".."))
