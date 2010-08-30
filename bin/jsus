@@ -53,11 +53,14 @@ Choice.options do
 
 end
 
+compile_start_time = Time.now
 
+pool_load_start_time = Time.now
 pool = if Choice.choices[:dependencies]
   Jsus::Pool.new(Choice.choices[:dependencies])
 end
-compile_start_time = Time.now
+pool_load_finish_time = Time.now
+
 package = Jsus::Package.new(Choice.choices[:input_directory], :pool => pool)
 package.include_dependencies! if Choice.choices[:dependencies]
 output_directory = Choice.choices[:output_directory]
@@ -85,6 +88,10 @@ finish_time = Time.now
 
 
 if Choice.choices[:benchmark]
-  puts "Total execution time:   #{(finish_time - start_time).round(3)}s"
-  puts "Total compilation time: #{(finish_time - compile_start_time).round(3)}s"
+  puts "Benchmarking results:"
+  puts "Total execution time:   #{format("%.3f" ,finish_time - start_time)}s"
+  puts ""
+  puts "Of them:"
+  puts "Pool preloading time:   #{format("%.3f", pool_load_finish_time - pool_load_start_time)}s"
+  puts "Total compilation time: #{format("%.3f", finish_time - compile_start_time - (pool_load_finish_time - pool_load_start_time))}s"
 end
