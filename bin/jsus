@@ -76,7 +76,7 @@ if Choice.choices[:generate_includes]
     c = Jsus::Container.new(*(package.source_files.to_a + package.linked_external_dependencies.to_a))
     script = %{(function(prefix) {
       var sources = %sources%;
-      for (var i = 0, j = sources.length; i < j; i++) document.write('<scr' + 'ipt src="' + (prefix || '') + sources[i] + "></script>');
+      for (var i = 0, j = sources.length; i < j; i++) document.write('<scr' + 'ipt src="' + (prefix || '') + sources[i] + '"></script>');
     })(window.prefix);}.sub("%sources%", JSON.pretty_generate(c.required_files(root)))
     f.puts script
   end
