@@ -41,6 +41,11 @@ describe Jsus::Pool do
         pool = Jsus::Pool.new("spec/data/Extensions/app/javascripts")
         pool.send(:extensions_map).keys.should include(Jsus::Tag["Core/Class"])
       end
+
+      it "should load package.json packages too" do
+        pool = Jsus::Pool.new("spec/data/JsonPackage")
+        pool.should have_exactly(1).packages
+      end
     end
   end
 

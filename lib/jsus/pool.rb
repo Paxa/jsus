@@ -22,7 +22,7 @@ module Jsus
     #
     def initialize(dir = nil)
       if dir
-        Dir[File.join(dir, '**', 'package.yml')].each do |package_path|
+        Dir[File.join(dir, '**', 'package.{yml,json}')].each do |package_path|
           Package.new(File.dirname(package_path), :pool => self)
         end
       end

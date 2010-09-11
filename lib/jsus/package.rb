@@ -15,12 +15,17 @@ module Jsus
     # Accepts options:
     # * +:pool:+ — which pool the package should belong to.
     #
-    # Raises an error when the given directory doesn't contain a package.yml
+    # Raises an error when the given directory doesn't contain a package.yml or package.json
     # file with meta info.
     #
     def initialize(directory, options = {})
       self.directory          = File.expand_path(directory)
-      self.header             = YAML.load_file(File.join(directory, 'package.yml'))
+      if File.exists?(File.join(directory, 'package.yml'))
+        self.header           = YAML.load_file(File.join(directory, 'package.yml'))
+      elsif File.exists?(File.join(directory, 'package.json'))
+        self.header           = JSON.load(IO.read(File.join(directory, 'package.json')))
+      else
+      end
       Dir.chdir(directory) do
         files.each do |source|
           source_file = SourceFile.from_file(source, :package => self)

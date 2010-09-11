@@ -43,6 +43,11 @@ spec/data/ExternalInternalDependencies/Test/Source/Widget/Input/Input.Color.js
 spec/data/ExternalInternalDependencies/Test/Source/Widget/Input/Input.js
 spec/data/ExternalInternalDependencies/Test/Source/Widget/Widget.js
 spec/data/ExternalInternalDependencies/Test/package.yml
+spec/data/JsonPackage/Source/Sheet.DOM.js
+spec/data/JsonPackage/Source/Sheet.js
+spec/data/JsonPackage/Source/SheetParser.CSS.js
+spec/data/JsonPackage/Source/sg-regex-tools.js
+spec/data/JsonPackage/package.json
 spec/data/OutsideDependencies/README
 spec/data/OutsideDependencies/app/javascripts/Core/Source/Class/Class.Extras.js
 spec/data/OutsideDependencies/app/javascripts/Core/Source/Class/Class.js

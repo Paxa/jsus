@@ -1,4 +1,7 @@
 = Jsus Changelog
+== Version 0.1.10
+* Package.json files are now supported too (with the same format as yaml packages)
+
 == Version 0.1.9
 * Benchmarking results are now more verbose.
 == Version 0.1.8

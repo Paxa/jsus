@@ -8,32 +8,47 @@ describe Jsus::Package do
   before(:each) { cleanup }
   after(:all) { cleanup }
   context "initialization" do
-    let(:input_dir) { "spec/data/OutsideDependencies/app/javascripts/Orwik" }
-    let(:output_dir) { "spec/data/OutsideDependencies/public/javascripts/Orwik" }
     context "from a directory" do
-      it "should load header from package.yml" do
-        subject.name.should == "orwik"
-        subject.filename.should == "orwik.js"
+      context "with a package.yml" do
+        let(:input_dir) { "spec/data/OutsideDependencies/app/javascripts/Orwik" }
+        let(:output_dir) { "spec/data/OutsideDependencies/public/javascripts/Orwik" }
+
+        it "should load header from package.yml" do
+          subject.name.should == "orwik"
+          subject.filename.should == "orwik.js"
+        end
+
+        it "should pass pool in options and register itself in the pool" do
+          pool = Jsus::Pool.new
+          package = Jsus::Package.new(input_dir, :pool => pool)
+          package.pool.should == pool
+          pool.packages.should include(package)
+        end
+
+        it "should set provided modules from source files" do
+          subject.provides.should have_exactly(4).items
+          subject.provides_names.should include("Color", "Input", "Input.Color", "Widget")
+        end
+
+        it "should set up outside dependencies" do
+          subject.dependencies_names.should == ['core/Class']
+        end
+
+        it "should set directory field" do
+          subject.directory.should == File.expand_path(input_dir)
+        end
       end
 
-      it "should pass pool in options and register itself in the pool" do
-        pool = Jsus::Pool.new
-        package = Jsus::Package.new(input_dir, :pool => pool)
-        package.pool.should == pool
-        pool.packages.should include(package)
-      end
+      context "with a package.json" do
+        let(:input_dir) { "spec/data/JsonPackage" }
+        let(:output_dir) { "spec/data/JsonPackage" }
 
-      it "should set provided modules from source files" do
-        subject.provides.should have_exactly(4).items        
-        subject.provides_names.should include("Color", "Input", "Input.Color", "Widget")
-      end
+        it "should load header from package.json" do
+          subject.name.should == "Sheet"
+          subject.provides_names.should     =~ ["Sheet", "SheetParser.CSS"]
+          subject.dependencies_names.should =~ ["combineRegExp"]
+        end
 
-      it "should set up outside dependencies" do
-        subject.dependencies_names.should == ['core/Class']
-      end
-
-      it "should set directory field" do
-        subject.directory.should == File.expand_path(input_dir)
       end
     end
   end
