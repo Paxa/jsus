@@ -29,7 +29,7 @@
 
         - if header["authors"]
           %dt Authors:
-          %dd #{header["authors"].join(", ")}
+          %dd #{[header["authors"]].flatten.join(", ")}
         - if header["author"]
           %dt Author:
           %dd #{header["author"]}
