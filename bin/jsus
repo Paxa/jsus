@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'jsus'
-start_time = Time.now
+require "fileutils"
+require "murdoc"
 require 'choice'
-
+start_time = Time.now
 
 Choice.options do
   option 'input_directory', :required => true do
@@ -51,6 +52,13 @@ Choice.options do
          "compile the package"
   end
 
+  option "docs_classes", :required => false do
+    default []
+    long "--generate-docs *CLASSES"
+    desc "Generate documentation for classes via murdoc, e.g.: lsd-* mootools-*"
+
+  end
+
 end
 
 compile_start_time = Time.now
@@ -82,7 +90,29 @@ if Choice.choices[:generate_includes]
   end
 end
 
+# Generate documentation
+unless Choice.choices[:docs_classes].empty?
+  documented_sources = Jsus::Container.new
+  sources = pool ? pool.sources : package.source_files
+  Choice.choices[:docs_classes].each do |expr|
+    regex = Regexp.new("^" + expr.gsub("*", ".*") + "$", Regexp::IGNORECASE)
+    sources.each {|s| documented_sources << s if s.provides.any? {|provided| provided.to_s =~ regex } }
+  end
 
+  doc_dir = Choice.choices[:output_directory] + "/docs"
+  FileUtils.mkdir_p(doc_dir)
+  template = File.dirname(__FILE__) + "/../markup/template.haml"
+  documented_sources.each do |source|
+    content = source.original_content.gsub(/\A\s*\/\*.*?\*\//m, "") # deleting initial comment
+    annotator = Murdoc::Annotator.new(content, :javascript, :highlight_source => true)
+    header = source.header
+    File.open("#{doc_dir}/#{File.basename(source.filename)}.html", "w+") do |f|
+      f.puts Murdoc::Formatter.new(template).render(:paragraphs => annotator.paragraphs, :header => header, :source => source)
+    end
+  end
+
+  FileUtils.cp(File.dirname(__FILE__) + "/../markup/stylesheet.css", doc_dir)
+end
 
 finish_time = Time.now
 

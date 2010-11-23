@@ -1,0 +1,47 @@
+!!!
+%html
+  %head
+    %title Documentaiton for #{header["script"]}
+    %link{:rel => "stylesheet", :href => "stylesheet.css"}
+  %body
+    %figure
+      - if header["requires"]
+        %h2 Requires
+        %ul
+          - [header["requires"]].flatten.each do |r|
+            %li #{r}
+      - if header["provides"]
+        %h2 Provides
+        %ul
+          - [header["provides"]].flatten.each do |p|
+            %li #{p}
+
+    %header
+      - if header["script"]
+        %h1 #{header["script"]}
+      - if header["description"]
+        %p #{header["description"]}
+
+      %dl
+        - if header["license"]
+          %dt License:
+          %dd #{header["license"]}
+
+        - if header["authors"]
+          %dt Authors:
+          %dd #{header["authors"].join(", ")}
+        - if header["author"]
+          %dt Author:
+          %dd #{header["author"]}
+
+
+    - paragraphs.each do |paragraph|
+      - unless paragraph.annotation.empty?
+        %section
+          = paragraph.formatted_annotation
+      - unless paragraph.source.empty?
+        %figure
+          %ol
+            - 1.upto(paragraph.source.split("\n").size) do |line|
+              %li #{line + paragraph.starting_line}          
+          %code<= paragraph.formatted_source

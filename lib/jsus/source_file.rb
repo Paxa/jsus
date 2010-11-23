@@ -218,6 +218,10 @@ module Jsus
       [@content, extensions.map {|e| e.content}].flatten.compact.join("\n")
     end 
     
+    def original_content # :nodoc:
+      @content
+    end
+
     # Assigns an instance of Jsus::Pool to the source file.
     # Also performs push to that pool.
     def pool=(new_value)
