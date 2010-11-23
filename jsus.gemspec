@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.1.13"
+  s.version = "0.1.14"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
-  s.date = %q{2010-11-23}
+  s.date = %q{2010-11-24}
   s.default_executable = %q{jsus}
   s.description = %q{Javascript packager and dependency resolver}
   s.email = %q{markizko@gmail.com}
@@ -20,7 +20,6 @@ Gem::Specification.new do |s|
     "TODO"
   ]
   s.files = [
-    ".autotest",
     ".document",
     ".rspec",
     "CHANGELOG",
@@ -32,6 +31,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "TODO",
     "VERSION",
+    "autotest/discover.rb",
     "bin/jsus",
     "jsus.gemspec",
     "lib/jsus.rb",
@@ -41,6 +41,8 @@ Gem::Specification.new do |s|
     "lib/jsus/pool.rb",
     "lib/jsus/source_file.rb",
     "lib/jsus/tag.rb",
+    "markup/index.haml",
+    "markup/packages_index.haml",
     "markup/stylesheet.css",
     "markup/template.haml",
     "spec/data/Basic/README",
@@ -91,12 +93,12 @@ Gem::Specification.new do |s|
     "spec/data/bad_test_source_one.js",
     "spec/data/bad_test_source_two.js",
     "spec/data/test_source_one.js",
-    "spec/lib/jsus/container_spec.rb",
-    "spec/lib/jsus/package_spec.rb",
-    "spec/lib/jsus/packager_spec.rb",
-    "spec/lib/jsus/pool_spec.rb",
-    "spec/lib/jsus/source_file_spec.rb",
-    "spec/lib/jsus/tag_spec.rb",
+    "spec/jsus/container_spec.rb",
+    "spec/jsus/package_spec.rb",
+    "spec/jsus/packager_spec.rb",
+    "spec/jsus/pool_spec.rb",
+    "spec/jsus/source_file_spec.rb",
+    "spec/jsus/tag_spec.rb",
     "spec/shared/class_stubs.rb",
     "spec/spec_helper.rb"
   ]
@@ -106,12 +108,12 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{Javascript packager and dependency resolver}
   s.test_files = [
-    "spec/lib/jsus/container_spec.rb",
-    "spec/lib/jsus/package_spec.rb",
-    "spec/lib/jsus/packager_spec.rb",
-    "spec/lib/jsus/pool_spec.rb",
-    "spec/lib/jsus/source_file_spec.rb",
-    "spec/lib/jsus/tag_spec.rb",
+    "spec/jsus/container_spec.rb",
+    "spec/jsus/package_spec.rb",
+    "spec/jsus/packager_spec.rb",
+    "spec/jsus/pool_spec.rb",
+    "spec/jsus/source_file_spec.rb",
+    "spec/jsus/tag_spec.rb",
     "spec/shared/class_stubs.rb",
     "spec/spec_helper.rb"
   ]
