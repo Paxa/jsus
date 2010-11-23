@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.1.14"
+  s.version = "0.1.15"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
   s.email = %q{markizko@gmail.com}
   s.executables = ["jsus"]
   s.extra_rdoc_files = [
-    "LICENSE",
     "README",
     "TODO"
   ]
@@ -25,11 +24,11 @@ Gem::Specification.new do |s|
     "CHANGELOG",
     "Gemfile",
     "Gemfile.lock",
-    "LICENSE",
     "Manifest",
     "README",
     "Rakefile",
     "TODO",
+    "UNLICENSE",
     "VERSION",
     "autotest/discover.rb",
     "bin/jsus",
