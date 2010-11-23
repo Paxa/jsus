@@ -3,4 +3,4 @@ Ruby implementation of javascript packager / dependency resolver.
 More info at: http://github.com/Inviz/Javascript-bundler
 
 = License
-MIT
+Public Domain, original authorship still belongs to me, Mark Abramov (markiz).
