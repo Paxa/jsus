@@ -3,3 +3,4 @@ spec/data/Basic/public
 spec/tmp
 doc/*
 pkg/*
+rcov
