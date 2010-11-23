@@ -104,7 +104,8 @@ unless Choice.choices[:docs_classes].empty?
   template = File.dirname(__FILE__) + "/../markup/template.haml"
   sources_index = {}
   documented_sources.each do |source|
-    content = source.original_content.gsub(/\A\s*\/\*.*?\*\//m, "") # deleting initial comment
+    skipped_lines = 0
+    content = source.original_content.gsub(/\A\s*\/\*.*?\*\//m) {|w| skipped_lines += w.split("\n").size; "" } # deleting initial comment
     annotator = Murdoc::Annotator.new(content, :javascript, :highlight_source => true)
     header = source.header
     sources_index[source.package.name] ||= []
@@ -112,7 +113,7 @@ unless Choice.choices[:docs_classes].empty?
     FileUtils.mkdir_p(source_dir)
     File.open("#{source_dir}/#{File.basename(source.filename)}.html", "w+") do |f|
       sources_index[source.package.name] << File.basename(source.filename)
-      f.puts Murdoc::Formatter.new(template).render(:paragraphs => annotator.paragraphs, :header => header, :source => source)
+      f.puts Murdoc::Formatter.new(template).render(:paragraphs => annotator.paragraphs, :header => header, :source => source, :skipped_lines => skipped_lines)
     end
   end
 

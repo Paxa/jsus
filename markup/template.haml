@@ -43,5 +43,5 @@
         %figure
           %ol
             - 1.upto(paragraph.source.split("\n").size) do |line|
-              %li #{line + paragraph.starting_line}          
+              %li #{line + paragraph.starting_line + skipped_lines}          
           %code<= paragraph.formatted_source
