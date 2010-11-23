@@ -18,6 +18,10 @@ describe Jsus::SourceFile do
         subject.filename.should == File.expand_path("spec/data/test_source_one.js")
       end
 
+      it "should set original_content to file content" do
+        subject.original_content.should == File.read(subject.filename)
+      end
+
       context "when format is invalid" do
         it "should return nil" do
           Jsus::SourceFile.from_file('spec/data/bad_test_source_one.js').should == nil

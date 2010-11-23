@@ -102,17 +102,37 @@ unless Choice.choices[:docs_classes].empty?
   doc_dir = Choice.choices[:output_directory] + "/docs"
   FileUtils.mkdir_p(doc_dir)
   template = File.dirname(__FILE__) + "/../markup/template.haml"
+  sources_index = {}
   documented_sources.each do |source|
     content = source.original_content.gsub(/\A\s*\/\*.*?\*\//m, "") # deleting initial comment
     annotator = Murdoc::Annotator.new(content, :javascript, :highlight_source => true)
     header = source.header
-    File.open("#{doc_dir}/#{File.basename(source.filename)}.html", "w+") do |f|
+    sources_index[source.package.name] ||= []
+    source_dir = "#{doc_dir}/#{source.package.name}"
+    FileUtils.mkdir_p(source_dir)
+    File.open("#{source_dir}/#{File.basename(source.filename)}.html", "w+") do |f|
+      sources_index[source.package.name] << File.basename(source.filename)
       f.puts Murdoc::Formatter.new(template).render(:paragraphs => annotator.paragraphs, :header => header, :source => source)
     end
   end
 
   FileUtils.cp(File.dirname(__FILE__) + "/../markup/stylesheet.css", doc_dir)
+
+  # building indices
+  sources_index.each do |pkg, sources_names|
+    source_dir = "#{doc_dir}/#{pkg}"
+    FileUtils.cp("#{doc_dir}/stylesheet.css", source_dir)
+    File.open("#{source_dir}/index.html", "w+") do |f|
+      f.puts Haml::Engine.new(File.read(File.dirname(__FILE__) + "/../markup/index.haml")).render(self, :package => pkg, :sources => sources_names)
+    end
+  end
+
+  # building main index of packages
+  File.open("#{doc_dir}/index.html", "w+") do |f|
+    f.puts Haml::Engine.new(File.read(File.dirname(__FILE__) + "/../markup/packages_index.haml")).render(self, :packages => sources_index.keys)
+  end
 end
+
 
 finish_time = Time.now
 
