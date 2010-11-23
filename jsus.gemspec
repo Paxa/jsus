@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.1.11"
+  s.version = "0.1.12"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
@@ -41,6 +41,8 @@ Gem::Specification.new do |s|
     "lib/jsus/pool.rb",
     "lib/jsus/source_file.rb",
     "lib/jsus/tag.rb",
+    "markup/stylesheet.css",
+    "markup/template.haml",
     "spec/data/Basic/README",
     "spec/data/Basic/app/javascripts/Orwik/Source/Library/Color.js",
     "spec/data/Basic/app/javascripts/Orwik/Source/Widget/Input/Input.Color.js",
@@ -126,6 +128,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<json_pure>, [">= 0"])
       s.add_runtime_dependency(%q<rgl>, [">= 0"])
       s.add_runtime_dependency(%q<choice>, [">= 0"])
+      s.add_runtime_dependency(%q<murdoc>, [">= 0"])
       s.add_runtime_dependency(%q<activesupport>, [">= 0"])
       s.add_runtime_dependency(%q<json_pure>, [">= 0"])
       s.add_runtime_dependency(%q<rgl>, [">= 0"])
@@ -138,6 +141,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<json_pure>, [">= 0"])
       s.add_dependency(%q<rgl>, [">= 0"])
       s.add_dependency(%q<choice>, [">= 0"])
+      s.add_dependency(%q<murdoc>, [">= 0"])
       s.add_dependency(%q<activesupport>, [">= 0"])
       s.add_dependency(%q<json_pure>, [">= 0"])
       s.add_dependency(%q<rgl>, [">= 0"])
@@ -151,6 +155,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<json_pure>, [">= 0"])
     s.add_dependency(%q<rgl>, [">= 0"])
     s.add_dependency(%q<choice>, [">= 0"])
+    s.add_dependency(%q<murdoc>, [">= 0"])
     s.add_dependency(%q<activesupport>, [">= 0"])
     s.add_dependency(%q<json_pure>, [">= 0"])
     s.add_dependency(%q<rgl>, [">= 0"])
