@@ -2,7 +2,6 @@
 require 'rubygems'
 require 'jsus'
 require "fileutils"
-require "murdoc"
 require 'choice'
 start_time = Time.now
 
@@ -92,6 +91,7 @@ end
 
 # Generate documentation
 unless Choice.choices[:docs_classes].empty?
+  require "murdoc"
   documented_sources = Jsus::Container.new
   sources = pool ? pool.sources : package.source_files
   Choice.choices[:docs_classes].each do |expr|
