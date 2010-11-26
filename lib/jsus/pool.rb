@@ -51,17 +51,19 @@ module Jsus
     # If given a source file, returns the input.
     #
     def lookup(source_or_key)
-      case source_or_key
-      when String
-        provides_map[Tag[source_or_key]]
-      when Tag
-        provides_map[source_or_key]
-      when SourceFile
-        source_or_key
-      else
-        raise "Illegal lookup query. Expected String, Tag or SourceFile, " <<
-              "given #{source_or_key.inspect}, an instance of #{source_or_key.class.name}."
+      result = case source_or_key
+        when String
+          provides_map[Tag[source_or_key]]
+        when Tag
+          provides_map[source_or_key]
+        when SourceFile
+          source_or_key
+        else
+          raise "Illegal lookup query. Expected String, Tag or SourceFile, " <<
+                "given #{source_or_key.inspect}, an instance of #{source_or_key.class.name}."
       end
+      puts "Couldn't find #{source_or_key}" if !result && Jsus.verbose?
+      result
     end
   
 
@@ -73,10 +75,11 @@ module Jsus
     def lookup_dependencies(source_or_source_key)      
       source = lookup(source_or_source_key)
       result = Container.new
+      looked_up = []
       if source
         dependencies = lookup_direct_dependencies(source)
-        while !dependencies.empty?
-          dependencies.each { |d| result.push(d) }
+        while !((dependencies - looked_up).empty?)
+          dependencies.each { |d| result.push(d); looked_up << d }
           dependencies = dependencies.map {|d| lookup_direct_dependencies(d).to_a }.flatten.uniq
         end
         result.sort!

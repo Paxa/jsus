@@ -26,4 +26,11 @@ require 'jsus/pool'
 
 
 module Jsus
+  def self.verbose?
+    !!@verbose
+  end
+
+  def self.verbose=(verbose)
+    @verbose = verbose
+  end
 end

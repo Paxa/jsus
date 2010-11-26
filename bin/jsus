@@ -58,9 +58,18 @@ Choice.options do
 
   end
 
+  option "verbose", :required => false do
+    default false
+    short "-v"
+    long "--verbose"
+    desc "When verbose mode is enabled, some debug information is displayed. Defaults to false."
+  end
+
 end
 
 compile_start_time = Time.now
+
+Jsus.verbose = Choice.choices[:verbose]
 
 pool_load_start_time = Time.now
 pool = if Choice.choices[:dependencies]
