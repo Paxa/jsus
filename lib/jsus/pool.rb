@@ -156,9 +156,11 @@ module Jsus
     #
     def lookup_direct_dependencies!(source)
       result = if source
-        (source.dependencies + source.external_dependencies).map do |dependency|
+        (source.dependencies).map do |dependency|
           result = provides_tree.glob("/#{dependency}").map {|node| node.value }
-          puts "#{source.filename} is missing #{dependency.is_a?(SourceFile) ? dependency.filename : dependency.to_s}" if !result && Jsus.verbose?
+          if (!result || (result.is_a?(Array) && result.empty?)) && Jsus.verbose?
+            puts "#{source.filename} is missing #{dependency.is_a?(SourceFile) ? dependency.filename : dependency.to_s}"
+          end
           result
         end.flatten
       else
