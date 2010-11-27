@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.1.20"
+  s.version = "0.1.21"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
-  s.date = %q{2010-11-27}
+  s.date = %q{2010-11-28}
   s.default_executable = %q{jsus}
   s.description = %q{Javascript packager and dependency resolver}
   s.email = %q{markizko@gmail.com}
@@ -57,6 +57,12 @@ Gem::Specification.new do |s|
     "spec/data/ChainDependencies/app/javascripts/Hash/package.yml",
     "spec/data/ChainDependencies/app/javascripts/Mash/Source/Mash.js",
     "spec/data/ChainDependencies/app/javascripts/Mash/package.yml",
+    "spec/data/DependenciesWildcards/app/javascripts/Class/Source/Class.js",
+    "spec/data/DependenciesWildcards/app/javascripts/Class/package.yml",
+    "spec/data/DependenciesWildcards/app/javascripts/Hash/Source/Hash.js",
+    "spec/data/DependenciesWildcards/app/javascripts/Hash/package.yml",
+    "spec/data/DependenciesWildcards/app/javascripts/Mash/Source/Mash.js",
+    "spec/data/DependenciesWildcards/app/javascripts/Mash/package.yml",
     "spec/data/Extensions/app/javascripts/Core/Source/Class.js",
     "spec/data/Extensions/app/javascripts/Core/package.yml",
     "spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js",
