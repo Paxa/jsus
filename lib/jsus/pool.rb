@@ -166,6 +166,42 @@ module Jsus
       Container.new(*result)
     end
 
+    #
+    # Returs a tree, containing all the sources
+    #
+    def source_tree
+      @source_tree ||= source_tree! 
+    end
+
+    def source_tree! # :nodoc:
+      tree = Tree.new
+      sources.each do |source|
+        if source.package
+          tree.insert("/" + source.package.name + "/" + File.basename(source.filename), source)
+        else
+          tree.insert("/" + File.basename(source.filename), source)
+        end
+      end
+      tree
+    end
+
+    #
+    # Returns a tree containing all the provides tags
+    #
+    def provides_tree
+      @provides_tree ||= provides_tree!
+    end
+
+    def provides_tree!
+      tree = Tree.new
+      sources.each do |source|
+        source.provides.each do |tag|
+          tree.insert("/" + tag.to_s, source)          
+        end
+      end
+      tree
+    end
+
     protected
 
     def provides_map # :nodoc:

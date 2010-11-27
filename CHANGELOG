@@ -1,4 +1,15 @@
 = Jsus Changelog
+== Version 0.1.20
+* Better integration for murdoc (factored it into class Jsus::Documenter)
+* Tree structure for future reuse
+
+== Versions 0.1.11 to 0.1.19
+* Murloc Documentation experimental support (a bit dirty for now)
+* Verbose mode for command-line, showing some missing dependencies and redeclared
+  provides
+* Miscellanous changes and tweaks (was too lazy to write changelogs, sorry)
+
+
 == Version 0.1.10
 * Package.json files are now supported too (with the same format as yaml packages)
 

@@ -126,4 +126,28 @@ describe Jsus::Pool do
       subject.lookup_extensions(Jsus::Tag["Core/Class"]).should have_exactly(1).item
     end
   end
+
+  describe "#source_tree" do
+    let(:input_dir) { "spec/data/Extensions/app/javascripts" }
+    subject { Jsus::Pool.new(input_dir) }
+
+    it "should return a tree with all the source elements in it" do
+      subject.source_tree["/Core/Class.js"].value.should be_a(Jsus::SourceFile)
+    end
+
+    it "should not choke when sources got no referenced package" do
+      subject.send(:sources).each {|s| s.package = nil}
+      lambda { subject.source_tree }.should_not raise_error
+    end
+  end
+
+  describe "#provides_tree" do
+    let(:input_dir) { "spec/data/Extensions/app/javascripts" }
+    subject { Jsus::Pool.new(input_dir) }
+
+    it "should return a tree with all the source elements in it" do
+      subject.provides_tree.glob("/Core/Class")[0].value.should be_a(Jsus::SourceFile)      
+    end
+  end
+
 end

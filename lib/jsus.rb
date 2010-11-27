@@ -16,7 +16,8 @@ require 'jsus/tag'
 require 'jsus/container'
 require 'jsus/packager'
 require 'jsus/pool'
-
+require 'jsus/tree'
+require 'jsus/documenter'
 #
 # Jsus — a library for packaging up your source files.
 #

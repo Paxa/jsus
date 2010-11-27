@@ -1,0 +1,19 @@
+%html
+  %head
+    %title Documentation index for #{node.full_path}
+    %link{:rel => "stylesheet", :href => "stylesheet.css"}
+%body
+  - subdirectories = node.children.select {|s| s.has_children? }
+  - unless subdirectories.empty?
+    %h2 List of subdirectories for #{node.full_path}:
+    %ul
+      - subdirectories.each do |child|
+        %li
+          %a{:href => "#{child.name}/index.html"}= child.name
+  - files = node.children.select {|s| s.value }
+  - unless files.empty?
+    %h2 List of files for #{node.full_path}:
+    %ul
+      - files.each do |child|
+        %li
+          %a{:href => "#{child.name}.html"}= child.name

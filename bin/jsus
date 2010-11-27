@@ -1,6 +1,12 @@
 #!/usr/bin/env ruby
 require 'rubygems'
-require 'jsus'
+begin
+  require 'jsus'
+rescue LoadError
+  $: << "./lib"
+  require "jsus"
+end
+
 require "fileutils"
 require 'choice'
 start_time = Time.now
@@ -54,7 +60,8 @@ Choice.options do
   option "docs_classes", :required => false do
     default []
     long "--generate-docs *CLASSES"
-    desc "Generate documentation for classes via murdoc, e.g.: lsd-* mootools-*"
+    desc "Generate documentation for classes via murdoc. You need to use FULL PATHS, e.g.: " <<
+         "/mootools/*, /LSD/*, /**/*"
 
   end
 
@@ -99,48 +106,11 @@ if Choice.choices[:generate_includes]
 end
 
 # Generate documentation
-unless Choice.choices[:docs_classes].empty?
-  require "murdoc"
-  documented_sources = Jsus::Container.new
-  sources = pool ? pool.sources : package.source_files
-  Choice.choices[:docs_classes].each do |expr|
-    regex = Regexp.new("^" + expr.gsub("*", ".*") + "$", Regexp::IGNORECASE)
-    sources.each {|s| documented_sources << s if s.provides.any? {|provided| provided.to_s =~ regex } }
-  end
-
-  doc_dir = Choice.choices[:output_directory] + "/docs"
-  FileUtils.mkdir_p(doc_dir)
-  template = File.dirname(__FILE__) + "/../markup/template.haml"
-  sources_index = {}
-  documented_sources.each do |source|
-    skipped_lines = 0
-    content = source.original_content.gsub(/\A\s*\/\*.*?\*\//m) {|w| skipped_lines += w.split("\n").size; "" } # deleting initial comment
-    annotator = Murdoc::Annotator.new(content, :javascript, :highlight_source => true)
-    header = source.header
-    sources_index[source.package.name] ||= []
-    source_dir = "#{doc_dir}/#{source.package.name}"
-    FileUtils.mkdir_p(source_dir)
-    File.open("#{source_dir}/#{File.basename(source.filename)}.html", "w+") do |f|
-      sources_index[source.package.name] << File.basename(source.filename)
-      f.puts Murdoc::Formatter.new(template).render(:paragraphs => annotator.paragraphs, :header => header, :source => source, :skipped_lines => skipped_lines)
-    end
-  end
-
-  FileUtils.cp(File.dirname(__FILE__) + "/../markup/stylesheet.css", doc_dir)
-
-  # building indices
-  sources_index.each do |pkg, sources_names|
-    source_dir = "#{doc_dir}/#{pkg}"
-    FileUtils.cp("#{doc_dir}/stylesheet.css", source_dir)
-    File.open("#{source_dir}/index.html", "w+") do |f|
-      f.puts Haml::Engine.new(File.read(File.dirname(__FILE__) + "/../markup/index.haml")).render(self, :package => pkg, :sources => sources_names)
-    end
-  end
-
-  # building main index of packages
-  File.open("#{doc_dir}/index.html", "w+") do |f|
-    f.puts Haml::Engine.new(File.read(File.dirname(__FILE__) + "/../markup/packages_index.haml")).render(self, :packages => sources_index.keys)
-  end
+unless Choice.choices[:docs_classes].empty?  
+  documenter = Jsus::Documenter.new
+  package.source_files.each {|source| documenter << source }
+  pool.sources.each {|source| documenter << source } if pool
+  documenter.only(Choice.choices[:docs_classes]).generate(Choice.choices[:output_directory] + "/docs")
 end
 
 
