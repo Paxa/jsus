@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.1.19"
+  s.version = "0.1.20"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
@@ -35,13 +35,14 @@ Gem::Specification.new do |s|
     "jsus.gemspec",
     "lib/jsus.rb",
     "lib/jsus/container.rb",
+    "lib/jsus/documenter.rb",
     "lib/jsus/package.rb",
     "lib/jsus/packager.rb",
     "lib/jsus/pool.rb",
     "lib/jsus/source_file.rb",
     "lib/jsus/tag.rb",
-    "markup/index.haml",
-    "markup/packages_index.haml",
+    "lib/jsus/tree.rb",
+    "markup/index_template.haml",
     "markup/stylesheet.css",
     "markup/template.haml",
     "spec/data/Basic/README",
@@ -93,11 +94,13 @@ Gem::Specification.new do |s|
     "spec/data/bad_test_source_two.js",
     "spec/data/test_source_one.js",
     "spec/jsus/container_spec.rb",
+    "spec/jsus/documenter_spec.rb",
     "spec/jsus/package_spec.rb",
     "spec/jsus/packager_spec.rb",
     "spec/jsus/pool_spec.rb",
     "spec/jsus/source_file_spec.rb",
     "spec/jsus/tag_spec.rb",
+    "spec/jsus/tree_spec.rb",
     "spec/shared/class_stubs.rb",
     "spec/spec_helper.rb"
   ]
@@ -108,11 +111,13 @@ Gem::Specification.new do |s|
   s.summary = %q{Javascript packager and dependency resolver}
   s.test_files = [
     "spec/jsus/container_spec.rb",
+    "spec/jsus/documenter_spec.rb",
     "spec/jsus/package_spec.rb",
     "spec/jsus/packager_spec.rb",
     "spec/jsus/pool_spec.rb",
     "spec/jsus/source_file_spec.rb",
     "spec/jsus/tag_spec.rb",
+    "spec/jsus/tree_spec.rb",
     "spec/shared/class_stubs.rb",
     "spec/spec_helper.rb"
   ]
