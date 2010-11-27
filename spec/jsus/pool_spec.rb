@@ -100,6 +100,14 @@ describe Jsus::Pool do
       subject.lookup_dependencies("Lol/Wtf").should == []
       subject.lookup_dependencies(Jsus::Tag["Caught/Mosh"]).should == []
     end
+
+    context "wildcard support" do
+      let(:input_dir) { "spec/data/DependenciesWildcards/app/javascripts" }
+
+      it "should support wildcards" do
+        subject.lookup_dependencies("Mash/Mash").should == [sources[1], sources[2]]
+      end
+    end
   end
 
 

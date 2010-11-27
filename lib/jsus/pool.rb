@@ -105,7 +105,8 @@ module Jsus
     def <<(source_or_sources_or_package)
       case
       when source_or_sources_or_package.kind_of?(SourceFile)
-        source = source_or_sources_or_package        
+        source = source_or_sources_or_package
+        add_source_to_trees(source)
         sources << source
         if source.extends
           extensions_map[source.extends] ||= []
@@ -156,10 +157,10 @@ module Jsus
     def lookup_direct_dependencies!(source)
       result = if source
         (source.dependencies + source.external_dependencies).map do |dependency|
-          result = lookup(dependency)
+          result = provides_tree.glob("/#{dependency}").map {|node| node.value }
           puts "#{source.filename} is missing #{dependency.is_a?(SourceFile) ? dependency.filename : dependency.to_s}" if !result && Jsus.verbose?
           result
-        end
+        end.flatten
       else
         []
       end
@@ -170,36 +171,29 @@ module Jsus
     # Returs a tree, containing all the sources
     #
     def source_tree
-      @source_tree ||= source_tree! 
-    end
-
-    def source_tree! # :nodoc:
-      tree = Tree.new
-      sources.each do |source|
-        if source.package
-          tree.insert("/" + source.package.name + "/" + File.basename(source.filename), source)
-        else
-          tree.insert("/" + File.basename(source.filename), source)
-        end
-      end
-      tree
+      @source_tree ||= Tree.new 
     end
 
     #
     # Returns a tree containing all the provides tags
     #
     def provides_tree
-      @provides_tree ||= provides_tree!
+      @provides_tree ||= Tree.new
     end
 
-    def provides_tree!
-      tree = Tree.new
-      sources.each do |source|
-        source.provides.each do |tag|
-          tree.insert("/" + tag.to_s, source)          
-        end
+
+    #
+    # Registers the source in both trees
+    #
+    def add_source_to_trees(source)
+      if source.package
+        source_tree.insert("/" + source.package.name + "/" + File.basename(source.filename), source)
+      else
+        source_tree.insert("/" + File.basename(source.filename), source)
       end
-      tree
+      source.provides.each do |tag|
+        provides_tree.insert("/" + tag.to_s, source)
+      end
     end
 
     protected

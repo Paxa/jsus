@@ -1,7 +1,10 @@
 module Jsus
   class Documenter
-    def initialize
+    attr_accessor :options
+
+    def initialize(options = {:highlight_source => true})
       require "murdoc"
+      self.options = options
     rescue LoadError
       raise "You should install murdoc gem in order to produce documentation"
     end
@@ -30,7 +33,7 @@ module Jsus
     def create_documentation_for_source(source, template)
       skipped_lines = 0
       content = source.original_content.gsub(/\A\s*\/\*.*?\*\//m) {|w| skipped_lines += w.split("\n").size; "" }
-      annotator = Murdoc::Annotator.new(content, :javascript, :highlight_source => true)
+      annotator = Murdoc::Annotator.new(content, :javascript, options)
       Murdoc::Formatter.new(template).render(:paragraphs => annotator.paragraphs, :header => source.header, :source => source, :skipped_lines => skipped_lines)
     end
 

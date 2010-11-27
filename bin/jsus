@@ -3,7 +3,7 @@ require 'rubygems'
 begin
   require 'jsus'
 rescue LoadError
-  $: << "./lib"
+  $: << File.expand_path(File.dirname(__FILE__) + "/../lib")
   require "jsus"
 end
 
@@ -65,6 +65,13 @@ Choice.options do
 
   end
 
+  option "no_syntax_highlight", :required => false do
+    default false
+    long "--no-syntax-highlight"
+    desc "Disable syntax highlighting in murdoc. Greatly increases docs generation speed. " <<
+         "Note: This option won't have any effect unless you have Pygments installed."
+  end
+
   option "verbose", :required => false do
     default false
     short "-v"
@@ -107,7 +114,7 @@ end
 
 # Generate documentation
 unless Choice.choices[:docs_classes].empty?  
-  documenter = Jsus::Documenter.new
+  documenter = Jsus::Documenter.new(:highlight_source => !Choice.choices[:no_syntax_highlight])
   package.source_files.each {|source| documenter << source }
   pool.sources.each {|source| documenter << source } if pool
   documenter.only(Choice.choices[:docs_classes]).generate(Choice.choices[:output_directory] + "/docs")

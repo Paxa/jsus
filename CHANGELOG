@@ -1,4 +1,7 @@
 = Jsus Changelog
+== Version 0.1.21
+* Support for wildcards in requires statements (beware, something could break)
+
 == Version 0.1.20
 * Better integration for murdoc (factored it into class Jsus::Documenter)
 * Tree structure for future reuse
