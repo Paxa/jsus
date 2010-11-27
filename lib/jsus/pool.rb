@@ -51,7 +51,7 @@ module Jsus
     # If given a source file, returns the input.
     #
     def lookup(source_or_key)
-      result = case source_or_key
+      case source_or_key
         when String
           provides_map[Tag[source_or_key]]
         when Tag
@@ -62,8 +62,6 @@ module Jsus
           raise "Illegal lookup query. Expected String, Tag or SourceFile, " <<
                 "given #{source_or_key.inspect}, an instance of #{source_or_key.class.name}."
       end
-      puts "Couldn't find #{source_or_key}" if !result && Jsus.verbose?
-      result
     end
   
 
@@ -72,7 +70,7 @@ module Jsus
     #
     # Returns an instance of Container which contains needed files sorted.
     #
-    def lookup_dependencies(source_or_source_key)      
+    def lookup_dependencies(source_or_source_key)
       source = lookup(source_or_source_key)
       result = Container.new
       looked_up = []
@@ -113,7 +111,12 @@ module Jsus
           extensions_map[source.extends] ||= []
           extensions_map[source.extends] << source
         else
-          source.provides.each {|p| provides_map[p] = source }
+          source.provides.each do |p|
+            if provides_map[p] && provides_map[p] != source && provides_map[p].filename != source.filename && Jsus.verbose?
+              puts "Redeclared #{p.to_s} in #{source.filename} (previously declared in #{provides_map[p].filename})"
+            end
+            provides_map[p] = source
+          end
         end
       when source_or_sources_or_package.kind_of?(Package)
         package = source_or_sources_or_package
@@ -151,7 +154,15 @@ module Jsus
     # Performs the actual lookup for #lookup_direct_dependencies
     #
     def lookup_direct_dependencies!(source)
-      result = source ? (source.dependencies + source.external_dependencies).map {|d| lookup(d)} : []
+      result = if source
+        (source.dependencies + source.external_dependencies).map do |dependency|
+          result = lookup(dependency)
+          puts "#{source.filename} is missing #{dependency.is_a?(SourceFile) ? dependency.filename : dependency.to_s}" if !result && Jsus.verbose?
+          result
+        end
+      else
+        []
+      end
       Container.new(*result)
     end
 
