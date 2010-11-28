@@ -29,10 +29,14 @@ module Jsus
       Dir.chdir(directory) do
         files.each do |source|
           source_file = SourceFile.from_file(source, :package => self)
-          if source_file.extension?
-            extensions << source_file
+          if source_file
+            if source_file.extension?
+              extensions << source_file
+            else
+              source_files << source_file
+            end
           else
-            source_files << source_file
+            puts "Warning: #{source} is not found for #{name}" if Jsus.verbose?
           end
         end
       end
