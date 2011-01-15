@@ -5,6 +5,8 @@
 #
 #
 module Jsus
+  class BadSourceFileException < Exception; end
+  
   class SourceFile
     attr_accessor :relative_filename, :filename, :package # :nodoc:
     # Constructors
@@ -45,13 +47,17 @@ module Jsus
           options[:content]           = source
           new(options)
         else
-          raise "#{filename} is missing a header or header is invalid"
+          raise BadSourceFileException, "#{filename} is missing a header or header is invalid"
         end
       else
-        raise "Referenced #{filename} does not exist. #{options[:package] ? "Referenced from package #{options[:package].name}" : ""}"
+        raise BadSourceFileException, "Referenced #{filename} does not exist. #{options[:package] ? "Referenced from package #{options[:package].name}" : ""}"
       end
     rescue Exception => e
-      raise "Exception #{e.inspect} happened on #{filename}. Please take appropriate measures"
+      if !e.kind_of?(BadSourceFileException) # if we didn't raise the error; like in YAML, for example
+        raise "Exception #{e.inspect} happened on #{filename}. Please take appropriate measures"
+      else # if we did it, just reraise
+        raise e
+      end
     end
 
     # Public API

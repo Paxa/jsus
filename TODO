@@ -1,2 +1,3 @@
 * Disallow circular dependencies
 * Rails integration
+* Cleanup jsus utility

@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
-  s.date = %q{2010-11-28}
+  s.date = %q{2011-01-15}
   s.default_executable = %q{jsus}
   s.description = %q{Javascript packager and dependency resolver}
   s.email = %q{markizko@gmail.com}
@@ -42,6 +42,9 @@ Gem::Specification.new do |s|
     "lib/jsus/source_file.rb",
     "lib/jsus/tag.rb",
     "lib/jsus/tree.rb",
+    "lib/jsus/validator.rb",
+    "lib/jsus/validator/base.rb",
+    "lib/jsus/validator/mooforge.rb",
     "markup/index_template.haml",
     "markup/stylesheet.css",
     "markup/template.haml",
@@ -86,6 +89,14 @@ Gem::Specification.new do |s|
     "spec/data/JsonPackage/Source/SheetParser.CSS.js",
     "spec/data/JsonPackage/Source/sg-regex-tools.js",
     "spec/data/JsonPackage/package.json",
+    "spec/data/MooforgeValidation/README",
+    "spec/data/MooforgeValidation/app/javascripts/Orwik/Source/Library/InvalidNoAuthors.js",
+    "spec/data/MooforgeValidation/app/javascripts/Orwik/Source/Library/InvalidNoLicense.js",
+    "spec/data/MooforgeValidation/app/javascripts/Orwik/Source/Library/Valid.js",
+    "spec/data/MooforgeValidation/app/javascripts/Orwik/Source/Widget/Input/Input.Color.js",
+    "spec/data/MooforgeValidation/app/javascripts/Orwik/Source/Widget/Input/Input.js",
+    "spec/data/MooforgeValidation/app/javascripts/Orwik/Source/Widget/Widget.js",
+    "spec/data/MooforgeValidation/app/javascripts/Orwik/package.yml",
     "spec/data/OutsideDependencies/README",
     "spec/data/OutsideDependencies/app/javascripts/Core/Source/Class/Class.Extras.js",
     "spec/data/OutsideDependencies/app/javascripts/Core/Source/Class/Class.js",
@@ -107,6 +118,8 @@ Gem::Specification.new do |s|
     "spec/jsus/source_file_spec.rb",
     "spec/jsus/tag_spec.rb",
     "spec/jsus/tree_spec.rb",
+    "spec/jsus/validator/base_spec.rb",
+    "spec/jsus/validator/mooforge_spec.rb",
     "spec/shared/class_stubs.rb",
     "spec/spec_helper.rb"
   ]
@@ -124,6 +137,8 @@ Gem::Specification.new do |s|
     "spec/jsus/source_file_spec.rb",
     "spec/jsus/tag_spec.rb",
     "spec/jsus/tree_spec.rb",
+    "spec/jsus/validator/base_spec.rb",
+    "spec/jsus/validator/mooforge_spec.rb",
     "spec/shared/class_stubs.rb",
     "spec/spec_helper.rb"
   ]
@@ -141,10 +156,6 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rspec>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<murdoc>, [">= 0"])
-      s.add_runtime_dependency(%q<activesupport>, [">= 0"])
-      s.add_runtime_dependency(%q<json_pure>, [">= 0"])
-      s.add_runtime_dependency(%q<rgl>, [">= 0"])
-      s.add_runtime_dependency(%q<choice>, [">= 0"])
     else
       s.add_dependency(%q<activesupport>, [">= 0"])
       s.add_dependency(%q<json_pure>, [">= 0"])
@@ -154,10 +165,6 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<murdoc>, [">= 0"])
-      s.add_dependency(%q<activesupport>, [">= 0"])
-      s.add_dependency(%q<json_pure>, [">= 0"])
-      s.add_dependency(%q<rgl>, [">= 0"])
-      s.add_dependency(%q<choice>, [">= 0"])
     end
   else
     s.add_dependency(%q<activesupport>, [">= 0"])
@@ -168,10 +175,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rspec>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<murdoc>, [">= 0"])
-    s.add_dependency(%q<activesupport>, [">= 0"])
-    s.add_dependency(%q<json_pure>, [">= 0"])
-    s.add_dependency(%q<rgl>, [">= 0"])
-    s.add_dependency(%q<choice>, [">= 0"])
   end
 end
 

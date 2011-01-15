@@ -18,6 +18,7 @@ require 'jsus/packager'
 require 'jsus/pool'
 require 'jsus/tree'
 require 'jsus/documenter'
+require 'jsus/validator'
 #
 # Jsus — a library for packaging up your source files.
 #

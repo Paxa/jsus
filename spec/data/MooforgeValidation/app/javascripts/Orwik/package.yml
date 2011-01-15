@@ -1,0 +1,11 @@
+name: Orwik
+filename: orwik.js
+web: http://orwik.com
+description: Orwik widgets and essensial things
+license: MIT-Style License, http://mootools.net/license
+copyright: 2008-2010 Yaroslaff Fedin http://orwik.com/people/inviz
+authors: Orwik team, http://developers.orwik.com
+sources:
+  - "Source/Library/Valid.js"
+  - "Source/Library/InvalidNoAuthors.js"
+  - "Source/Library/InvalidNoLicense.js"

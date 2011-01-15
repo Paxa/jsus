@@ -79,6 +79,12 @@ Choice.options do
     desc "When verbose mode is enabled, some debug information is displayed. Defaults to false."
   end
 
+  option "validate_with", :required => false do
+    default []
+    long "--validate-with *VALIDATORS"
+    desc "performs validation of the resulting source. " <<
+         "Available validators: mooforge"
+  end
 end
 
 compile_start_time = Time.now
@@ -88,6 +94,8 @@ Jsus.verbose = Choice.choices[:verbose]
 pool_load_start_time = Time.now
 pool = if Choice.choices[:dependencies]
   Jsus::Pool.new(Choice.choices[:dependencies])
+else
+  Jsus::Pool.new
 end
 pool_load_finish_time = Time.now
 
@@ -98,6 +106,19 @@ package.compile(output_directory)
 package.generate_scripts_info(output_directory) unless Choice.choices[:without_scripts_info]
 package.generate_tree(output_directory) unless Choice.choices[:without_tree]
 
+# Validations
+validators_map = {"mooforge" => Jsus::Validator::Mooforge}
+Choice.choices[:validate_with].each do |validator_name|
+  if validator = validators_map[validator_name.downcase]
+    errors = validator.new(pool.sources.to_a & package.source_files.to_a).validation_errors
+    unless errors.empty?
+      puts "Validator found errors: "
+      errors.each {|e| puts "  * #{e}"}
+    end
+  else
+    puts "No such validator: #{validator_name}"
+  end
+end
 
 # Hack, hack, hack :[
 if Choice.choices[:generate_includes]
