@@ -45,13 +45,13 @@ module Jsus
           options[:content]           = source
           new(options)
         else
-#          puts "WARNING: file #{filename} has invalid format (should be YAML)"
-          nil
+          raise "#{filename} is missing a header or header is invalid"
         end
       else
-#        puts "WARNING: file #{filename} does not exist"
-        nil
+        raise "Referenced #{filename} does not exist. #{options[:package] ? "Referenced from package #{options[:package].name}" : ""}"
       end
+    rescue Exception => e
+      raise "Exception #{e.inspect} happened on #{filename}. Please take appropriate measures"
     end
 
     # Public API

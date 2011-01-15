@@ -19,10 +19,6 @@ Jeweler::Tasks.new do |gem|
   gem.description = "Javascript packager and dependency resolver"
   gem.email = "markizko@gmail.com"
   gem.authors = ["Mark Abramov"]
-  gem.add_runtime_dependency "activesupport"
-  gem.add_runtime_dependency "json_pure"
-  gem.add_runtime_dependency "rgl"
-  gem.add_runtime_dependency "choice"
 end
 Jeweler::RubygemsDotOrgTasks.new
 

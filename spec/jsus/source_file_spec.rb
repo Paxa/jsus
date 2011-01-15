@@ -23,16 +23,23 @@ describe Jsus::SourceFile do
       end
 
       context "when format is invalid" do
-        it "should return nil" do
-          Jsus::SourceFile.from_file('spec/data/bad_test_source_one.js').should == nil
-          Jsus::SourceFile.from_file('spec/data/bad_test_source_two.js').should == nil
+        it "should raise error" do
+          lambda { Jsus::SourceFile.from_file('spec/data/bad_test_source_one.js') }.should raise_error
+          lambda { Jsus::SourceFile.from_file('spec/data/bad_test_source_two.js') }.should raise_error
         end
       end
 
       context "when file does not exist" do
-        it "should return nil" do
-          Jsus::SourceFile.from_file('spec/data/non-existant-file.js').should == nil
+        it "should raise error" do
+          lambda { Jsus::SourceFile.from_file('spec/data/non-existant-file.js') }.should raise_error
         end
+      end
+      
+      context "when some error happens" do
+        it "should raise error" do
+          YAML.stub!(:load) { raise "Could not parse the file!" }
+          lambda { subject }.should raise_error(RuntimeError, /spec\/data\/test_source_one\.js/)
+        end        
       end
     end
 
