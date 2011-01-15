@@ -12,6 +12,8 @@ require 'choice'
 start_time = Time.now
 
 Choice.options do
+  header "Jsus version #{Jsus.version}"
+  
   option 'input_directory', :required => true do
     short "-i"
     long "--input-directory=DIRECTORY"

@@ -35,4 +35,8 @@ module Jsus
   def self.verbose=(verbose)
     @verbose = verbose
   end
+  
+  def self.version
+    @version ||= File.read(File.dirname(__FILE__) + "/../VERSION")
+  end
 end
