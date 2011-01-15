@@ -1,4 +1,9 @@
 = Jsus Changelog
+== Version 0.2.0
+* Support for mooforge validator (checks if every file has authors && license),
+  more validators at request
+* Errors on source files should now be easier to track down
+
 == Version 0.1.21
 * Support for wildcards in requires statements (beware, something could break)
 
