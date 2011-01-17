@@ -1,6 +1,6 @@
 When /^I run "jsus (.*?)"$/ do |args|
   Dir.chdir DATA_DIR do
-    `jsus #{args}`
+    `#{JSUS_CLI_PATH} #{args}`
   end  
 end
 
