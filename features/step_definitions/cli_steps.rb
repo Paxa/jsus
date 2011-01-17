@@ -18,3 +18,19 @@ Then /^file "(.*?)" should contain$/ do |filename, content|
     File.read(filename).should include(content)
   end    
 end
+
+Then /^file "(.*?)" should have "(.*?)" (before|after) "(.*?)"$/ do |filename, what, position, other|
+  Dir.chdir DATA_DIR do
+    position = []
+    contents = File.read(filename)
+    position << contents.index(what)
+    position << contents.index(other)
+    
+    case position
+    when "before"
+      position[0].should < position[1]
+    when "after"
+      position[1].should < position[0]
+    end
+  end
+end
