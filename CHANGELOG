@@ -1,4 +1,9 @@
 = Jsus Changelog
+== Version 0.2.1
+* Started adding cucumber features for command-line utility. Look into /features
+  directory for reference
+* Removed choice gem from list of dependency. Using stdlib's optparse instead
+
 == Version 0.2.0
 * Support for mooforge validator (checks if every file has authors && license),
   more validators at request
