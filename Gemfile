@@ -9,6 +9,7 @@ gem "choice"
 group :development do
   gem "bundler"
   gem "rspec"
+  gem "cucumber"
   gem "jeweler"
   gem "murdoc"
 end
