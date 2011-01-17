@@ -81,7 +81,7 @@ module Jsus
     end
 
     # Returns an array of provided tags names including those provided by linked external dependencies.
-    def provides_names
+    def provides_names      
       source_files.map {|s| s.provides_names(:short => true) }.flatten |
       linked_external_dependencies.map {|d| d.provides_names }.flatten
     end
@@ -148,7 +148,8 @@ module Jsus
     # Looks up all the external dependencies in the pool.
     def include_dependencies!
       source_files.each do |source|
-        linked_external_dependencies << pool.lookup_dependencies(source) if pool
+        deps = pool.lookup_dependencies(source).to_a - @source_files.to_a
+        linked_external_dependencies << deps if pool
       end
     end
 

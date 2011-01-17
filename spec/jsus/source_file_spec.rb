@@ -259,4 +259,18 @@ describe Jsus::SourceFile do
       end
     end
   end
+  
+  describe "#==, eql, hash" do
+    it "should return true for source files pointing to the same physical file" do
+      subject.should == described_class.from_file(subject.filename)
+      subject.should eql(described_class.from_file(subject.filename))
+      subject.hash.should == described_class.from_file(subject.filename).hash
+    end
+    
+    it "should return false for source files pointing to different physical files" do
+      subject.should_not == described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js")
+      subject.should_not eql(described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js"))
+      subject.hash.should_not == described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js").hash
+    end    
+  end  
 end

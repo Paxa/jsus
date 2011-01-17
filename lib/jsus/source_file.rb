@@ -239,6 +239,17 @@ module Jsus
     def pool
       @pool
     end
+   
+    def ==(other) # :nodoc:
+      eql?(other)
+    end
     
+    def eql?(other) # :nodoc:
+      filename == other.filename
+    end
+    
+    def hash
+      [self.class, filename].hash
+    end
   end
 end

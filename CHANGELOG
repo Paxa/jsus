@@ -1,4 +1,7 @@
 = Jsus Changelog
+== Version 0.2.2
+* Fixed dupes in structure json files
+
 == Version 0.2.1
 * Started adding cucumber features for command-line utility. Look into /features
   directory for reference
