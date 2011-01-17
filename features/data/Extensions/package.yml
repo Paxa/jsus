@@ -1,0 +1,9 @@
+name: Package
+filename: package.js
+web: http://github.com/markiz/jsus
+description: Jsus package with extension for extdep
+license: Public Domain, http://unlicense.org/UNLICENSE
+authors: Mark Abramov (http://github.com/markiz)
+sources:
+  - "Source/Library/Color.js"
+  - "Source/Extensions/MootoolsCore.js"

@@ -1,0 +1,8 @@
+name: Mootools
+filename: mootools.js
+web: http://mootools.net
+description: Fake mootools package
+license: Public Domain, http://unlicense.org/UNLICENSE
+authors: mootools authors
+sources:
+  - "Source/Core.js"
