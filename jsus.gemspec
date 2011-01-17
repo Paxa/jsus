@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.2.0"
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
-  s.date = %q{2011-01-15}
+  s.date = %q{2011-01-17}
   s.default_executable = %q{jsus}
   s.description = %q{Javascript packager and dependency resolver}
   s.email = %q{markizko@gmail.com}
@@ -32,6 +32,43 @@ Gem::Specification.new do |s|
     "VERSION",
     "autotest/discover.rb",
     "bin/jsus",
+    "cucumber.yml",
+    "features/command-line/basic_dependency_resolution.feature",
+    "features/command-line/extensions.feature",
+    "features/command-line/external_dependency_resolution.feature",
+    "features/command-line/json_package.feature",
+    "features/command-line/structure_json.feature",
+    "features/data/Basic/Source/Library/Color.js",
+    "features/data/Basic/Source/Widget/Input/Input.Color.js",
+    "features/data/Basic/package.yml",
+    "features/data/BasicWrongOrder/Source/Library/Color.js",
+    "features/data/BasicWrongOrder/Source/Widget/Input/Input.Color.js",
+    "features/data/BasicWrongOrder/package.yml",
+    "features/data/Extensions/Mootools/Source/Core.js",
+    "features/data/Extensions/Mootools/package.yml",
+    "features/data/Extensions/Source/Extensions/MootoolsCore.js",
+    "features/data/Extensions/Source/Library/Color.js",
+    "features/data/Extensions/package.yml",
+    "features/data/ExternalDependency/Mootools/Source/Core.js",
+    "features/data/ExternalDependency/Mootools/package.yml",
+    "features/data/ExternalDependency/Source/Library/Color.js",
+    "features/data/ExternalDependency/Source/Widget/Input/Input.Color.js",
+    "features/data/ExternalDependency/package.yml",
+    "features/data/ExternalDependencyWithExternalDependency/Leonardo/Source/Core.js",
+    "features/data/ExternalDependencyWithExternalDependency/Leonardo/package.yml",
+    "features/data/ExternalDependencyWithExternalDependency/Mootools/Source/Core.js",
+    "features/data/ExternalDependencyWithExternalDependency/Mootools/package.yml",
+    "features/data/ExternalDependencyWithExternalDependency/Source/Library/Color.js",
+    "features/data/ExternalDependencyWithExternalDependency/Source/Widget/Input/Input.Color.js",
+    "features/data/ExternalDependencyWithExternalDependency/package.yml",
+    "features/data/JsonPackage/Source/Library/Color.js",
+    "features/data/JsonPackage/Source/Widget/Input/Input.Color.js",
+    "features/data/JsonPackage/package.json",
+    "features/data/tmp2/package.js",
+    "features/data/tmp2/scripts.json",
+    "features/data/tmp2/tree.json",
+    "features/step_definitions/cli_steps.rb",
+    "features/support/env.rb",
     "jsus.gemspec",
     "lib/jsus.rb",
     "lib/jsus/container.rb",
@@ -151,18 +188,18 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<activesupport>, [">= 0"])
       s.add_runtime_dependency(%q<json_pure>, [">= 0"])
       s.add_runtime_dependency(%q<rgl>, [">= 0"])
-      s.add_runtime_dependency(%q<choice>, [">= 0"])
       s.add_development_dependency(%q<bundler>, [">= 0"])
       s.add_development_dependency(%q<rspec>, [">= 0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<murdoc>, [">= 0"])
     else
       s.add_dependency(%q<activesupport>, [">= 0"])
       s.add_dependency(%q<json_pure>, [">= 0"])
       s.add_dependency(%q<rgl>, [">= 0"])
-      s.add_dependency(%q<choice>, [">= 0"])
       s.add_dependency(%q<bundler>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 0"])
+      s.add_dependency(%q<cucumber>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<murdoc>, [">= 0"])
     end
@@ -170,9 +207,9 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<activesupport>, [">= 0"])
     s.add_dependency(%q<json_pure>, [">= 0"])
     s.add_dependency(%q<rgl>, [">= 0"])
-    s.add_dependency(%q<choice>, [">= 0"])
     s.add_dependency(%q<bundler>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 0"])
+    s.add_dependency(%q<cucumber>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<murdoc>, [">= 0"])
   end
