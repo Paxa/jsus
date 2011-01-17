@@ -1,0 +1,12 @@
+{
+  "name": "Package",
+  "filename": "package.js",
+  "web": "http://github.com/markiz/jsus",
+  "description": "Jsus json package file",
+  "license": "Public Domain, http://unlicense.org/UNLICENSE",
+  "authors": "Mark Abramov (http://github.com/markiz)",
+  "sources": [
+    "Source/Library/Color.js",
+    "Source/Widget/Input/Input.Color.js"
+  ]
+}
