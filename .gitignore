@@ -4,3 +4,4 @@ spec/tmp
 doc/*
 pkg/*
 rcov
+features/data/tmp
