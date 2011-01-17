@@ -1,0 +1,8 @@
+name: Leonardo
+filename: package.js
+web: http://github.com/markiz/jsus
+description: Another fake package named leonardo depending on mootools core
+license: Public Domain, http://unlicense.org/UNLICENSE
+authors: Mark Abramov (http://github.com/markiz)
+sources:
+  - "Source/Core.js"
