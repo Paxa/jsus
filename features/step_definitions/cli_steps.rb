@@ -14,10 +14,27 @@ Then /^the following files should exist:$/ do |table|
 end
 
 Then /^file "(.*?)" should contain$/ do |filename, content|
-  Dir.chdir DATA_DIR do
+  Dir.chdir DATA_DIR do    
     File.read(filename).should include(content)
   end    
 end
+
+Then /^file "(.*?)" should contain valid JSON$/i do |filename|
+  Dir.chdir DATA_DIR do
+    json = nil
+    lambda { json = JSON.load(File.read(filename)) }.should_not raise_error
+    json.should_not be_nil
+  end    
+end
+
+Then /^file "(.*?)" should contain JSON equivalent to$/i do |filename, expected_json|
+  Dir.chdir DATA_DIR do
+    json = JSON.load(File.read(filename))
+    expected = JSON.load(expected_json)
+    json.should == expected
+  end    
+end
+
 
 Then /^file "(.*?)" should have "(.*?)" (before|after) "(.*?)"$/ do |filename, what, position, other|
   Dir.chdir DATA_DIR do
