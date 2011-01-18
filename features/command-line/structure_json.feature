@@ -3,7 +3,7 @@ Feature: structure json files
   generate some extra files.
   
   Scenario: auto-generation of tree.json and scripts.json
-    When I run "jsus -i Basic -o tmp"
+    When I run "jsus Basic tmp"
     Then the following files should exist:
       | tmp/tree.json    |
       | tmp/scripts.json |

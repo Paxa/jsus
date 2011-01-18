@@ -3,7 +3,7 @@ Feature: extensions
   extensions.
   
   Scenario: monkeypatch for external dependency
-    When I run "jsus -i Extensions -o tmp -d Extensions/Mootools"
+    When I run "jsus Extensions tmp -d Extensions/Mootools"
     Then the following files should exist:
       | tmp/package.js |
     And file "tmp/package.js" should contain

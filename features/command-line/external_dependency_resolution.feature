@@ -3,7 +3,7 @@ Feature: external dependencies
   pool.
   
   Scenario: basic external dependency
-    When I run "jsus -i ExternalDependency -o tmp -d ExternalDependency/Mootools"
+    When I run "jsus ExternalDependency tmp -d ExternalDependency/Mootools"
     Then the following files should exist:
       | tmp/package.js |
     And file "tmp/package.js" should contain
@@ -50,7 +50,7 @@ Feature: external dependencies
     And file "tmp/package.js" should have "script: Core.js" before "script: Color.js"
   
   Scenario: external dependency with external dependency
-    When I run "jsus -i ExternalDependencyWithExternalDependency -o tmp -d ExternalDependencyWithExternalDependency"
+    When I run "jsus ExternalDependencyWithExternalDependency tmp -d ExternalDependencyWithExternalDependency"
     Then the following files should exist:
       | tmp/package.js |
     And file "tmp/package.js" should contain

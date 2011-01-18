@@ -3,7 +3,7 @@ Feature: resolve dependencies
   dependency list.
 
   Scenario: internal dependencies in correct order
-    When I run "jsus -i Basic -o tmp"
+    When I run "jsus Basic tmp"
     Then the following files should exist:
       | tmp/package.js |
     And file "tmp/package.js" should contain
@@ -52,7 +52,7 @@ Feature: resolve dependencies
   
   
   Scenario: internal dependencies in wrong order
-    When I run "jsus -i BasicWrongOrder -o tmp"
+    When I run "jsus BasicWrongOrder tmp"
     Then the following files should exist:
       | tmp/package.js |
     And file "tmp/package.js" should contain

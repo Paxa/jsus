@@ -3,7 +3,7 @@ Feature: json package files
   package.json 
 
   Scenario: package with package.json file
-    When I run "jsus -i JsonPackage -o tmp"
+    When I run "jsus JsonPackage tmp"
     Then the following files should exist:
       | tmp/package.js |
     And file "tmp/package.js" should contain
