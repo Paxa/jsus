@@ -42,6 +42,18 @@ Examples
   * `jsus . Output`
   * Look at what Output directory contains
 
+Plans
+=====
+
+These are rather long-term, for when I get to have time and mood to do those:
+* Rails integration
+* npm packages support
+
+NB:
+* I don't have any particular roadmap or plans for more features
+* However, I am open for any suggestions
+  * Bonus points for suggestions with pull-requests
+
 
 License
 =======
