@@ -52,6 +52,10 @@ cli = OptionParser.new do |opts|
     options[:validators] = (validators || []).map {|v| v.downcase }
   end
   
+  opts.on('--postproc [*PROCESSORS]', Array, 'performs postprocessing. Available postprocs:\n* moocompat12 -- removes mootools 1.2compat tags and their contents\n* mooltIE8 -- removes mootools ltIE8 compat tags and their contents') do |postprocs|
+    options[:postproc] = postprocs
+  end
+  
   opts.on_tail('-v', '--verbose', 'verbose mode, shows various debug messages') do
     options[:verbose] = true
   end
@@ -100,7 +104,25 @@ pool_load_finish_time = Time.now
 package = Jsus::Package.new(options[:input_dir], :pool => pool)
 package.include_dependencies!
 output_dir = options[:output_dir]
-package.compile(output_dir)
+
+package_content = package.compile(nil)
+
+if options[:postproc]
+  options[:postproc].each do |processor|
+    case processor      
+    when /^moocompat12$/i
+      package_content.gsub!(/\/\/<1.2compat>.*?\/\/<\/1.2compat>/m, '')
+    when /^mooltie8$/i
+      package_content.gsub!(/\/\/<ltIE8>.*?\/\/<\/ltIE8>/m, '')
+    else
+      $stderr.puts "Unknown post-processor: #{processor}"
+    end
+  end
+end
+FileUtils.mkdir_p(output_dir)
+package_filename = File.join(output_dir, package.filename)
+File.open(package_filename, 'w') {|f| f << package_content  }
+
 package.generate_scripts_info(output_dir) unless options[:without_scripts_info]
 package.generate_tree(output_dir) unless options[:without_tree_info]
 
@@ -117,6 +139,8 @@ validators_map = {"mooforge" => Jsus::Validator::Mooforge}
     puts "No such validator: #{validator_name}"
   end
 end
+
+# Postprocs, sort of hack
 
 # Hack, hack, hack >:E
 if options[:generate_includes]

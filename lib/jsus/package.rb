@@ -116,7 +116,8 @@ module Jsus
     
     # Compiles source files and linked external source files into a given category.
     def compile(directory = ".")
-      Packager.new(*(source_files.to_a + linked_external_dependencies.to_a)).pack(File.join(directory, filename))
+      fn = directory ? File.join(directory, filename) : nil
+      Packager.new(*(source_files.to_a + linked_external_dependencies.to_a)).pack(fn)
     end
 
     # Generates tree structure for files in package into a json file.

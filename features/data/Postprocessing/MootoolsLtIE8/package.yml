@@ -1,0 +1,8 @@
+name: Mootools
+filename: package.js
+web: http://github.com/markiz/jsus
+description: Mootools fork which is going to be postprocessed. This one has its ltIE8 features removed.
+license: Public Domain, http://unlicense.org/UNLICENSE
+authors: Mark Abramov (http://github.com/markiz)
+sources:
+  - "Source/Core.js"

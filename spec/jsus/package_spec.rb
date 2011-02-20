@@ -61,6 +61,18 @@ describe Jsus::Package do
       required_files = Dir["#{input_dir}/**/*.js"].map {|f| IO.read(f) }
       required_files.each {|f| compiled_content.should include(f)}
     end
+    
+    context "when given nil" do
+      it "should not raise errors" do
+        lambda { subject.compile(nil) }.should_not raise_error
+      end
+      
+      it "should return a string with compiled content" do
+        compiled_content = subject.compile(nil)
+        required_files = Dir["#{input_dir}/**/*.js"].map {|f| IO.read(f) }
+        required_files.each {|f| compiled_content.should include(f)}
+      end
+    end
   end
 
   describe "#generate_scripts_info" do
