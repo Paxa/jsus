@@ -112,8 +112,10 @@ if options[:postproc]
     case processor.strip
     when /^moocompat12$/i
       package_content.gsub!(/\/\/<1.2compat>.*?\/\/<\/1.2compat>/m, '')
+      package_content.gsub!(/\/\*<1.2compat>\*\/.*?\/\*<\/1.2compat>\*\//m, '')
     when /^mooltie8$/i
       package_content.gsub!(/\/\/<ltIE8>.*?\/\/<\/ltIE8>/m, '')
+      package_content.gsub!(/\/\*<ltIE8>\*\/.*?\/\*<\/ltIE8>\*\//m, '')
     else
       $stderr.puts "Unknown post-processor: #{processor}"
     end
