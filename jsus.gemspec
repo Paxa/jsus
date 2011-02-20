@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.2.3"
+  s.version = "0.2.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
-  s.date = %q{2011-02-11}
+  s.date = %q{2011-02-20}
   s.default_executable = %q{jsus}
   s.description = %q{Javascript packager and dependency resolver}
   s.email = %q{markizko@gmail.com}
@@ -37,6 +37,8 @@ Gem::Specification.new do |s|
     "features/command-line/extensions.feature",
     "features/command-line/external_dependency_resolution.feature",
     "features/command-line/json_package.feature",
+    "features/command-line/postproc.feature",
+    "features/command-line/replacements.feature",
     "features/command-line/structure_json.feature",
     "features/data/Basic/Source/Library/Color.js",
     "features/data/Basic/Source/Widget/Input/Input.Color.js",
@@ -64,6 +66,16 @@ Gem::Specification.new do |s|
     "features/data/JsonPackage/Source/Library/Color.js",
     "features/data/JsonPackage/Source/Widget/Input/Input.Color.js",
     "features/data/JsonPackage/package.json",
+    "features/data/Postprocessing/MootoolsCompat12/Source/Core.js",
+    "features/data/Postprocessing/MootoolsCompat12/package.yml",
+    "features/data/Postprocessing/MootoolsLtIE8/Source/Core.js",
+    "features/data/Postprocessing/MootoolsLtIE8/package.yml",
+    "features/data/Replacements/Mootools/Source/Core.js",
+    "features/data/Replacements/Mootools/package.yml",
+    "features/data/Replacements/MootoolsFork/Replacements/MootoolsCore.js",
+    "features/data/Replacements/MootoolsFork/package.yml",
+    "features/data/Replacements/Source/Library/Color.js",
+    "features/data/Replacements/package.yml",
     "features/data/tmp2/package.js",
     "features/data/tmp2/scripts.json",
     "features/data/tmp2/tree.json",
@@ -97,6 +109,8 @@ Gem::Specification.new do |s|
     "spec/data/ChainDependencies/app/javascripts/Hash/package.yml",
     "spec/data/ChainDependencies/app/javascripts/Mash/Source/Mash.js",
     "spec/data/ChainDependencies/app/javascripts/Mash/package.yml",
+    "spec/data/ClassReplacement/Source/Class.js",
+    "spec/data/ClassReplacement/package.yml",
     "spec/data/DependenciesWildcards/app/javascripts/Class/Source/Class.js",
     "spec/data/DependenciesWildcards/app/javascripts/Class/package.yml",
     "spec/data/DependenciesWildcards/app/javascripts/Hash/Source/Hash.js",
