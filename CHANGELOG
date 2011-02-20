@@ -1,4 +1,14 @@
 = Jsus Changelog
+== Version 0.2.4
+* Replacements feature
+* Postprocessing feature
+See jsus-examples repo or features dir for more information.
+
+== Version 0.2.3
+* Minor CLI reworkings:
+  * Deprecated -i and -o options (use plain arguments now)
+  * Restored generate-includes customizable root option
+  
 == Version 0.2.2
 * Fixed dupes in structure json files
 
