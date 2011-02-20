@@ -16,26 +16,26 @@ start_time = Time.now
 options = {}
 cli = OptionParser.new do |opts|
   opts.banner = "jsus #{Jsus.version}. Usage: jsus [options] <input_dir> <output_dir>"
-  
+
   opts.on('-i', '--input-directory [DIR]', '[DEPRECATED] path to input directory ') do |dir|
     $stderr.puts "DEPRECATION NOTICE: please do not use -i command-line argument"
     options[:input_dir] = dir
   end
-  
+
   opts.on('-o', '--input-directory [DIR]', '[DEPRECATED] path to output directory ') do |dir|
     $stderr.puts "DEPRECATION NOTICE: please do not use -o command-line argument"
     options[:output_dir] = dir
   end
-    
+
   opts.on('-d', '--with-dependencies [DEPS]', 'path to directory containing dependency packages')  do |dir|
     options[:deps_dir] = dir
   end
-  
+
   opts.on('-g', '--generate-includes [ROOT]', 'generates includes.js file that you may use for ad-hoc requiring of dependencies, defaults to output directory') do |dir|
     options[:generate_includes] = true
     options[:includes_root] = dir
   end
-  
+
   opts.on('--generate-docs [*CLASSES]', Array, "generate docs for some of the sources. When given empty array, defaults to /**/*") do |docs|
     if !docs
       options[:documented_classes] = ["/**/*"]
@@ -43,19 +43,19 @@ cli = OptionParser.new do |opts|
       options[:documented_classes] = docs
     end
   end
-  
+
   opts.on('--no-syntax-highlight', 'if you turned on docs generation, it will use syntax highlighting by default. This option prevents it') do
     options[:no_syntax_highlight] = true
   end
-  
+
   opts.on('--validate-with [*VALIDATORS]', Array, 'performs a check against some of the validators. Available validators: mooforge') do |validators|
     options[:validators] = (validators || []).map {|v| v.downcase }
   end
-  
+
   opts.on('--postproc [*PROCESSORS]', Array, 'performs postprocessing. Available postprocs:\n* moocompat12 -- removes mootools 1.2compat tags and their contents\n* mooltIE8 -- removes mootools ltIE8 compat tags and their contents') do |postprocs|
     options[:postproc] = postprocs
   end
-  
+
   opts.on_tail('-v', '--verbose', 'verbose mode, shows various debug messages') do
     options[:verbose] = true
   end
@@ -63,17 +63,17 @@ cli = OptionParser.new do |opts|
   opts.on_tail('-b', '--benchmark', 'shows time spent on various stages') do
     options[:benchmark] = true
   end
-  
+
   opts.on_tail('--without-scripts-info', 'do not generate scripts.json') do
     options[:without_scripts_info] = true
   end
-  
+
   opts.on_tail('--without-tree-info', 'do not generate tree.json') do
     options[:without_tree_info] = true
   end
-  
-  
-    
+
+
+
   opts.on_tail('-h', '--help', 'Show this message') do
     puts opts
     exit
@@ -90,9 +90,9 @@ if !(options[:input_dir] && options[:output_dir])
 end
 
 compile_start_time = Time.now
- 
+
 Jsus.verbose = options[:verbose]
- 
+
 pool_load_start_time = Time.now
 pool = if options[:deps_dir]
   Jsus::Pool.new(options[:deps_dir])
@@ -109,7 +109,7 @@ package_content = package.compile(nil)
 
 if options[:postproc]
   options[:postproc].each do |processor|
-    case processor      
+    case processor.strip
     when /^moocompat12$/i
       package_content.gsub!(/\/\/<1.2compat>.*?\/\/<\/1.2compat>/m, '')
     when /^mooltie8$/i
