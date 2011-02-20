@@ -66,6 +66,13 @@ describe Jsus::Pool do
     it "should allow tags" do
       subject.lookup(Jsus::Tag["Class/Class"]).should == sources[1]
     end
+    
+    it "should return replacements whenever possible" do
+      pkg = Jsus::Package.new("spec/data/ClassReplacement",  :pool => subject)
+      subject << pkg.source_files
+      subject.lookup("Class/Class").should == pkg.source_files[0]
+      subject.lookup(Jsus::Tag["Class/Class"]).should == pkg.source_files[0]
+    end
   end
 
   describe "#lookup_direct_dependencies" do
@@ -154,7 +161,11 @@ describe Jsus::Pool do
     subject { Jsus::Pool.new(input_dir) }
 
     it "should return a tree with all the source elements in it" do
-      subject.provides_tree.glob("/Core/Class")[0].value.should be_a(Jsus::SourceFile)      
+      subject.provides_tree.glob("/Core/Class")[0].value.should == Jsus::Tag["Core/Class"]
+    end
+        
+    it "should allow wildcards" do
+      subject.provides_tree.glob("/Core/*")[0].value.should == Jsus::Tag["Core/Class"]
     end
   end
 

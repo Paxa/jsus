@@ -19,6 +19,13 @@ Then /^file "(.*?)" should contain$/ do |filename, content|
   end    
 end
 
+
+Then /^file "(.*?)" should not contain$/ do |filename, content|
+  Dir.chdir DATA_DIR do    
+    File.read(filename).should_not include(content)
+  end    
+end
+
 Then /^file "(.*?)" should contain valid JSON$/i do |filename|
   Dir.chdir DATA_DIR do
     json = nil

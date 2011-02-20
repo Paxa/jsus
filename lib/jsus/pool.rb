@@ -4,7 +4,7 @@
 # * Resolve dependencies
 # * Look up extensions
 #
-# 
+#
 
 
 module Jsus
@@ -15,7 +15,7 @@ module Jsus
     #
     # Basic constructor.
     #
-    # Accepts an optional directory argument, when it is set, it looks up for 
+    # Accepts an optional directory argument, when it is set, it looks up for
     # packages from the given directory and if it finds any, adds them to the pool.
     #
     # Directory is considered a Package directory if it contains +package.yml+ file.
@@ -28,9 +28,9 @@ module Jsus
       end
       flush_cache!
     end
-    
-    
-    # 
+
+
+    #
     # An array containing all the packages in the pool. Unordered.
     #
     def packages
@@ -38,7 +38,7 @@ module Jsus
     end
 
     #
-    # Container with all the sources in the pool. It is actually ordered in case you 
+    # Container with all the sources in the pool. It is actually ordered in case you
     # want to include ALL the source files from the pool.
     #
     def sources
@@ -46,16 +46,17 @@ module Jsus
     end
 
     #
-    # Looks up for a file providing given tag or tag key. 
+    # Looks up for a file replacing or providing given tag or tag key.
+    # Replacement file gets priority.
     #
     # If given a source file, returns the input.
     #
     def lookup(source_or_key)
       case source_or_key
         when String
-          provides_map[Tag[source_or_key]]
+          lookup(Tag[source_or_key])
         when Tag
-          provides_map[source_or_key]
+          replacement_map[source_or_key] || provides_map[source_or_key]
         when SourceFile
           source_or_key
         else
@@ -63,7 +64,7 @@ module Jsus
                 "given #{source_or_key.inspect}, an instance of #{source_or_key.class.name}."
       end
     end
-  
+
 
     #
     # Looks up for dependencies for given file recursively.
@@ -118,6 +119,8 @@ module Jsus
             end
             provides_map[p] = source
           end
+
+          replacement_map[source.replaces] = source if source.replaces if source.replaces
         end
       when source_or_sources_or_package.kind_of?(Package)
         package = source_or_sources_or_package
@@ -140,13 +143,13 @@ module Jsus
 
     (Array.instance_methods - self.instance_methods).each {|m| delegate m, :to => :sources }
     # Private API
-    
-    # 
+
+    #
     # Looks up direct dependencies for the given source_file or provides tag.
     # You probably will find yourself using #include_dependencies instead.
     # This method caches results locally, use flush_cache! to drop.
     #
-    def lookup_direct_dependencies(source_or_source_key)      
+    def lookup_direct_dependencies(source_or_source_key)
       source = lookup(source_or_source_key)
       @cached_dependencies[source] ||= lookup_direct_dependencies!(source)
     end
@@ -162,7 +165,7 @@ module Jsus
             puts "#{source.filename} is missing #{dependency.is_a?(SourceFile) ? dependency.filename : dependency.to_s}"
           end
           result
-        end.flatten
+        end.flatten.map {|tag| lookup(tag) }
       else
         []
       end
@@ -173,7 +176,7 @@ module Jsus
     # Returs a tree, containing all the sources
     #
     def source_tree
-      @source_tree ||= Tree.new 
+      @source_tree ||= Tree.new
     end
 
     #
@@ -194,7 +197,7 @@ module Jsus
         source_tree.insert("/" + File.basename(source.filename), source)
       end
       source.provides.each do |tag|
-        provides_tree.insert("/" + tag.to_s, source)
+        provides_tree.insert("/" + tag.to_s, tag)
       end
     end
 
@@ -206,6 +209,10 @@ module Jsus
 
     def extensions_map # :nodoc:
       @extensions_map ||= Hash.new{|hash, key| hash[key] = [] }
+    end
+
+    def replacement_map # :nodoc:
+      @replacement_map ||= {}
     end
   end
 end

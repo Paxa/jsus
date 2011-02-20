@@ -1,0 +1,8 @@
+name: Mootools Fork
+filename: moofork.js
+web: http://github.com/markiz/jsus
+description: Mootools fork containing replacement files
+license: Public Domain, http://unlicense.org/UNLICENSE
+authors: Mark Abramov (http://github.com/markiz)
+sources:
+  - "Replacements/MootoolsCore.js"

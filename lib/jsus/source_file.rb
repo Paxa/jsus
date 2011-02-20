@@ -128,6 +128,13 @@ module Jsus
       provides.map {|p| p.name(options)}
     end
 
+    #
+    # Returns a tag for replaced file, if any
+    #
+    def replaces
+      @replaces
+    end
+    
 
     #
     # Returns a tag for source file, which this one is an extension for.
@@ -213,6 +220,7 @@ module Jsus
       @provides = [@header["provides"] || []].flatten
       @provides.map! {|tag_name| Tag.new(tag_name, :package => package) }
       @extends = (@header["extends"] && !@header["extends"].empty?) ? Tag.new(@header["extends"]) : nil
+      @replaces = @header["replaces"] ? Tag.new(@header["replaces"]) : nil
     end
 
     def content=(new_value) # :nodoc:
