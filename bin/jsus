@@ -22,7 +22,7 @@ cli = OptionParser.new do |opts|
     options[:input_dir] = dir
   end
 
-  opts.on('-o', '--input-directory [DIR]', '[DEPRECATED] path to output directory ') do |dir|
+  opts.on('-o', '--output-directory [DIR]', '[DEPRECATED] path to output directory ') do |dir|
     $stderr.puts "DEPRECATION NOTICE: please do not use -o command-line argument"
     options[:output_dir] = dir
   end
