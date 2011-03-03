@@ -38,11 +38,11 @@ module Jsus
     end
 
     #
-    # Container with all the sources in the pool. It is actually ordered in case you
-    # want to include ALL the source files from the pool.
+    # Container with all the sources in the pool.
+    # Attention: the sources are no more ordered.
     #
     def sources
-      @sources ||= Container.new
+      @sources ||= []
     end
 
     #
@@ -81,9 +81,8 @@ module Jsus
           dependencies.each { |d| result.push(d); looked_up << d }
           dependencies = dependencies.map {|d| lookup_direct_dependencies(d).to_a }.flatten.uniq
         end
-        result.sort!
       end
-      result
+      result.sort!
     end
 
     #
@@ -158,18 +157,15 @@ module Jsus
     # Performs the actual lookup for #lookup_direct_dependencies
     #
     def lookup_direct_dependencies!(source)
-      result = if source
-        (source.dependencies).map do |dependency|
-          result = provides_tree.glob("/#{dependency}").map {|node| node.value }
-          if (!result || (result.is_a?(Array) && result.empty?)) && Jsus.verbose?
-            puts "#{source.filename} is missing #{dependency.is_a?(SourceFile) ? dependency.filename : dependency.to_s}"
-          end
-          result
-        end.flatten.map {|tag| lookup(tag) }
-      else
-        []
-      end
-      Container.new(*result)
+      return [] unless source
+
+      source.dependencies.map do |dependency|
+        result = provides_tree.glob("/#{dependency}").map {|node| node.value }
+        if (!result || (result.is_a?(Array) && result.empty?)) && Jsus.verbose?
+          puts "#{source.filename} is missing #{dependency.is_a?(SourceFile) ? dependency.filename : dependency.to_s}"
+        end
+        result
+      end.flatten.map {|tag| lookup(tag) }
     end
 
     #

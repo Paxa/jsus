@@ -80,10 +80,10 @@ describe Jsus::Pool do
       packages.each {|package| subject << package.source_files }
     end
 
-    it "should return a container with direct dependencies" do
-      subject.lookup_direct_dependencies("Mash/Mash").should be_a(Jsus::Container)
+    it "should return an array with direct dependencies" do
+      subject.lookup_direct_dependencies("Mash/Mash").should be_an(Array)
       subject.lookup_direct_dependencies("Mash/Mash").should == [sources[2]]
-      subject.lookup_direct_dependencies(Jsus::Tag["Mash/Mash"]).should be_a(Jsus::Container)
+      subject.lookup_direct_dependencies(Jsus::Tag["Mash/Mash"]).should be_a(Array)
       subject.lookup_direct_dependencies(Jsus::Tag["Mash/Mash"]).should == [sources[2]]
     end
 
