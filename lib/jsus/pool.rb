@@ -69,7 +69,7 @@ module Jsus
     #
     # Looks up for dependencies for given file recursively.
     #
-    # Returns an instance of Container which contains needed files sorted.
+    # Returns an instance of Container which contains the needed files sorted.
     #
     def lookup_dependencies(source_or_source_key)
       source = lookup(source_or_source_key)
@@ -78,7 +78,7 @@ module Jsus
       if source
         dependencies = lookup_direct_dependencies(source)
         while !((dependencies - looked_up).empty?)
-          dependencies.each { |d| result.push(d); looked_up << d }
+          dependencies.each { |d| result << d; looked_up << d }
           dependencies = dependencies.map {|d| lookup_direct_dependencies(d).to_a }.flatten.uniq
         end
       end

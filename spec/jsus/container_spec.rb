@@ -34,9 +34,9 @@ describe Jsus::Container do
   describe "#sources" do
     subject { container_with_dependency }
     it "should always be sorted" do
-      subject.sources.index(simple_source).should < subject.sources.index(dependant_source)
+      subject.index(simple_source).should < subject.sources.index(dependant_source)
       subject << another_simple_source
-      subject.sources.index(simple_source).should < subject.sources.index(dependant_source)
+      subject.index(simple_source).should < subject.sources.index(dependant_source)
     end
 
     it "should not allow duplicates" do
@@ -62,6 +62,27 @@ describe Jsus::Container do
 
     it "should generate routes from given root" do
       subject.required_files("/home/jsus").should == ["simple.js", "../dependencies/simple3.js"]
+    end
+  end
+
+  context "lazy sorting" do
+    subject { container_with_dependency.sort! }
+
+    it "should only call topsort when it's needed" do
+      subject.should_not_receive(:topsort)
+      subject.sort!
+      subject.each {|source| } # no-op
+    end
+
+    it "should not call topsort when adding resources" do
+      subject.should_not_receive(:topsort)
+      subject << simple_source
+    end
+    
+    it "should call topsort for kicker methods" do
+      subject << simple_source
+      subject.should_receive(:topsort)
+      subject.each {|source| }
     end
   end
 end

@@ -12,34 +12,24 @@ module Jsus
       sources.each do |source|
         push(source)
       end
-      sort!
     end
 
     # Public API
 
-    #
-    # Pushes an item to container and sorts container.
-    #
-    # When given an array or another container, enumerates its contents.
-    #
-    def <<(source)
-      push(source)
-      sort!
-    end
-
-    # Pushes an item to container *without sorting it*. Use with care.
+    # Pushes an item to container
     def push(source)
       if source
         if source.kind_of?(Array) || source.kind_of?(Container)
           source.each {|s| self.push(s) }
-        else
-          sources.push(source)
+        else          
+          sources.push(source) unless sources.include?(source)
         end
       end
       clear_cache!
       self
     end
-
+    alias_method :<<, :push
+    
     # Flattens the container items.
     def flatten
       map {|item| item.respond_to?(:flatten) ? item.flatten : item }.flatten
@@ -55,15 +45,24 @@ module Jsus
       @sources = new_value
     end
 
-    # Performs a sort and returns self. Executed automatically by #<< .
+    # Performs a sort and returns self.
     def sort!
-      self.sources = topsort
+      unless sorted?
+        self.sources = topsort
+        @sorted = true
+      end
       self
     end
-
+    
+    # Returns whether collection is sorted already
+    def sorted?
+      !!@sorted
+    end
+    
     # Lists all the required files (dependencies and extensions) for
     # the sources in the container.
     def required_files(root = nil)
+      sort!
       files = sources.map {|s| s.required_files }.flatten
       if root
         root = Pathname.new(File.expand_path(root))
@@ -110,15 +109,30 @@ module Jsus
     end
     
     def clear_cache! # :nodoc:
+     
       @cache = nil
+      @sorted = nil
     end
 
+
+    CACHE_CLEAR_METHODS = [
+      "map!", "reject!", "inject!"
+    ] # :nodoc:
+
     DELEGATED_METHODS = [
-                          "==", "map", "map!", "each", "inject", "inject!",
-                          "reject", "reject!", "detect", "size", "length", "[]",
-                          "empty?", "index", "include?", "select", "-", "+", "|", "&"
-                        ] # :nodoc:
+      "==", "to_a", "map", "map!", "each", "inject", "inject!",
+      "reject", "reject!", "detect", "size", "length", "[]",
+      "empty?", "index", "include?", "select", "-", "+", "|", "&"
+    ] # :nodoc:
     # delegates most Enumerable methods to #sources
-    (DELEGATED_METHODS).each {|m| delegate m, :to => :sources }
+    (DELEGATED_METHODS).each do |m|
+      class_eval <<-EVAL
+        def #{m}(*args, &block)
+          sort!
+          #{"clear_cache!" if CACHE_CLEAR_METHODS.include?(m)}
+          self.sources.send(:#{m}, *args, &block)
+        end
+      EVAL
+    end
   end
 end

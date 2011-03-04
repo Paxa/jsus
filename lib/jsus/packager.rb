@@ -16,7 +16,7 @@ module Jsus
     end
 
     def sources # :nodoc:
-      container.sources
+      container
     end
 
     # 

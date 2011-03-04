@@ -1,4 +1,10 @@
 = Jsus Changelog
+== Version 0.2.5
+* Fixed Container#sort not dealing with wildcards, which made it slower but
+  at least made it work
+* Reduced a whole ton of Container creation calls wherever they didn't seem
+  appropriate
+
 == Version 0.2.4
 * Replacements feature
 * Postprocessing feature
