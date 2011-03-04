@@ -25,6 +25,7 @@ module Jsus
       elsif File.exists?(File.join(directory, 'package.json'))
         self.header           = JSON.load(IO.read(File.join(directory, 'package.json')))
       else
+        raise "Directory #{directory} does not contain a valid package.yml / package.json file!"
       end
       Dir.chdir(directory) do
         files.each do |source|
