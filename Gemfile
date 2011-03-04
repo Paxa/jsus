@@ -11,4 +11,6 @@ group :development do
   gem "cucumber"
   gem "jeweler"
   gem "murdoc"
+  gem "ruby-debug19", :platforms => :ruby_19
+  gem "ruby-debug",   :platforms => :ruby_18
 end

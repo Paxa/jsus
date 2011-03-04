@@ -253,7 +253,7 @@ module Jsus
     end
     
     def eql?(other) # :nodoc:
-      filename == other.filename
+      other.kind_of?(SourceFile) && filename == other.filename
     end
     
     def hash

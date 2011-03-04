@@ -95,6 +95,7 @@ module Jsus
       node.value = value
       node
     end
+    alias_method :[]=, :insert
 
     def traverse(all_nodes = false)
       node_list = [root]
@@ -105,6 +106,11 @@ module Jsus
       end
     end
 
+    def leaves(only_with_value = true)
+      result = []
+      traverse {|node| result << node if !only_with_value || node.value }
+      result
+    end
 
 
     def create_all_nodes_if_needed(full_path)

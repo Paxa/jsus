@@ -169,4 +169,25 @@ describe Jsus::Tree do
     end
   end
 
+  describe "#leaves" do
+    subject { Jsus::Tree.new }
+    let(:nodes) { [] }
+    before(:each) do
+      nodes << subject.insert("/hello/world/one", 1) <<
+               subject.insert("/hello/world/two", 2) <<
+               subject.insert("/hello/three", nil)     <<
+               subject.insert("/hello/four", 4)
+    end
+    
+    it "should return only the leaves with content by default" do
+      subject.leaves.should =~ [nodes[0], nodes[1], nodes[3]]
+    end
+    
+    
+    it "should return all the leaves if asked" do
+      subject.leaves(false).should =~ nodes
+    end
+    
+  end
+
 end

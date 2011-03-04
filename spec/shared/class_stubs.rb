@@ -6,7 +6,7 @@ class Source
   attr_accessor :dependencies
   attr_accessor :content
   attr_accessor :filename
-
+  attr_accessor :replaces
   def initialize(options = {})
     options.each do |attr, value|
       send("#{attr}=", value)

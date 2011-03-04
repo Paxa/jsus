@@ -21,7 +21,7 @@ module Jsus
       if source
         if source.kind_of?(Array) || source.kind_of?(Container)
           source.each {|s| self.push(s) }
-        else          
+        else
           sources.push(source) unless sources.include?(source)
         end
       end
@@ -29,7 +29,7 @@ module Jsus
       self
     end
     alias_method :<<, :push
-    
+
     # Flattens the container items.
     def flatten
       map {|item| item.respond_to?(:flatten) ? item.flatten : item }.flatten
@@ -48,17 +48,18 @@ module Jsus
     # Performs a sort and returns self.
     def sort!
       unless sorted?
+        remove_replaced_files!
         self.sources = topsort
         @sorted = true
       end
       self
     end
-    
+
     # Returns whether collection is sorted already
     def sorted?
       !!@sorted
     end
-    
+
     # Lists all the required files (dependencies and extensions) for
     # the sources in the container.
     def required_files(root = nil)
@@ -79,17 +80,9 @@ module Jsus
 
     def topsort # :nodoc:
       graph = RGL::DirectedAdjacencyGraph.new
-      provides_map = {}
       # init vertices
-      provides_tree = Tree.new
-      items = self.sources
-      items.each do |item|
-        graph.add_vertex(item)
-        item.provides.each do |provides|
-          provides_map[provides] = item
-          provides_tree.insert("/" + provides.to_s, item)
-        end
-      end
+      items = sources
+      items.each {|item| graph.add_vertex(item) }
       # init edges
       items.each do |item|
         item.dependencies.each do |dependency|
@@ -103,13 +96,59 @@ module Jsus
       graph.topsort_iterator.each { |item| result << item }
       result
     end
-    
+
     def cache # :nodoc:
       @cache ||= {}
     end
-    
+
+    def provides_tree # :nodoc:
+      @provides_tree ||= provides_tree!
+    end
+
+    def provides_tree! # :nodoc:
+      tree = Tree.new
+      # Provisions
+      sources.each do |file|
+        file.provides.each do |tag|
+          tree["/#{tag}"] = file
+        end
+      end
+      # Replacements
+      sources.each do |file|
+        if file.replaces
+          tree["/#{file.replaces}"] = file
+        end
+      end
+      tree
+    end
+
+    def remove_replaced_files!
+      sources.reject! do |sf|
+        !sf.provides.empty? && sf.provides.any? { |tag|
+          replacements_tree["/#{tag}"] &&
+          replacements_tree["/#{tag}"].value &&
+          replacements_tree["/#{tag}"].value != sf
+        }
+      end
+    end
+
+    def replacements_tree
+      @replacements_tree ||= replacements_tree!
+    end
+
+    def replacements_tree!
+      tree = Tree.new
+      sources.each do |file|
+        if file.replaces
+          tree["/#{file.replaces}"] = file
+        end
+      end
+      tree
+    end
+
     def clear_cache! # :nodoc:
-     
+      @provides_tree = nil
+      @replacements_tree = nil
       @cache = nil
       @sorted = nil
     end
