@@ -1,13 +1,10 @@
-#
-# Pool class is designed for three purposes:
-# * Maintain connections between SourceFiles and/or Packages
-# * Resolve dependencies
-# * Look up extensions
-#
-#
-
-
 module Jsus
+  #
+  # Pool class is designed for three purposes:
+  # * Maintain connections between SourceFiles and/or Packages
+  # * Resolve dependencies
+  # * Look up extensions
+  #
   class Pool
 
     # Constructors

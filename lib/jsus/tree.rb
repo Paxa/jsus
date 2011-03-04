@@ -1,25 +1,24 @@
-#
-# Jsus::Tree is a basic hierarchical tree structure class
-# What it does, basically, is maintaining hierarchical filesystem-like
-# structure (with node names like /namespace/inner/item) and supporting
-# lookups via #glob method. 
-#
-# Example:
-#
-#     tree = Jsus::Tree.new
-#     tree["/folder/item_0"] = "Hello"
-#     tree["/folder/item_1"] = "World"
-#     tree["/other/soul"]    = "Empty"
-#     tree.glob("/*")         # => 3 Jsus::Node-s (`root`, `folder`, `other`)
-#     tree.glob("/**/*")      # => 6 Jsus::Node-s (`root`, `folder`, `other`, `item_0`, `item_1`, `soul`)
-#     tree["/something"]      # => nil
-#     tree["/folder/item_1"]  # => Jsus::Node
-#     tree["/other/soul"] = nil
-#     tree.leaves(true)       # => 2 Jsus::Node-s (no `soul` node)
-#     tree.leaves(false)      # => 3 Jsus::Node-s
-#
-
 module Jsus
+  #
+  # Jsus::Tree is a basic hierarchical tree structure class
+  # What it does, basically, is maintaining hierarchical filesystem-like
+  # structure (with node names like /namespace/inner/item) and supporting
+  # lookups via #glob method. 
+  #
+  # Example:
+  #
+  #     tree = Jsus::Tree.new
+  #     tree["/folder/item_0"] = "Hello"
+  #     tree["/folder/item_1"] = "World"
+  #     tree["/other/soul"]    = "Empty"
+  #     tree.glob("/*")         # => 3 Jsus::Node-s (`root`, `folder`, `other`)
+  #     tree.glob("/**/*")      # => 6 Jsus::Node-s (`root`, `folder`, `other`, `item_0`, `item_1`, `soul`)
+  #     tree["/something"]      # => nil
+  #     tree["/folder/item_1"]  # => Jsus::Node
+  #     tree["/other/soul"] = nil
+  #     tree.leaves(true)       # => 2 Jsus::Node-s (no `soul` node)
+  #     tree.leaves(false)      # => 3 Jsus::Node-s
+  #  
   class Tree
     PATH_SEPARATOR = "/"
 
@@ -45,8 +44,8 @@ module Jsus
     end
     
     #
-    # Jsus::Tree node class
-    # Most of the time you only need to extract #value from the node
+    # Jsus::Tree node class.
+    # Most of the time you only need to extract #value from the node,
     # although sometimes you might need to refer to #parent node and #full_path
     #
     class Node

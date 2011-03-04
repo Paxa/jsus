@@ -1,10 +1,10 @@
-#
-# Packager is a plain simple class accepting several source files 
-# and joining their contents.
-#
-# It uses Container for storage which means it automatically sorts sources.
-#
 module Jsus
+  #
+  # Packager is a plain simple class accepting several source files 
+  # and joining their contents.
+  #
+  # It uses Container for storage which means it automatically sorts sources.
+  #
   class Packager
     attr_accessor :container  # :nodoc:
 

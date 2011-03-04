@@ -1,8 +1,8 @@
-#
-# Tag is basically just a string that contains a package name and a name for class
-# (or not necessarily a class) which the given SourceFile provides/requires/extends.
-#
 module Jsus
+  #
+  # Tag is basically just a string that contains a package name and a name for class
+  # (or not necessarily a class) which the given SourceFile provides/requires/extends/replaces.
+  #  
   class Tag
     attr_accessor :package, :external # :nodoc:
 
@@ -57,7 +57,7 @@ module Jsus
     #
     # Returns a well-formed name for the tag.
     # Options:
-    # * +:short:+ — whether the tag should try using short form
+    # * +:short:+ -- whether the tag should try using short form
     #
     # Important note: only non-external tags support short forms.
     # 

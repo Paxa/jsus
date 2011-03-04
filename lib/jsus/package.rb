@@ -1,9 +1,8 @@
-#
-# Package is basically a list of source files with some meta info.
-#
-
-
 module Jsus
+  #
+  # Package is a (self-contained) unit with all the info required to build
+  # a javascript package.
+  #
   class Package
     attr_accessor :directory # directory which this package resides in (full path)
     attr_accessor :pool      # an instance of Pool
@@ -13,7 +12,7 @@ module Jsus
     # Creates a package from given directory.
     #
     # Accepts options:
-    # * +:pool:+ — which pool the package should belong to.
+    # * +:pool:+ -- which pool the package should belong to.
     #
     # Raises an error when the given directory doesn't contain a package.yml or package.json
     # file with meta info.

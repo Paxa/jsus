@@ -19,23 +19,26 @@ require 'jsus/pool'
 require 'jsus/tree'
 require 'jsus/documenter'
 require 'jsus/validator'
+
 #
-# Jsus — a library for packaging up your source files.
+# Jsus -- a library for packaging up your source files.
 #
 # For better understanding of jsus ideas start with http://github.com/Markiz/jsus-examples
 #
 #
-
-
 module Jsus
+  # Returns whether or not jsus is in verbose mode  
   def self.verbose?
     !!@verbose
   end
 
+  # Sets verbose mode to on. In verbose mode jsus shows a lot of warnings
+  # like missing dependencies.
   def self.verbose=(verbose)
     @verbose = verbose
   end
   
+  # Returns current version
   def self.version
     @version ||= File.read(File.dirname(__FILE__) + "/../VERSION")
   end

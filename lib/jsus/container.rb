@@ -1,9 +1,9 @@
-#
-# Container is an array which contains source files. Main difference
-# between it and array is the fact that container maintains topological
-# sort for the source files.
-#
 module Jsus
+  #
+  # Container is an array that contains source files. Main difference
+  # from an array is the fact that container maintains topological
+  # sort for the source files.
+  #
   class Container
     #
     # Every argument for initializer is pushed into the container.
@@ -35,7 +35,9 @@ module Jsus
       map {|item| item.respond_to?(:flatten) ? item.flatten : item }.flatten
     end
 
-    # Contains the source files in the correct order.
+    # Contains the source files. Please, don't use sources directly, if you
+    # depend on them to be topologically sorted. Use collection methods like
+    # inject/reject/map directly on the container instead.
     def sources
       @sources ||= []
     end

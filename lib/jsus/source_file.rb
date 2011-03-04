@@ -1,12 +1,12 @@
-#
-# SourceFile is a base for any Jsus operation.
-# 
-# It contains basic info about source as well as file content.
-#
-#
 module Jsus
+  # Generic exception for 'bad' source files (no yaml header, for example)
   class BadSourceFileException < Exception; end
   
+  #
+  # SourceFile is a base for any Jsus operation.
+  # 
+  # It contains basic info about source as well as file content.
+  #
   class SourceFile
     attr_accessor :relative_filename, :filename, :package # :nodoc:
     # Constructors
@@ -16,11 +16,11 @@ module Jsus
     # You probably should use SourceFile.from_file instead.
     #
     # But if you know what you are doing, it accepts the following values:
-    # * +package+ — an instance of Package, normally passed by a parent
-    # * +relative_filename+ — used in Package, for generating tree structure of the source files
-    # * +filename+ — full filename for the given package
-    # * +content+ — file content of the source file
-    # * +pool+ — an instance of Pool
+    # * +package+ -- an instance of Package, normally passed by a parent
+    # * +relative_filename+ -- used in Package, for generating tree structure of the source files
+    # * +filename+ -- full filename for the given package
+    # * +content+ -- file content of the source file
+    # * +pool+ -- an instance of Pool
     def initialize(options = {})
       [:package, :header, :relative_filename, :filename, :content, :pool].each do |field|
         send("#{field}=", options[field]) if options[field]
@@ -31,8 +31,8 @@ module Jsus
     # Initializes a SourceFile given the filename and options
     # 
     # options:
-    # * <tt>:pool:</tt> — an instance of Pool
-    # * <tt>:package:</tt> — an instance of Package
+    # * <tt>:pool:</tt> -- an instance of Pool
+    # * <tt>:package:</tt> -- an instance of Package
     #
     # returns either an instance of SourceFile or nil when it's not possible to parse the input
     #
@@ -89,7 +89,7 @@ module Jsus
     #
     # Returns an array with names of dependencies. Unordered.
     # Accepts options:
-    # * <tt>:short:</tt> — whether inner dependencies should not prepend package name
+    # * <tt>:short:</tt> -- whether inner dependencies should not prepend package name
     #   e.g. 'Class' instead of 'Core/Class' when in package 'Core').
     #   Doesn't change anything for external dependencies
     #
@@ -122,7 +122,7 @@ module Jsus
     # 
     # Returns an array with provides names. 
     # Accepts options:
-    # * <tt>:short:</tt> — whether provides should not prepend package name
+    # * <tt>:short:</tt> -- whether provides should not prepend package name
     #   e.g. 'Class' instead of 'Core/Class' when in package 'Core')
     def provides_names(options = {})
       provides.map {|p| p.name(options)}
