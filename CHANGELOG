@@ -4,6 +4,9 @@
   at least made it work
 * Reduced a whole ton of Container creation calls wherever they didn't seem
   appropriate
+* Container sorting routine is now lazily evaluated
+
+All in all, this resulted in 70% speedups on complex cases.
 
 == Version 0.2.4
 * Replacements feature
