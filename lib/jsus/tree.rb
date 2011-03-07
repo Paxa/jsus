@@ -28,11 +28,10 @@ module Jsus
     
       # Splits path into components
       #     Jsus::Tree.components_from_path("/hello/world") # => ["hello", "world"]
-      def components_from_path(path)
-        raise "Path should start with root (got: #{path})" unless path && path[0,1] == PATH_SEPARATOR
-        path = path.dup
-        path[0,1] = ""
-        path.split(PATH_SEPARATOR)
+      def components_from_path(path)                
+        raise "Empty path given: #{path.inspect}" if !path || path == ""
+        path = path.to_s.dup        
+        path.split(PATH_SEPARATOR).reject {|comp| comp == "" }
       end
       alias_method :get_path_components, :components_from_path
 
@@ -130,14 +129,21 @@ module Jsus
     end
 
     # Looks up a node by direct path. Does not support wildcards
-    def [](path)
+    def lookup(path)
       path_components = self.class.get_path_components(path)
       path_components.inject(root) do |result, component|
         if result
           result.find_child(component)
         end
-      end
+      end      
     end
+    
+    def [](path)
+      node = lookup(path)
+      node ? node.value : nil
+    end
+    
+    
 
     # Searches for nodes by a given pathspec
     # See Jsus::Node#find_children_matching for more details

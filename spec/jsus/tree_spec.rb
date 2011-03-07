@@ -98,19 +98,47 @@ describe Jsus::Tree do
     end
   end
 
-  describe "#[]" do
-    it "should raise error unless path starts with root" do
-      lambda { subject["hello"] }.should raise_error      
+  describe "#lookup" do
+    it "should return nil if node is not found" do
+      subject.lookup("/hello").should be_nil
+      subject.lookup("/hello/world").should be_nil
     end
 
     it "should allow to get node by path" do
-      subject.insert("/hello/world", 123)
-      subject["/hello/world"].value.should == 123
+      subject["/hello/world"] = 123
+      subject.lookup("/hello/world").value.should == 123
     end
 
+    it "should prepend leading slash if needed" do
+      subject["/hello"] = "world"
+      subject.lookup("hello").should_not be_nil
+    end
+    
+    it "should raise error for empty paths" do
+      lambda { subject.lookup("") }.should raise_error
+      lambda { subject.lookup(nil) }.should raise_error
+    end
+  end
+
+  describe "#[]" do
     it "should return nil if node is not found" do
       subject["/hello"].should be_nil
       subject["/hello/world"].should be_nil
+    end
+
+    it "should allow to get node by path" do
+      subject["/hello/world"] = 123
+      subject["/hello/world"].should == 123
+    end
+
+    it "should prepend leading slash if needed" do
+      subject["/hello"] = "world"
+      subject["hello"].should_not be_nil
+    end
+    
+    it "should raise error for empty paths" do
+      lambda { subject[""] }.should raise_error
+      lambda { subject[nil] }.should raise_error
     end
   end
 
