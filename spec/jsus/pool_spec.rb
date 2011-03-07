@@ -147,7 +147,7 @@ describe Jsus::Pool do
     subject { Jsus::Pool.new(input_dir) }
 
     it "should return a tree with all the source elements in it" do
-      subject.source_tree["/Core/Class.js"].value.should be_a(Jsus::SourceFile)
+      subject.source_tree["/Core/Class.js"].should be_a(Jsus::SourceFile)
     end
 
     it "should not choke when sources got no referenced package" do
@@ -161,11 +161,11 @@ describe Jsus::Pool do
     subject { Jsus::Pool.new(input_dir) }
 
     it "should return a tree with all the source elements in it" do
-      subject.provides_tree.glob("/Core/Class")[0].value.should == Jsus::Tag["Core/Class"]
+      subject.provides_tree.glob("/Core/Class")[0].should == Jsus::Tag["Core/Class"]
     end
         
     it "should allow wildcards" do
-      subject.provides_tree.glob("/Core/*")[0].value.should == Jsus::Tag["Core/Class"]
+      subject.provides_tree.glob("/Core/*")[0].should == Jsus::Tag["Core/Class"]
     end
   end
 

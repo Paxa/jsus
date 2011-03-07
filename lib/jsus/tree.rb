@@ -3,7 +3,7 @@ module Jsus
   # Jsus::Tree is a basic hierarchical tree structure class
   # What it does, basically, is maintaining hierarchical filesystem-like
   # structure (with node names like /namespace/inner/item) and supporting
-  # lookups via #glob method. 
+  # lookups via #glob method.
   #
   # Example:
   #
@@ -18,19 +18,19 @@ module Jsus
   #     tree["/other/soul"] = nil
   #     tree.leaves(true)       # => 2 Jsus::Node-s (no `soul` node)
   #     tree.leaves(false)      # => 3 Jsus::Node-s
-  #  
+  #
   class Tree
     PATH_SEPARATOR = "/"
 
-    
+
     class <<self
       # Utility functions
-    
+
       # Splits path into components
       #     Jsus::Tree.components_from_path("/hello/world") # => ["hello", "world"]
-      def components_from_path(path)                
+      def components_from_path(path)
         raise "Empty path given: #{path.inspect}" if !path || path == ""
-        path = path.to_s.dup        
+        path = path.to_s.dup
         path.split(PATH_SEPARATOR).reject {|comp| comp == "" }
       end
       alias_method :get_path_components, :components_from_path
@@ -41,7 +41,7 @@ module Jsus
         "#{PATH_SEPARATOR}#{components.join(PATH_SEPARATOR)}"
       end
     end
-    
+
     #
     # Jsus::Tree node class.
     # Most of the time you only need to extract #value from the node,
@@ -104,7 +104,7 @@ module Jsus
       #    'smth*' -- nodes beginning with smth
       #    'smth*else' -- nodes beginning with smth and ending with else
       #    <string without asterisks> -- plain node lookup by name
-      # Returns array with search results      
+      # Returns array with search results
       def find_children_matching(pathspec)
         case pathspec
           when "**"
@@ -116,7 +116,7 @@ module Jsus
             [find_child(pathspec)].compact
         end
       end
-      
+
       # Returns whether this node has children
       def has_children?
         !children.empty?
@@ -135,22 +135,28 @@ module Jsus
         if result
           result.find_child(component)
         end
-      end      
+      end
     end
-    
+
     def [](path)
       node = lookup(path)
       node ? node.value : nil
     end
-    
-    
+
+
 
     # Searches for nodes by a given pathspec
     # See Jsus::Node#find_children_matching for more details
-    def glob(pathspec)
+    def find_nodes_matching(pathspec)
       self.class.get_path_components(pathspec).inject([root]) do |nodes, component|
         nodes.map {|node| node.find_children_matching(component) }.flatten
       end
+    end
+
+    # Returns values for nodes matching given pathspec
+    # See Jsus::Node#find_children_matching for more details
+    def glob(pathspec)
+      find_nodes_matching(pathspec).map {|node| node.value }
     end
 
     # Inserts a node with given value into the tree
@@ -172,8 +178,8 @@ module Jsus
         node.children.each {|child| node_list << child }
       end
     end
-    
-    # Returns a list of leaves. 
+
+    # Returns a list of leaves.
     # Returns only leaves with set values by default
     def leaves(only_with_value = true)
       result = []
@@ -182,7 +188,7 @@ module Jsus
     end
 
     protected
-    
+
     def create_all_nodes_if_needed(full_path) # :nodoc:
       self.class.get_path_components(full_path).inject(root) do |result, component|
         result.find_or_create_child(component)

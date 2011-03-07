@@ -90,7 +90,7 @@ module Jsus
         item.dependencies.each do |dependency|
           # If we can find items that provide the required dependency...
           # (dependency could be a wildcard as well, hence items)
-          dependency_cache[dependency] ||= provides_tree.glob("/" + dependency.to_s).map {|node| node.value }
+          dependency_cache[dependency] ||= provides_tree.glob(dependency)
           # ... we draw an edge from every required item to the dependant item
           dependency_cache[dependency].each do |required_item|
             graph.add_edge(required_item, item)
@@ -116,13 +116,13 @@ module Jsus
       # Provisions
       sources.each do |file|
         file.provides.each do |tag|
-          tree["/#{tag}"] = file
+          tree[tag] = file
         end
       end
       # Replacements
       sources.each do |file|
         if file.replaces
-          tree["/#{file.replaces}"] = file
+          tree[file.replaces] = file
         end
       end
       tree
@@ -130,11 +130,7 @@ module Jsus
 
     def remove_replaced_files! # :nodoc:
       sources.reject! do |sf|
-        !sf.provides.empty? && sf.provides.any? { |tag|
-          replacements_tree["/#{tag}"] &&
-          replacements_tree["/#{tag}"].value &&
-          replacements_tree["/#{tag}"].value != sf
-        }
+        !sf.provides.empty? && sf.provides.any? { |tag| replacements_tree[tag] && replacements_tree[tag] != sf }
       end
     end
 
@@ -146,7 +142,7 @@ module Jsus
       tree = Tree.new
       sources.each do |file|
         if file.replaces
-          tree["/#{file.replaces}"] = file
+          tree[file.replaces] = file
         end
       end
       tree

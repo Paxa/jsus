@@ -8,7 +8,7 @@ describe Jsus::Documenter do
   describe "<<" do
     it "should add source files to tree" do
       pool.sources.each {|s| subject << s}
-      subject.tree["/Orwik/Color.js"].value.should be_a(Jsus::SourceFile)
+      subject.tree["/Orwik/Color.js"].should be_a(Jsus::SourceFile)
     end
   end
 

@@ -96,6 +96,12 @@ describe Jsus::Tree do
     it "should return a node" do
       subject.insert("/hello/world", "value").value.should == "value"
     end
+    
+    it "should prepend leading slash" do
+      subject.insert("hello", "world")
+      subject.root.children[0].full_path.should == "/hello"
+      subject.root.children[0].value.should == "world"
+    end
   end
 
   describe "#lookup" do
@@ -126,19 +132,52 @@ describe Jsus::Tree do
       subject["/hello/world"].should be_nil
     end
 
-    it "should allow to get node by path" do
+    it "should allow to get node value by path" do
       subject["/hello/world"] = 123
       subject["/hello/world"].should == 123
     end
 
-    it "should prepend leading slash if needed" do
+    it "should prepend leading slash to path if needed" do
       subject["/hello"] = "world"
-      subject["hello"].should_not be_nil
+      subject["hello"].should == "world"
     end
     
     it "should raise error for empty paths" do
       lambda { subject[""] }.should raise_error
       lambda { subject[nil] }.should raise_error
+    end
+  end
+
+  describe "#find_nodes_matching" do
+    subject { Jsus::Tree.new }
+    let(:nodes) { [] }
+    before(:each) do
+      nodes << subject.insert("/hello/world/one", 1) <<
+               subject.insert("/hello/world/two", 2) <<
+               subject.insert("/hello/three", 3)     <<
+               subject.insert("/hello/four", 4)
+    end
+
+    it "should return the node if exact path is given" do
+      subject.find_nodes_matching("/hello/four").should == [nodes[3]]
+    end
+
+    it "should return all matching children of given node excluding subtrees if path with wildcard is given" do
+      subject.find_nodes_matching("/hello/*").should =~ [nodes[2], nodes[3]]
+    end
+
+    it "should search for children matching wildcards" do
+      subject.find_nodes_matching("/hello/thr*").should == [nodes[2]]
+    end
+
+    it "should return all nodes in all subtrees of the prefix subtree if double wildcard is given" do
+      subject.find_nodes_matching("/hello/world/**/*").should =~ [nodes[0], nodes[1]]
+      subject.find_nodes_matching("/hello/**/*").should =~ nodes
+    end
+
+    it "should not choke when it cannot find anything" do
+      subject.find_nodes_matching("/ololo").should == []
+      subject.find_nodes_matching("/ololo/mwahaha").should == []
     end
   end
 
@@ -152,20 +191,21 @@ describe Jsus::Tree do
                subject.insert("/hello/four", 4)
     end
 
-    it "should return the node if exact path is given" do
-      subject.glob("/hello/four").should == [nodes[3]]
+    it "should return the node value if exact path is given" do
+      subject.glob("/hello/four").should == [4]
     end
 
-    it "should return all nodes in given node AND WITHOUT CHILDREN if path with wildcard is given" do
-      subject.glob("/hello/*").should =~ [nodes[2], nodes[3]]
+    it "should return all matching children of given node excluding subtrees if path with wildcard is given" do
+      subject.glob("/hello/*").should =~ [3, 4]
     end
 
     it "should search for children matching wildcards" do
-      subject.glob("/hello/thr*").should == [nodes[2]]
+      subject.glob("/hello/thr*").should == [3]
     end
 
-    it "should return all nodes in all subtrees and in the given subtree if double wildcard is given" do
-      subject.glob("/hello/**/*").should =~ nodes
+    it "should return all node values in all subtrees of the prefix subtree if double wildcard is given" do
+      subject.glob("/hello/world/**/*").should =~ [1, 2]
+      subject.glob("/hello/**/*").should =~ [1, 2, 3, 4]
     end
 
     it "should not choke when it cannot find anything" do
@@ -173,7 +213,7 @@ describe Jsus::Tree do
       subject.glob("/ololo/mwahaha").should == []
     end
   end
-
+  
   describe "#traverse" do
     subject { Jsus::Tree.new }
     let(:nodes) { [] }

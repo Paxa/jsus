@@ -157,7 +157,7 @@ module Jsus
       return [] unless source
 
       source.dependencies.map do |dependency|
-        result = provides_tree.glob("/#{dependency}").map {|node| node.value }
+        result = provides_tree.glob("/#{dependency}")
         if (!result || (result.is_a?(Array) && result.empty?)) && Jsus.verbose?
           puts "#{source.filename} is missing #{dependency.is_a?(SourceFile) ? dependency.filename : dependency.to_s}"
         end

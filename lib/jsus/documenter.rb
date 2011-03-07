@@ -43,9 +43,9 @@ module Jsus
     def <<(source) # :nodoc:
       filename = File.basename(source.filename)
       if source.package
-        tree["/#{source.package.name}/#{filename}"] = source
+        tree["#{source.package.name}/#{filename}"] = source
       else
-        tree["/#{filename}"] = source
+        tree["#{filename}"] = source
       end
       self
     end
@@ -90,7 +90,8 @@ module Jsus
 
     def documented_sources! # :nodoc:
       doctree = Tree.new
-      current_scope.map {|pathspec| tree.glob(pathspec) }.flatten.each {|s| doctree.insert(s.full_path, s.value)}
+      current_scope.map {|pathspec| tree.find_nodes_matching(pathspec) }.
+                    flatten.each {|s| doctree.insert(s.full_path, s.value)}
       doctree
     end
 
