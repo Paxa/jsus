@@ -102,6 +102,12 @@ describe Jsus::Tree do
       subject.root.children[0].full_path.should == "/hello"
       subject.root.children[0].value.should == "world"
     end
+    
+    it "should allow tags for nodes insertion" do
+      subject.insert(Jsus::Tag["hello"], "world")
+      subject.root.children[0].full_path.should == "/hello"
+      subject.root.children[0].value.should == "world"
+    end
   end
 
   describe "#lookup" do
@@ -124,6 +130,11 @@ describe Jsus::Tree do
       lambda { subject.lookup("") }.should raise_error
       lambda { subject.lookup(nil) }.should raise_error
     end
+    
+    it "should allow tags for node lookup" do
+      subject["/Core/Moo"] = "Tools"
+      subject.lookup(Jsus::Tag["Core/Moo"]).value.should == "Tools"
+    end    
   end
 
   describe "#[]" do
@@ -146,6 +157,11 @@ describe Jsus::Tree do
       lambda { subject[""] }.should raise_error
       lambda { subject[nil] }.should raise_error
     end
+    
+    it "should allow tags for node lookup" do
+      subject["/Core/Moo"] = "Tools"
+      subject[Jsus::Tag["Core/Moo"]].should == "Tools"
+    end    
   end
 
   describe "#find_nodes_matching" do
