@@ -1,10 +1,19 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 
-if File.exists?('./lib/jsus.rb')  # override with local version of jsus
-  $:.unshift File.expand_path(Dir.pwd) + "/lib"
-elsif File.exists?(File.expand_path(File.dirname(__FILE__)) + "/../lib/jsus.rb")
-  $:.unshift File.expand_path(File.dirname(__FILE__)) + "/../lib"
+require 'pathname'
+begin
+  gem_home = Pathname.new(ENV["GEM_HOME"]).realpath.to_s
+  current_dir = File.dirname(Pathname.new(__FILE__).realpath.to_s)
+  if current_dir.index(gem_home) != 0 && File.exists?(current_dir + '/../lib/jsus.rb')
+    # If we are outside gem home,
+    # override whatever they got there
+    # with local version of jsus
+    $:.unshift File.expand_path(current_dir + "/../lib")
+  end
+rescue Exception => e
+  # Something weird happened during our checks,
+  # but it's probably nothing.
 end
 require 'jsus'
 
