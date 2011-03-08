@@ -60,6 +60,7 @@ GEM
       archive-tar-minitar (>= 0.5.2)
     stream (0.5)
     term-ansicolor (1.0.5)
+    watchr (0.7)
 
 PLATFORMS
   ruby
@@ -75,3 +76,4 @@ DEPENDENCIES
   rspec
   ruby-debug
   ruby-debug19
+  watchr
