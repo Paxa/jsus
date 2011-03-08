@@ -138,7 +138,7 @@ package.generate_scripts_info(output_dir) unless options[:without_scripts_info]
 package.generate_tree(output_dir) unless options[:without_tree_info]
 
 # Validations
-validators_map = {"mooforge" => Jsus::Validator::Mooforge}
+validators_map = {"mooforge" => Jsus::Util::Validator::Mooforge}
 (options[:validators] || []).each do |validator_name|
   if validator = validators_map[validator_name]
     errors = validator.new(pool.sources.to_a & package.source_files.to_a).validation_errors
@@ -173,7 +173,7 @@ end
 docs_start_time = Time.now
 # Generate documentation
 if options[:documented_classes] && !options[:documented_classes].empty?
-  documenter = Jsus::Documenter.new(:highlight_source => !options[:no_syntax_highlight])
+  documenter = Jsus::Util::Documenter.new(:highlight_source => !options[:no_syntax_highlight])
   package.source_files.each {|source| documenter << source }
   pool.sources.each {|source| documenter << source } if pool
   documenter.only(options[:documented_classes]).generate(output_dir + "/docs")

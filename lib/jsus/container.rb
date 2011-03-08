@@ -112,7 +112,7 @@ module Jsus
 
     # Provides tree contains
     def provides_tree! # :nodoc:
-      tree = Tree.new
+      tree = Util::Tree.new
       # Provisions
       sources.each do |file|
         file.provides.each do |tag|
@@ -139,7 +139,7 @@ module Jsus
     end
 
     def replacements_tree! # :nodoc:
-      tree = Tree.new
+      tree = Util::Tree.new
       sources.each do |file|
         if file.replaces
           tree[file.replaces] = file

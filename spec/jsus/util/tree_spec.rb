@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Jsus::Tree::Node do
+describe Jsus::Util::Tree::Node do
   describe "#initialize" do
     it "should accept full path" do
       described_class.new("/path/node", nil).full_path.should == "/path/node"
@@ -17,7 +17,7 @@ describe Jsus::Tree::Node do
 
   describe "#children" do
     subject { described_class.new("/") }
-    
+
     it "should be initialized with an empty array" do
       subject.children.should == []
     end
@@ -38,7 +38,7 @@ describe Jsus::Tree::Node do
     it "if it matches a child name, it should return that child" do
       subject.find_children_matching("one").should == [nodes[0]]
     end
-    
+
     it "if it is *, it should return children, not containing other children" do
       subject.find_children_matching("*").should == [nodes[1]]
     end
@@ -53,12 +53,12 @@ describe Jsus::Tree::Node do
   end
 end
 
-describe Jsus::Tree do
-  subject { Jsus::Tree.new }
+describe Jsus::Util::Tree do
+  subject { described_class.new }
 
   describe "#root" do
     it "should create node if needed" do
-      subject.root.should be_a(Jsus::Tree::Node)
+      subject.root.should be_a(Jsus::Util::Tree::Node)
     end
 
     it "should not recreate node" do
@@ -72,7 +72,7 @@ describe Jsus::Tree do
       subject.root.children.should have_exactly(1).element
       subject.root.children[0].value.should == "Value"
     end
-    
+
     it "should create all underlying nodes if needed" do
       subject.insert("/hello/world", "value")
       subject.root.children[0].children[0].value.should == "value"
@@ -96,13 +96,13 @@ describe Jsus::Tree do
     it "should return a node" do
       subject.insert("/hello/world", "value").value.should == "value"
     end
-    
+
     it "should prepend leading slash" do
       subject.insert("hello", "world")
       subject.root.children[0].full_path.should == "/hello"
       subject.root.children[0].value.should == "world"
     end
-    
+
     it "should allow tags for nodes insertion" do
       subject.insert(Jsus::Tag["hello"], "world")
       subject.root.children[0].full_path.should == "/hello"
@@ -125,16 +125,16 @@ describe Jsus::Tree do
       subject["/hello"] = "world"
       subject.lookup("hello").should_not be_nil
     end
-    
+
     it "should raise error for empty paths" do
       lambda { subject.lookup("") }.should raise_error
       lambda { subject.lookup(nil) }.should raise_error
     end
-    
+
     it "should allow tags for node lookup" do
       subject["/Core/Moo"] = "Tools"
       subject.lookup(Jsus::Tag["Core/Moo"]).value.should == "Tools"
-    end    
+    end
   end
 
   describe "#[]" do
@@ -152,20 +152,20 @@ describe Jsus::Tree do
       subject["/hello"] = "world"
       subject["hello"].should == "world"
     end
-    
+
     it "should raise error for empty paths" do
       lambda { subject[""] }.should raise_error
       lambda { subject[nil] }.should raise_error
     end
-    
+
     it "should allow tags for node lookup" do
       subject["/Core/Moo"] = "Tools"
       subject[Jsus::Tag["Core/Moo"]].should == "Tools"
-    end    
+    end
   end
 
   describe "#find_nodes_matching" do
-    subject { Jsus::Tree.new }
+    subject { described_class.new }
     let(:nodes) { [] }
     before(:each) do
       nodes << subject.insert("/hello/world/one", 1) <<
@@ -198,7 +198,7 @@ describe Jsus::Tree do
   end
 
   describe "#glob" do
-    subject { Jsus::Tree.new }
+    subject { described_class.new }
     let(:nodes) { [] }
     before(:each) do
       nodes << subject.insert("/hello/world/one", 1) <<
@@ -229,9 +229,9 @@ describe Jsus::Tree do
       subject.glob("/ololo/mwahaha").should == []
     end
   end
-  
+
   describe "#traverse" do
-    subject { Jsus::Tree.new }
+    subject { described_class.new }
     let(:nodes) { [] }
     before(:each) do
       nodes << subject.insert("/hello/world/one", 1) <<
@@ -249,12 +249,12 @@ describe Jsus::Tree do
     it "should traverse all nodes if given a true argument" do
       counter = 0
       subject.traverse(true) { counter += 1 }
-      counter.should == 7    
+      counter.should == 7
     end
   end
 
   describe "#leaves" do
-    subject { Jsus::Tree.new }
+    subject { described_class.new }
     let(:nodes) { [] }
     before(:each) do
       nodes << subject.insert("/hello/world/one", 1) <<
@@ -262,16 +262,16 @@ describe Jsus::Tree do
                subject.insert("/hello/three", nil)     <<
                subject.insert("/hello/four", 4)
     end
-    
+
     it "should return only the leaves with content by default" do
       subject.leaves.should =~ [nodes[0], nodes[1], nodes[3]]
     end
-    
-    
+
+
     it "should return all the leaves if asked" do
       subject.leaves(false).should =~ nodes
     end
-    
+
   end
 
 end

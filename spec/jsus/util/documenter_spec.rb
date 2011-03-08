@@ -1,8 +1,8 @@
 require "spec_helper"
 
-describe Jsus::Documenter do
+describe Jsus::Util::Documenter do
   subject { described_class.new }
-  let(:input_dir) { "#{File.dirname(__FILE__)}/../data/Basic/app/javascripts/Orwik" }
+  let(:input_dir) { "spec/data/Basic/app/javascripts/Orwik" }
   let(:pool) { Jsus::Pool.new(input_dir) }
 
   describe "<<" do

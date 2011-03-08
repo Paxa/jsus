@@ -169,14 +169,14 @@ module Jsus
     # Returs a tree, containing all the sources
     #
     def source_tree
-      @source_tree ||= Tree.new
+      @source_tree ||= Util::Tree.new
     end
 
     #
     # Returns a tree containing all the provides tags
     #
     def provides_tree
-      @provides_tree ||= Tree.new
+      @provides_tree ||= Util::Tree.new
     end
 
 

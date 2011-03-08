@@ -1,4 +1,8 @@
 = Jsus Changelog
+== Version 0.2.6
+* Moved support classes to Jsus::Util module namespace
+* Now using autoload instead of require's for stuff
+
 == Version 0.2.5
 * Fixed Container#sort not dealing with wildcards, which made it slower but
   at least made it work
@@ -17,7 +21,7 @@ See jsus-examples repo or features dir for more information.
 * Minor CLI reworkings:
   * Deprecated -i and -o options (use plain arguments now)
   * Restored generate-includes customizable root option
-  
+
 == Version 0.2.2
 * Fixed dupes in structure json files
 
@@ -66,7 +70,7 @@ See jsus-examples repo or features dir for more information.
   First robust solution handles this via Pool and eager dependency load.
 
 == Version 0.1.5
-* Introduced new concept, Tag, which is going to be used instead of 
+* Introduced new concept, Tag, which is going to be used instead of
   provides/requires strings
 * Introduced source extensions (monkey-patching, actually)
 * Wrote some basic documentation for the classes

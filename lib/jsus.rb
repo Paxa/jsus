@@ -18,15 +18,12 @@ require 'pathname'
 #
 module Jsus
   autoload :SourceFile, 'jsus/source_file'
-  autoload :Package, 'jsus/package'
-  autoload :Tag, 'jsus/tag'
-  autoload :Container, 'jsus/container'
-  autoload :Packager, 'jsus/packager'
-  autoload :Pool, 'jsus/pool'
-  autoload :Tree, 'jsus/tree'
-  autoload :Documenter, 'jsus/documenter'
-  autoload :Validator, 'jsus/validator'
-
+  autoload :Package,    'jsus/package'
+  autoload :Tag,        'jsus/tag'
+  autoload :Container,  'jsus/container'
+  autoload :Packager,   'jsus/packager'
+  autoload :Pool,       'jsus/pool'
+  autoload :Util,       'jsus/util'
   # Returns whether or not jsus is in verbose mode
   def self.verbose?
     !!@verbose
