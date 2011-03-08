@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.2.5"
+  s.version = "0.2.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
-  s.date = %q{2011-03-04}
+  s.date = %q{2011-03-07}
   s.default_executable = %q{jsus}
   s.description = %q{Javascript packager and dependency resolver}
   s.email = %q{markizko@gmail.com}
@@ -84,16 +84,17 @@ Gem::Specification.new do |s|
     "jsus.gemspec",
     "lib/jsus.rb",
     "lib/jsus/container.rb",
-    "lib/jsus/documenter.rb",
     "lib/jsus/package.rb",
     "lib/jsus/packager.rb",
     "lib/jsus/pool.rb",
     "lib/jsus/source_file.rb",
     "lib/jsus/tag.rb",
-    "lib/jsus/tree.rb",
-    "lib/jsus/validator.rb",
-    "lib/jsus/validator/base.rb",
-    "lib/jsus/validator/mooforge.rb",
+    "lib/jsus/util.rb",
+    "lib/jsus/util/documenter.rb",
+    "lib/jsus/util/tree.rb",
+    "lib/jsus/util/validator.rb",
+    "lib/jsus/util/validator/base.rb",
+    "lib/jsus/util/validator/mooforge.rb",
     "markup/index_template.haml",
     "markup/stylesheet.css",
     "markup/template.haml",
@@ -162,15 +163,15 @@ Gem::Specification.new do |s|
     "spec/data/bad_test_source_two.js",
     "spec/data/test_source_one.js",
     "spec/jsus/container_spec.rb",
-    "spec/jsus/documenter_spec.rb",
     "spec/jsus/package_spec.rb",
     "spec/jsus/packager_spec.rb",
     "spec/jsus/pool_spec.rb",
     "spec/jsus/source_file_spec.rb",
     "spec/jsus/tag_spec.rb",
-    "spec/jsus/tree_spec.rb",
-    "spec/jsus/validator/base_spec.rb",
-    "spec/jsus/validator/mooforge_spec.rb",
+    "spec/jsus/util/documenter_spec.rb",
+    "spec/jsus/util/tree_spec.rb",
+    "spec/jsus/util/validator/base_spec.rb",
+    "spec/jsus/util/validator/mooforge_spec.rb",
     "spec/shared/class_stubs.rb",
     "spec/spec_helper.rb"
   ]
@@ -181,15 +182,15 @@ Gem::Specification.new do |s|
   s.summary = %q{Javascript packager and dependency resolver}
   s.test_files = [
     "spec/jsus/container_spec.rb",
-    "spec/jsus/documenter_spec.rb",
     "spec/jsus/package_spec.rb",
     "spec/jsus/packager_spec.rb",
     "spec/jsus/pool_spec.rb",
     "spec/jsus/source_file_spec.rb",
     "spec/jsus/tag_spec.rb",
-    "spec/jsus/tree_spec.rb",
-    "spec/jsus/validator/base_spec.rb",
-    "spec/jsus/validator/mooforge_spec.rb",
+    "spec/jsus/util/documenter_spec.rb",
+    "spec/jsus/util/tree_spec.rb",
+    "spec/jsus/util/validator/base_spec.rb",
+    "spec/jsus/util/validator/mooforge_spec.rb",
     "spec/shared/class_stubs.rb",
     "spec/spec_helper.rb"
   ]
