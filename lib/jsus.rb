@@ -10,16 +10,6 @@ require 'rgl/topsort'
 require 'fileutils'
 require 'pathname'
 
-require 'jsus/source_file'
-require 'jsus/package'
-require 'jsus/tag'
-require 'jsus/container'
-require 'jsus/packager'
-require 'jsus/pool'
-require 'jsus/tree'
-require 'jsus/documenter'
-require 'jsus/validator'
-
 #
 # Jsus -- a library for packaging up your source files.
 #
@@ -27,7 +17,17 @@ require 'jsus/validator'
 #
 #
 module Jsus
-  # Returns whether or not jsus is in verbose mode  
+  autoload :SourceFile, 'jsus/source_file'
+  autoload :Package, 'jsus/package'
+  autoload :Tag, 'jsus/tag'
+  autoload :Container, 'jsus/container'
+  autoload :Packager, 'jsus/packager'
+  autoload :Pool, 'jsus/pool'
+  autoload :Tree, 'jsus/tree'
+  autoload :Documenter, 'jsus/documenter'
+  autoload :Validator, 'jsus/validator'
+
+  # Returns whether or not jsus is in verbose mode
   def self.verbose?
     !!@verbose
   end
@@ -37,7 +37,7 @@ module Jsus
   def self.verbose=(verbose)
     @verbose = verbose
   end
-  
+
   # Returns current version
   def self.version
     @version ||= File.read(File.dirname(__FILE__) + "/../VERSION")
