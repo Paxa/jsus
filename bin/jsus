@@ -107,7 +107,8 @@ module Jsus
           puts cli
           exit
         end
-
+        options[:input_dir]  = File.expand_path(options[:input_dir])
+        options[:output_dir] = File.expand_path(options[:output_dir])
         self.cli_options = options
       end
 
@@ -122,11 +123,14 @@ module Jsus
       def run!
         parse_command_line!
         if watch?
-          watch do |match|
-            puts "#{match} has changed, relaunching jsus..."
-            launch!
-            puts "... done"
-            puts ""
+          watch do |base, match|
+            full_path = File.join(base, match)
+            unless full_path.include?(cli_options[:output_dir])
+              puts "#{match} has changed, relaunching jsus..."
+              launch!
+              puts "... done"
+              puts ""
+            end
           end
         else
           launch!
@@ -134,35 +138,25 @@ module Jsus
       end
 
       def watch
-        require 'watchr'
-        require 'abbrev'
+        require 'fssm'
         puts "Jsus enters watch mode, it will watch your files for changes and relaunch itself"
         puts ""
-        Watchr.options.debug = Jsus.verbose?
-        script = Watchr::Script.new
         start_directory = Dir.pwd
         watched_dirs = [cli_options[:input_dir], cli_options[:deps_dir]].compact.map {|path| File.expand_path(path)}
-        unambig_keys = watched_dirs.abbrev.keys
-
-        # lcp stands for longest common prefix.
-        lcp = unambig_keys.inject(unambig_keys[0]) {|result, k|
-          k.length < result.length ? k : result
-        }
-        lcp = lcp.sub(/(.*\/).*?$/, '\\1')
-        lcp = lcp[0..-2] if lcp.size > 1
-
-        script.watch("(.*\/)?(.*\.js|package.yml|package.json)") do |match|
-          Dir.chdir start_directory do
-            yield match
+        FSSM.monitor do
+          watched_dirs.each do |dir|
+            path dir do
+              glob ["**/*.js", "**/package.yml", "**/package.json"]
+              update {|base, relative| yield base, relative }
+              delete {|base, relative| yield base, relative }
+              create {|base, relative| yield base, relative }
+            end
           end
         end
-        Dir.chdir(lcp) do
-          contrl = Watchr::Controller.new(script, Watchr.handler.new)
-          contrl.run
-        end
+
       rescue LoadError => e
-        puts "You need to install watchr gem for --watch option."
-        puts "You may also want to install ruby-fsevent for OS X"
+        puts "You need to install fssm gem for --watch option."
+        puts "You may also want to install rb-fsevent for OS X"
         raise e
       end
 
