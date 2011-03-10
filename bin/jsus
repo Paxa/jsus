@@ -64,6 +64,10 @@ cli = OptionParser.new do |opts|
     options[:postproc] = postprocs
   end
 
+  opts.on('--compress', 'compresses resulting file with YUI compressor') do
+    options[:compress] = true
+  end
+
   opts.on_tail('-v', '--verbose', 'verbose mode, shows various debug messages') do
     Jsus.verbose = true
   end
@@ -134,6 +138,24 @@ launch_jsus = lambda do
   end
   FileUtils.mkdir_p(output_dir)
   package_filename = File.join(output_dir, package.filename)
+  if options[:compress]
+    begin
+      require 'yui/compressor'
+      compressor = YUI::JavaScriptCompressor.new(:munge => true)
+      compressed_content = compressor.compress(package_content)
+      if compressed_content != ""
+        compression_ratio = compressed_content.size.to_f / package_content.size.to_f
+        package_content = compressed_content
+      else
+        compression_ratio = 1.00
+        puts "ERROR: YUI compressor could not parse input. Falling back to uncompressed version"
+        puts "Compressor command used: #{compressor.command.join(' ')}"
+      end
+      puts "Compression ratio: #{sprintf("%.2f%%", compression_ratio * 100)}" if Jsus.verbose?
+    rescue LoadError
+      puts 'ERROR: You need "yui-compressor" gem in order to use --compress option'
+    end
+  end
   File.open(package_filename, 'w') {|f| f << package_content  }
 
   package.generate_scripts_info(output_dir) unless options[:without_scripts_info]
