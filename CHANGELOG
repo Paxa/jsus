@@ -1,4 +1,9 @@
 = Jsus Changelog
+== Version 0.2.7
+* Brushed up CLI code
+* Added --watch option for cli (using fssm gem and fs backend for your operating system)
+* Added --compress option for cli (using yui-compressor gem)
+
 == Version 0.2.6
 * Moved support classes to Jsus::Util module namespace
 * Now using autoload instead of require's for stuff
