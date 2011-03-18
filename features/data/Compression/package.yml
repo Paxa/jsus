@@ -1,0 +1,9 @@
+name: Compression
+filename: compression.js
+web: http://github.com/markiz/jsus
+description: Jsus package with correct order set
+license: Public Domain, http://unlicense.org/UNLICENSE
+authors: Mark Abramov (http://github.com/markiz)
+sources:
+  - "Source/Library/Color.js"
+  - "Source/Widget/Input/Input.Color.js"
