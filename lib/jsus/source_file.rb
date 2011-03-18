@@ -1,10 +1,10 @@
 module Jsus
   # Generic exception for 'bad' source files (no yaml header, for example)
   class BadSourceFileException < Exception; end
-  
+
   #
   # SourceFile is a base for any Jsus operation.
-  # 
+  #
   # It contains basic info about source as well as file content.
   #
   class SourceFile
@@ -29,7 +29,7 @@ module Jsus
 
     #
     # Initializes a SourceFile given the filename and options
-    # 
+    #
     # options:
     # * <tt>:pool:</tt> -- an instance of Pool
     # * <tt>:package:</tt> -- an instance of Package
@@ -40,7 +40,7 @@ module Jsus
       if File.exists?(filename)
         source = File.read(filename)
         yaml_data = source.match(%r(^/\*\s*(---.*?)\*/)m)
-        if (yaml_data && yaml_data[1] && header = YAML.load(yaml_data[1]))          
+        if (yaml_data && yaml_data[1] && header = YAML.load(yaml_data[1]))
           options[:header]            = header
           options[:relative_filename] = filename
           options[:filename]          = File.expand_path(filename)
@@ -78,7 +78,7 @@ module Jsus
       header["description"]
     end
 
-    # 
+    #
     # Returns an array of dependencies tags. Unordered.
     #
     def dependencies
@@ -95,7 +95,7 @@ module Jsus
     #
     def dependencies_names(options = {})
       dependencies.map {|d| d.name(options) }
-    end    
+    end
     alias_method :requires_names, :dependencies_names
 
     #
@@ -112,15 +112,15 @@ module Jsus
       external_dependencies.map {|d| d.name }
     end
 
-    # 
+    #
     # Returns an array with provides tags.
     #
     def provides
       @provides
     end
-        
-    # 
-    # Returns an array with provides names. 
+
+    #
+    # Returns an array with provides names.
     # Accepts options:
     # * <tt>:short:</tt> -- whether provides should not prepend package name
     #   e.g. 'Class' instead of 'Core/Class' when in package 'Core')
@@ -134,13 +134,13 @@ module Jsus
     def replaces
       @replaces
     end
-    
+
 
     #
     # Returns a tag for source file, which this one is an extension for.
     #
     # E.g.: file Foo.js in package Core provides ['Class', 'Hash']. File Bar.js in package Bar
-    # extends 'Core/Class'. That means its contents would be appended to the Foo.js when compiling 
+    # extends 'Core/Class'. That means its contents would be appended to the Foo.js when compiling
     # the result.
     #
     def extends
@@ -162,7 +162,7 @@ module Jsus
       @extensions = @extensions.flatten.compact.uniq
       @extensions
     end
-        
+
     def extensions=(new_value) # :nodoc:
       @extensions = new_value
     end
@@ -177,14 +177,14 @@ module Jsus
     end
 
     def include_extensions! # :nodoc:
-      if pool        
+      if pool
         provides.each do |p|
           extensions << pool.lookup_extensions(p)
         end
       end
     end
 
-    # 
+    #
     # Returns an array of files required by this files including all the filenames for extensions.
     # SourceFile filename always goes first, all the extensions are unordered.
     #
@@ -193,7 +193,7 @@ module Jsus
       [filename, extensions.map {|e| e.filename}].flatten
     end
 
-    # 
+    #
     # Returns a hash containing basic info with dependencies/provides tags' names
     # and description for source file.
     #
@@ -209,7 +209,7 @@ module Jsus
       self.to_hash.inspect
     end
     # Private API
-    
+
     def header=(new_header) # :nodoc:
       @header = new_header
       # prepare defaults
@@ -219,8 +219,18 @@ module Jsus
       @dependencies.map! {|tag_name| Tag.new(tag_name, :package => package) }
       @provides = [@header["provides"] || []].flatten
       @provides.map! {|tag_name| Tag.new(tag_name, :package => package) }
-      @extends = (@header["extends"] && !@header["extends"].empty?) ? Tag.new(@header["extends"]) : nil
-      @replaces = @header["replaces"] ? Tag.new(@header["replaces"]) : nil
+
+      @extends = case @header["extends"]
+      when Array then Tag.new(@header["extends"][0])
+      when String then Tag.new(@header["extends"])
+      else nil
+      end
+
+      @replaces = case @header["replaces"]
+      when Array then Tag.new(@header["replaces"][0])
+      when String then Tag.new(@header["replaces"])
+      else nil
+      end
     end
 
     def content=(new_value) # :nodoc:
@@ -230,8 +240,8 @@ module Jsus
     def content # :nodoc:
       include_extensions
       [@content, extensions.map {|e| e.content}].flatten.compact.join("\n")
-    end 
-    
+    end
+
     def original_content # :nodoc:
       @content
     end
@@ -247,15 +257,15 @@ module Jsus
     def pool
       @pool
     end
-   
+
     def ==(other) # :nodoc:
       eql?(other)
     end
-    
+
     def eql?(other) # :nodoc:
       other.kind_of?(SourceFile) && filename == other.filename
     end
-    
+
     def hash
       [self.class, filename].hash
     end
