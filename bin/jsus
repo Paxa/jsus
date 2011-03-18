@@ -231,14 +231,14 @@ module Jsus
       compressor = YUI::JavaScriptCompressor.new(:munge => true)
       compressed_content = compressor.compress(@package_content)
       if compressed_content != ""
-        compression_ratio = compressed_content.size.to_f / @package_content.size.to_f
-        @package_content = compressed_content
+        @compression_ratio = compressed_content.size.to_f / @package_content.size.to_f
+        compressed_file_name = @package.filename.sub(/.js$/, ".min.js")
+        File.open(File.join(@output_dir, compressed_file_name), "w") {|f| f.write(compressed_content) }
       else
-        compression_ratio = 1.00
-        puts "ERROR: YUI compressor could not parse input. Falling back to uncompressed version"
+        @compression_ratio = 1.00
+        puts "ERROR: YUI compressor could not parse input. "
         puts "Compressor command used: #{compressor.command.join(' ')}"
       end
-      puts "Compression ratio: #{sprintf("%.2f%%", compression_ratio * 100)}" if Jsus.verbose?
       checkpoint(:compress)
     rescue LoadError
       puts 'ERROR: You need "yui-compressor" gem in order to use --compress option'
@@ -302,6 +302,8 @@ module Jsus
         puts "Total compilation time: #{formatted_time_for(:compilation)}"
         puts "Post-processing time:   #{formatted_time_for(:postproc)}" if options[:postproc]
         puts "Compression time:       #{formatted_time_for(:compress)}" if options[:compress]
+        puts ""
+        puts "Compression ratio: #{sprintf("%.2f%%", @compression_ratio * 100)}" if Jsus.verbose? && @compression_ratio
       end
     end
 
