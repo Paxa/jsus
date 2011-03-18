@@ -127,8 +127,14 @@ module Jsus
             full_path = File.join(base, match)
             unless full_path.include?(cli_options[:output_dir])
               puts "#{match} has changed, relaunching jsus..."
-              launch!
-              puts "... done"
+              begin
+                launch!
+                puts "... done"
+              rescue Exception => e
+                puts "Exception happened: #{e}, #{e.inspect}"
+                puts "\t#{e.backtrace.join("\n\t")}" if Jsus.verbose?
+                puts "Compilation FAILED."
+              end
               puts ""
             end
           end
