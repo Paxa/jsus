@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'spec_helper'
 
 describe Jsus::SourceFile do
@@ -34,12 +35,12 @@ describe Jsus::SourceFile do
           lambda { Jsus::SourceFile.from_file('spec/data/non-existant-file.js') }.should raise_error
         end
       end
-      
+
       context "when some error happens" do
         it "should raise error" do
           YAML.stub!(:load) { raise "Could not parse the file!" }
           lambda { subject }.should raise_error(RuntimeError, /spec\/data\/test_source_one\.js/)
-        end        
+        end
       end
     end
 
@@ -56,6 +57,22 @@ describe Jsus::SourceFile do
       source.header.should            == subject.header
     end
 
+    it "should not break on unicode files" do
+      source = nil
+      lambda { source = Jsus::SourceFile.from_file("spec/data/unicode_source.js") }.should_not raise_error
+      source.header["authors"][1].should == "Sebastian Markbåge"
+    end
+
+    if Encoding.respond_to?(:default_external)
+      it "should not break on unicode files even when external encoding is set to non-utf" do
+        old_external = Encoding.default_external
+        Encoding.default_external = 'cp1251'
+        source = nil
+        lambda { source = Jsus::SourceFile.from_file("spec/data/unicode_source.js") }.should_not raise_error
+        source.header["authors"][1].should == "Sebastian Markbåge"
+        Encoding.default_external = old_external
+      end
+    end
   end
 
   context "when no package set, " do
@@ -79,13 +96,13 @@ describe Jsus::SourceFile do
         subject.dependencies_names(:short => true).should == ["Class"]
       end
     end
-    
+
     describe "#external_dependencies" do
       it "should be empty" do
         subject.external_dependencies.should be_empty
       end
     end
-    
+
     describe "#external_dependencies_names" do
       it "should be empty" do
         subject.external_dependencies_names.should be_empty
@@ -126,18 +143,18 @@ describe Jsus::SourceFile do
         subject.dependencies_names(:short => true).should include("Class", "Mash/Mash")
       end
     end
-    
+
     describe "#external_dependencies" do
-      it "should include external dependencies" do 
+      it "should include external dependencies" do
         subject.should have_exactly(1).external_dependencies
         subject.external_dependencies.should include(Jsus::Tag["Mash/Mash"])
       end
-      
+
       it "should not include internal dependencies" do
         subject.external_dependencies.should_not include(Jsus::Tag["Orwik/Class"])
       end
     end
-    
+
     describe "#external_dependencies_names" do
       it "should include names of external dependencies" do
         subject.external_dependencies_names.should include("Mash/Mash")
@@ -147,7 +164,7 @@ describe Jsus::SourceFile do
         subject.external_dependencies_names.should_not include("Orwik/Class")
       end
     end
-    
+
   end
 
   context "when pool is not set, " do
@@ -259,18 +276,18 @@ describe Jsus::SourceFile do
       end
     end
   end
-  
+
   describe "#==, eql, hash" do
     it "should return true for source files pointing to the same physical file" do
       subject.should == described_class.from_file(subject.filename)
       subject.should eql(described_class.from_file(subject.filename))
       subject.hash.should == described_class.from_file(subject.filename).hash
     end
-    
+
     it "should return false for source files pointing to different physical files" do
       subject.should_not == described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js")
       subject.should_not eql(described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js"))
       subject.hash.should_not == described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js").hash
-    end    
-  end  
+    end
+  end
 end
