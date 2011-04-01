@@ -63,10 +63,10 @@ describe Jsus::SourceFile do
       source.header["authors"][1].should == "Sebastian Markbåge"
     end
 
-    if Encoding.respond_to?(:default_external)
+    if defined?(Encoding) && Encoding.respond_to?(:default_external)
       it "should not break on unicode files even when external encoding is set to non-utf" do
         old_external = Encoding.default_external
-        Encoding.default_external = 'cp1251'
+        Encoding.default_external = 'us-ascii'
         source = nil
         lambda { source = Jsus::SourceFile.from_file("spec/data/unicode_source.js") }.should_not raise_error
         source.header["authors"][1].should == "Sebastian Markbåge"
