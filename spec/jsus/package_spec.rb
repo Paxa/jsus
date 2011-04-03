@@ -31,7 +31,7 @@ describe Jsus::Package do
         end
 
         it "should set up outside dependencies" do
-          subject.dependencies_names.should == ['core/Class']
+          subject.dependencies_names.should == ['Core/Class']
         end
 
         it "should set directory field" do
@@ -61,12 +61,12 @@ describe Jsus::Package do
       required_files = Dir["#{input_dir}/**/*.js"].map {|f| IO.read(f) }
       required_files.each {|f| compiled_content.should include(f)}
     end
-    
+
     context "when given nil" do
       it "should not raise errors" do
         lambda { subject.compile(nil) }.should_not raise_error
       end
-      
+
       it "should return a string with compiled content" do
         compiled_content = subject.compile(nil)
         required_files = Dir["#{input_dir}/**/*.js"].map {|f| IO.read(f) }
@@ -84,7 +84,7 @@ describe Jsus::Package do
       info["provides"].should have_exactly(4).items
       info["provides"].should include("Color", "Widget", "Input", "Input.Color")
     end
-    
+
     context "when external dependencies are included" do
       let(:lib_dir) { "spec/data/ChainDependencies/app/javascripts" }
       let(:pool) { Jsus::Pool.new(lib_dir) }
@@ -122,7 +122,7 @@ describe Jsus::Package do
       tree["Widget"]["Input"]["Input.Color"]["requires"].should include("Input", "Color")
       tree["Widget"]["Input"]["Input.Color"]["provides"].should == ["Input.Color"]
     end
-    
+
     it "should allow different filenames" do
       subject.generate_tree(output_dir, "structure.json")
       File.exists?("#{output_dir}/structure.json").should be_true
@@ -130,7 +130,7 @@ describe Jsus::Package do
       tree["Library"]["Color"]["provides"].should == ["Color"]
     end
   end
-  
+
   describe "#required_files" do
    it "should list required files in correct order" do
      required_files = subject.required_files
@@ -173,5 +173,11 @@ describe Jsus::Package do
       subject.source_files[0].extensions.should have_exactly(1).item
     end
 
+  end
+
+  describe "#filename" do
+    it "should convert package name to snake_case" do
+      subject.filename.should == "orwik.js"
+    end
   end
 end

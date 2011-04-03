@@ -1,0 +1,9 @@
+name: Plugin Package
+filename: plugin.js
+web: http://github.com/markiz/jsus
+description: Mooforge plugin using various mooforge-specific conventions
+license: 'Public Domain, http://unlicense.org/UNLICENSE'
+authors: Mark Abramov (http://github.com/markiz)
+sources:
+  - "Source/plugin-support.js"
+  - "Source/plugin.js"

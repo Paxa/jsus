@@ -277,6 +277,11 @@ describe Jsus::SourceFile do
     end
   end
 
+  it "should allow quirky mooforge dependencies syntax" do
+    subject = described_class.from_file("spec/data/mooforge_quirky_source.js")
+    subject.dependencies_names.should == ["MootoolsCore/Core"]
+  end
+
   describe "#==, eql, hash" do
     it "should return true for source files pointing to the same physical file" do
       subject.should == described_class.from_file(subject.filename)

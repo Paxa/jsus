@@ -215,10 +215,8 @@ module Jsus
       # prepare defaults
       @header["description"] ||= ""
       # handle tags
-      @dependencies = [@header["requires"] || []].flatten
-      @dependencies.map! {|tag_name| Tag.new(tag_name, :package => package) }
-      @provides = [@header["provides"] || []].flatten
-      @provides.map! {|tag_name| Tag.new(tag_name, :package => package) }
+      @dependencies = parse_tag_list(Array(@header["requires"]))
+      @provides = parse_tag_list(Array(@header["provides"]))
 
       @extends = case @header["extends"]
       when Array then Tag.new(@header["extends"][0])
@@ -245,6 +243,24 @@ module Jsus
     def original_content # :nodoc:
       @content
     end
+
+    def parse_tag_list(tag_list)
+      tag_list.map do |tag_name|
+        case tag_name
+        when String
+          Tag.new(tag_name, :package => package)
+        when Hash
+          tags = []
+          tag_name.each do |pkg_name, sources|
+            normalized_package_name = pkg_name.sub(/(.+)\/.*$/, "\\1")
+            Array(sources).each do |source|
+              tags << Tag.new([normalized_package_name, source].join("/"))
+            end
+          end
+          tags
+        end
+      end.flatten
+    end # parse_tag_list
 
     # Assigns an instance of Jsus::Pool to the source file.
     # Also performs push to that pool.

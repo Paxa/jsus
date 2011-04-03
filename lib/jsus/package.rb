@@ -7,7 +7,7 @@ module Jsus
     attr_accessor :directory # directory which this package resides in (full path)
     attr_accessor :pool      # an instance of Pool
     # Constructors
-     
+
     #
     # Creates a package from given directory.
     #
@@ -48,7 +48,7 @@ module Jsus
 
 
     # Public API
-    
+
     # Returns a package.yml header.
     def header
       @header ||= {}
@@ -58,15 +58,15 @@ module Jsus
     def name
       header["name"] ||= ""
     end
-    
+
     # Returns a package description.
     def description
       header["description"] ||= ""
-    end    
+    end
 
     # Returns a filename for compiled package.
     def filename
-      header["filename"] ||= name + ".js"
+      header["filename"] ||= snake_case(name) + ".js"
     end
 
     # Returns a list of sources filenames.
@@ -81,7 +81,7 @@ module Jsus
     end
 
     # Returns an array of provided tags names including those provided by linked external dependencies.
-    def provides_names      
+    def provides_names
       source_files.map {|s| s.provides_names(:short => true) }.flatten |
       linked_external_dependencies.map {|d| d.provides_names }.flatten
     end
@@ -103,7 +103,7 @@ module Jsus
     def external_dependencies
       source_files.map {|s| s.external_dependencies }.flatten
     end
-    
+
     # Returns an array of external dependencies' names (including resolved ones).
     def external_dependencies_names
       external_dependencies.map {|d| d.name }
@@ -113,7 +113,7 @@ module Jsus
     def linked_external_dependencies
       @linked_external_dependencies ||= Container.new
     end
-    
+
     # Compiles source files and linked external source files into a given category.
     def compile(directory = ".")
       fn = directory ? File.join(directory, filename) : nil
@@ -164,7 +164,7 @@ module Jsus
     end
 
     # Lists the required files for the package.
-    def required_files      
+    def required_files
       source_files.map {|s| s.required_files }.flatten
     end
 
@@ -189,7 +189,7 @@ module Jsus
     end
 
     # Private API
-    
+
     def header=(new_header) # :nodoc:
       @header = new_header
     end

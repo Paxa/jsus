@@ -2,15 +2,15 @@ module Jsus
   #
   # Tag is basically just a string that contains a package name and a name for class
   # (or not necessarily a class) which the given SourceFile provides/requires/extends/replaces.
-  #  
+  #
   class Tag
     attr_accessor :package, :external # :nodoc:
 
     # Constructors
-    
+
     #
     # Creates a tag from given name/options.
-    # 
+    #
     # The way it works may seem a bit tricky but actually it parses name/options
     # combinations in different ways and may be best described by examples:
     #
@@ -21,8 +21,8 @@ module Jsus
     #     d = Tag.new("Core/Class", :package => core) # :package_name => "Core", :name => "Class", :external => false
     #     mash = Package.new(...) # let's consider its name is 'Mash'
     #     e = Tag.new("Core/Class", :package => mash) # :package_name => "Core", :name => "Class", :external => true
-    # 
-    # Between all those, tags b,c,d and e are equal, meaning they all use 
+    #
+    # Between all those, tags b,c,d and e are equal, meaning they all use
     # the same spot in Hash or whatever else.
     #
     def initialize(name, options = {})
@@ -60,7 +60,7 @@ module Jsus
     # * +:short:+ -- whether the tag should try using short form
     #
     # Important note: only non-external tags support short forms.
-    # 
+    #
     #    Tag.new('Core/Class').name(:short => true) # => 'Core/Class'
     #    core = Package.new(...) # let's consider its name is 'Core'
     #    Tag.new('Core/Class', :package => core).name(:short => true) # => 'Class'
@@ -91,9 +91,9 @@ module Jsus
         super
       end
     end
-    
+
     # Private API
-    
+
     def self.normalize_name_and_options(name, options = {}) # :nodoc:
       result = {}
       name.gsub!(%r(^(\.)?/), "")
@@ -108,6 +108,7 @@ module Jsus
         end
         result[:name] = name
       end
+      result[:package_name] = normalize_package_name(result[:package_name]) if result[:package_name]
       result
     end
 
@@ -118,7 +119,14 @@ module Jsus
     def self.name_and_options_to_full_name(name, options = {}) # :nodoc:
       normalized_options_to_full_name(normalize_name_and_options(name, options))
     end
-        
+
+    def self.normalize_package_name(name) # :nodoc:
+      package_chunks = name.split("/")
+      package_chunks.map do |pc|
+        Jsus::Util::Inflection.random_case_to_mixed_case(pc)
+      end.join("/")
+    end # normalize_name
+
     def package_name=(new_value) # :nodoc:
       @package_name = new_value
     end
@@ -137,6 +145,6 @@ module Jsus
 
     def inspect # :nodoc
       "<Jsus::Tag: #{name}>"
-    end    
+    end
   end
 end

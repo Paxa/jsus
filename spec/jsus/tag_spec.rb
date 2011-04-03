@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Jsus::Tag do
   subject { Jsus::Tag.new("Wtf") }
 
-  context "initialization" do  
+  context "initialization" do
     it "should set given name" do
       Jsus::Tag.new("Wtf").name.should == "Wtf"
     end
@@ -44,6 +44,12 @@ describe Jsus::Tag do
 
     it "should return a given tag if given a tag" do
       Jsus::Tag.new(subject).should == subject
+    end
+
+    it "should translate mooforge styled names into jsus-styled names" do
+      Jsus::Tag.new("mootools_core/Wtf").should      == Jsus::Tag.new("MootoolsCore/Wtf")
+      Jsus::Tag.new("Effects.Fx/Hello.World").should == Jsus::Tag.new("EffectsFx/Hello.World")
+      Jsus::Tag.new("effects.fx/Wtf").should         == Jsus::Tag.new("EffectsFx/Wtf")
     end
   end
 
@@ -106,7 +112,7 @@ describe Jsus::Tag do
     it "should return true when tag is empty" do
       Jsus::Tag.new("").should be_empty
     end
-    
+
     it "should return false when tag is not empty" do
       Jsus::Tag.new("Core/Mash").should_not be_empty
     end
