@@ -66,7 +66,7 @@ module Jsus
 
     # Returns a filename for compiled package.
     def filename
-      header["filename"] ||= snake_case(name) + ".js"
+      header["filename"] ||= Jsus::Util::Inflection.snake_case(name) + ".js"
     end
 
     # Returns a list of sources filenames.
