@@ -9,14 +9,13 @@ module Jsus
         #     iAmCamelCase => IAmCamelCase
         #     some_Weird_._punctuation => SomeWeirdPunctuation
         def random_case_to_mixed_case(string)
-          string.split(/[^a-zA-Z]+/).map {|chunk| chunk[0,1].upcase + chunk[1..-1] }.join
+          string.split(/[^a-zA-Z]+/).map {|chunk| capitalize(chunk) }.join
         end # random_case_to_mixed_case
 
         # Same as #random_case_to_mixed_case, but preserves dots
         # color.fx => Color.Fx
         def random_case_to_mixed_case_preserve_dots(string)
-          string.split(/[^a-zA-Z\.]+/).map {|chunk| capitalize(chunk) }.
-                 map {|chunk| chunk.split(".").map {|c| capitalize(c)}.join(".") }.join
+          string.split(".").map {|c| random_case_to_mixed_case(c) }.join(".")
         end # random_case_to_mixed_case
 
         # Capitalizes first letter (doesn't do anything else to other letters, unlike String#capitalize)
@@ -31,7 +30,8 @@ module Jsus
 
         # Translates MixedCase string to camel-case
         def snake_case(string)
-          decapitalize(string.gsub(/(.)([A-Z])([a-z]+)/) {|match| "#{match[1]}_#{match[2].downcase}#{match[3]}"})
+          decapitalize(string.gsub(/(.)([A-Z])([a-z]+)/) {|_| "#{$1}_#{$2.downcase}#{$3}"}.
+                              gsub(/[^A-Za-z_]+/, "_"))
         end # snake_case
       end # class <<self
     end # module Inflection
