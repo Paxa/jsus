@@ -148,6 +148,20 @@ module Jsus
         puts ""
         start_directory = Dir.pwd
         watched_dirs = [cli_options[:input_dir], cli_options[:deps_dir]].compact.map {|path| File.expand_path(path)}
+
+        watched_dirs.reject! do |dir|
+          # This is a work around for rb-fsevent quirk
+          # Apparently, when your dependency dir is a child directory for your input dir,
+          # You get problems.
+          result = false
+          pathname_traversal = Pathname.new(dir).descend do |parent|
+            parent = parent.to_s
+            result ||= watched_dirs.include?(parent) && parent != dir
+          end
+          result
+        end
+
+        puts "Watching directories: " + watched_dirs.inspect if Jsus.verbose?
         FSSM.monitor do
           watched_dirs.each do |dir|
             path dir do
