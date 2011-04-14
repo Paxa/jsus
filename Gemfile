@@ -10,7 +10,7 @@ group :development do
   gem "rspec"
   gem "cucumber"
   gem "jeweler"
-  gem "murdoc"
+  gem "murdoc",       :platforms => :mri
   gem "ruby-debug19", :platforms => :ruby_19
   gem "ruby-debug",   :platforms => :ruby_18
   gem 'fssm'
