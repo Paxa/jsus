@@ -49,7 +49,7 @@ module Jsus
     end # not_found!
 
     def respond_with(text)
-      [200, {"Content-Type" => "text/javascript"}, text]
+      [200, {"Content-Type" => "text/javascript"}, [text]]
     end # respond_with
 
     def generate_package(package_name, options = {})
