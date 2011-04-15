@@ -23,16 +23,17 @@ GEM
       rake
     json (1.4.6)
     json_pure (1.4.6)
+    kramdown (0.13.2)
     linecache (0.43)
     linecache19 (0.5.11)
       ruby_core_source (>= 0.1.4)
-    murdoc (0.1.5)
+    murdoc (0.1.11)
       haml (~> 3.0.0)
-      haml (~> 3.0.0)
-      rdiscount (~> 1.6.5)
-      rdiscount (~> 1.6.5)
+      kramdown
+    rack (1.2.2)
+    rack-test (0.5.7)
+      rack (>= 1.0)
     rake (0.8.7)
-    rdiscount (1.6.5)
     rgl (0.4.0)
       rake
       stream (>= 0.5)
@@ -59,8 +60,12 @@ GEM
       ruby-debug-base19 (>= 0.11.19)
     ruby_core_source (0.1.4)
       archive-tar-minitar (>= 0.5.2)
+    sinatra (1.2.3)
+      rack (~> 1.1)
+      tilt (< 2.0, >= 1.2.2)
     stream (0.5)
     term-ansicolor (1.0.5)
+    tilt (1.2.2)
     yui-compressor (0.9.4)
 
 PLATFORMS
@@ -73,9 +78,11 @@ DEPENDENCIES
   fssm
   jeweler
   json_pure
-  murdoc
+  murdoc (~> 0.1.11)
+  rack-test
   rgl
   rspec
   ruby-debug
   ruby-debug19
+  sinatra
   yui-compressor
