@@ -1,0 +1,33 @@
+{
+  "Widget": {
+    "Input": {
+      "Input.Color": {
+        "provides": [
+          "Input.Color"
+        ],
+        "requires": [
+          "Color"
+        ],
+        "desc": "Cool colorpicker for everyone to enjoy"
+      },
+      "provides": [
+        "Input"
+      ],
+      "requires": [
+
+      ],
+      "desc": "Generic Input"
+    }
+  },
+  "Library": {
+    "Color": {
+      "provides": [
+        "Color"
+      ],
+      "requires": [
+        "Mootools/Core"
+      ],
+      "desc": "A library to work with colors"
+    }
+  }
+}

@@ -15,19 +15,15 @@ describe Jsus::Middleware do
   end
 
   def suppress_output
-    old_stdout = $stdout
-    old_stderr = $stderr
-    $stdout = IO.new('/dev/null')
-    $stderr = IO.new('/dev/null')
+    old_stdout, old_stderr = $stdout, $stderr
+    $stdout, $stderr = IO.new('/dev/null'), IO.new('/dev/null')
     yield
-    $stdout = old_stdout
-    $stderr = old_stderr
+    $stdout, $stderr = old_stdout, old_stderr
   end
 
   before(:all) do
-    puts(:before_all)
     @server = new_server
-    @server_thread = Thread.new { @server.run! }
+    @server_thread = Thread.new { suppress_output { @server.run! } }
   end
 
   after(:all) { @server_thread.kill }
@@ -51,8 +47,9 @@ describe Jsus::Middleware do
   end
 
   context "for basic package with an external dependency" do
-    let(:packages_dir) { File.expand_path("features/data/ExternalDependency") }
+    let(:packages_dir) { File.expand_path("spec/data/ComplexDependencies") }
     before(:each) { described_class.settings = {:packages_dir => packages_dir} }
+
     describe "/javascripts/jsus/package/Package.js" do
       let(:path) { "/javascripts/jsus/package/Package.js" }
 
@@ -65,6 +62,7 @@ describe Jsus::Middleware do
       end
 
       it "should respond with generated package content" do
+        get(path).body.should include("script: Input.js")
         get(path).body.should include("script: Color.js")
         get(path).body.should include("script: Input.Color.js")
       end
@@ -75,8 +73,45 @@ describe Jsus::Middleware do
 
       it "should preserve correct order" do
         body = get(path).body
+        body.index("script: Core.js").should < body.index("script: Color.js")
         body.index("script: Color.js").should < body.index("script: Input.Color.js")
-        body.index("script: Color.js").should > body.index("script: Core.js")
+        body.index("script: Input.js").should < body.index("script: Input.Color.js")
+      end
+    end
+
+    describe "using /exclude/ directive" do
+      let(:path) { "/javascripts/jsus/require/Package/Input.Color/exclude/Package/Color.js" }
+
+      it "should be successful" do
+        get(path).should be_successful
+      end
+
+      it "should respond with type text/javascript" do
+        get(path).content_type.should == "text/javascript"
+      end
+
+      it "should respond with generated content" do
+        get(path).body.should include("script: Input.Color.js")
+      end
+
+      it "should not include dependencies mentioned in exclude directive" do
+        get(path).body.should_not include("script: Color.js")
+        get(path).body.should_not include("script: Core.js")
+      end
+
+      it "should not fail when used with non-existent tag" do
+        result = get("/javascripts/jsus/require/Package/Input.Color/exclude/Package/Colorful.js")
+        result.should be_successful
+        result.body.should include("script: Input.Color.js")
+      end
+
+      it "should be chainable" do
+        result = get("/javascripts/jsus/require/Package/Input.Color/exclude/Mootools/Core/exclude/Package/Input.js")
+        result.should be_successful
+        result.body.should include("script: Input.Color.js")
+        result.body.should include("script: Color.js")
+        result.body.should_not include("script: Input.js")
+        result.body.should_not include("script: Core.js")
       end
     end
 

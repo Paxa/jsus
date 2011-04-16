@@ -63,9 +63,20 @@ module Jsus
     end # generate_package
 
     def generate_by_tag(tag, options = {})
+      components = tag.split("/")
+      components, directives = extract_directives(components, ["exclude"])
+      # p [components, directives]
+      tag = components.join("/")
       source_file = pool.lookup(tag)
       if source_file
-        dependencies = pool.lookup_dependencies(source_file)
+        result = ""
+        excluded_dependencies = []
+        Array(directives["exclude"]).each do |excluded|
+          excluded_dependencies.push(*[pool.lookup(excluded)].compact)
+          excluded_dependencies.push(*pool.lookup_dependencies(excluded).to_a)
+        end
+        dependencies = pool.lookup_dependencies(source_file) - excluded_dependencies
+        dependencies = Container.new(*dependencies)
         respond_with(dependencies.map {|d| d.content}.join("\n") + source_file.content)
       else
         not_found!
@@ -87,5 +98,29 @@ module Jsus
     def pool
       self.class.pool
     end # pool
+
+    def extract_directives(components, directives)
+      resulting_directives = {}
+      resulting_components = []
+      i = 0
+      while i < components.size do
+        if !directives.include?(components[i])
+          resulting_components << components[i]
+        else
+          j = i + 1
+          directive_value = []
+          while j < components.size && !directives.include?(components[j]) do
+            directive_value << components[j]
+            j += 1
+          end
+          directive = components[i]
+          resulting_directives[directive] ||= []
+          resulting_directives[directive] << directive_value.join("/")
+          i = j - 1
+        end
+        i += 1
+      end
+      [resulting_components, resulting_directives]
+    end # extract_directives
   end # class Middleware
 end # module Jsus
