@@ -50,8 +50,8 @@ describe Jsus::Middleware do
     let(:packages_dir) { File.expand_path("spec/data/ComplexDependencies") }
     before(:each) { described_class.settings = {:packages_dir => packages_dir} }
 
-    describe "/javascripts/jsus/package/Package.js" do
-      let(:path) { "/javascripts/jsus/package/Package.js" }
+    describe "/javascripts/jsus/require/Package.js" do
+      let(:path) { "/javascripts/jsus/require/Package.js" }
 
       it "should be successful" do
         get(path).should be_successful
@@ -79,8 +79,8 @@ describe Jsus::Middleware do
       end
     end
 
-    describe "using /exclude/ directive" do
-      let(:path) { "/javascripts/jsus/require/Package/Input.Color/exclude/Package/Color.js" }
+    describe "using ~Tags" do
+      let(:path) { "/javascripts/jsus/require/Package~Package:Color.js" }
 
       it "should be successful" do
         get(path).should be_successful
@@ -100,13 +100,13 @@ describe Jsus::Middleware do
       end
 
       it "should not fail when used with non-existent tag" do
-        result = get("/javascripts/jsus/require/Package/Input.Color/exclude/Package/Colorful.js")
+        result = get("/javascripts/jsus/require/Package~Package:Colorful.js")
         result.should be_successful
         result.body.should include("script: Input.Color.js")
       end
 
       it "should be chainable" do
-        result = get("/javascripts/jsus/require/Package/Input.Color/exclude/Mootools/Core/exclude/Package/Input.js")
+        result = get("/javascripts/jsus/require/Package~Mootools:Core~Package:Input.js")
         result.should be_successful
         result.body.should include("script: Input.Color.js")
         result.body.should include("script: Color.js")
@@ -115,8 +115,44 @@ describe Jsus::Middleware do
       end
     end
 
-    describe "/javascripts/jsus/require/Package/Input.Color.js" do
-      let(:path) { "/javascripts/jsus/require/Package/Input.Color.js" }
+    describe "using +Tags" do
+      let(:path) { "/javascripts/jsus/require/Package:Color+Package:Input.js" }
+
+      it "should be successful" do
+        get(path).should be_successful
+      end
+
+      it "should respond with type text/javascript" do
+        get(path).content_type.should == "text/javascript"
+      end
+
+      it "should respond with generated content" do
+        get(path).body.should include("script: Color.js")
+        get(path).body.should include("script: Input.js")
+      end
+
+      it "should not include files not mentioned in include directive" do
+        get(path).body.should_not include("script: Input.Color.js")
+      end
+
+      it "should not fail when used with non-existent tag" do
+        result = get("/javascripts/jsus/require/Package:Color+Package:Colorful.js")
+        result.should be_successful
+        result.body.should include("script: Color.js")
+      end
+
+      it "should be chainable" do
+        result = get("/javascripts/jsus/require/Package:Color+Package:Input~Mootools:Core.js")
+        result.should be_successful
+        result.body.should include("script: Input.js")
+        result.body.should include("script: Color.js")
+        result.body.should_not include("script: Input.Color.js")
+        result.body.should_not include("script: Core.js")
+      end
+    end
+
+    describe "/javascripts/jsus/require/Package:Input.Color.js" do
+      let(:path) { "/javascripts/jsus/require/Package:Input.Color.js" }
 
       it "should be successful" do
         get(path).should be_successful
@@ -145,14 +181,21 @@ describe Jsus::Middleware do
 
   describe "for invalid paths" do
     describe "when package is non-existent" do
-      let(:path) { "/javascripts/jsus/package/randomshit.js" }
+      let(:path) { "/javascripts/jsus/require/randomshit.js" }
       it "should return 404" do
         get(path).should be_not_found
       end
     end
 
     describe "when required file is non-existent" do
-      let(:path) { "/javascripts/jsus/require/randomshit.js" }
+      let(:path) { "/javascripts/jsus/require/nonexistent:randomshit.js" }
+      it "should return 404" do
+        get(path).should be_not_found
+      end
+    end
+
+    describe "when given random gibberish" do
+      let(:path) { "/javascripts/jsus/require/+++---asda~~:sda_s+__+-dr928213dasasda=d%20%32%13__=_-=--/asa/sd/.asd13/.js" }
       it "should return 404" do
         get(path).should be_not_found
       end

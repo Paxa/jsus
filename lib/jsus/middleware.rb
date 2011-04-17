@@ -33,16 +33,58 @@ module Jsus
       path.sub!(path_prefix_regex, "")
       components = path.split("/")
       return @app.call(env) unless components.size >= 2
-      if components[0] == "package"
-        generate_package(components[1].sub(/.js$/, ""))
-      elsif components[0] == "require"
-        generate_by_tag(components[1..-1].join("/").sub(/.js$/, ""))
+      if components[0] == "require"
+        generate(components[1].sub(/.js$/, ""))
       else
         not_found!
       end
     end # call
 
     protected
+
+    def generate(path_string)
+      path_args = parse_path_string(path_string)
+      # p path_args
+      files = []
+      path_args[:include].each {|tag| files += get_associated_files(tag).to_a }
+      path_args[:exclude].each {|tag| files -= get_associated_files(tag).to_a }
+      if !files.empty?
+        respond_with(Container.new(*files).map {|f| f.content }.join("\n"))
+      else
+        not_found!
+      end
+    end # generate
+
+    # Notice: + is a space after url decoding
+    # input:
+    # "Package:A~Package:C Package:B~Other:D"
+    # output:
+    # {:include => ["Package/A", "Package/B"], :exclude => ["Package/C", "Other/D"]}
+    def parse_path_string(path_string)
+      path_string = " " + path_string unless path_string[0,1] =~ /\+\-/
+      included = []
+      excluded = []
+      path_string.scan(/([ ~])([^ ~]*)/) do |op, arg|
+        arg = arg.gsub(":", "/")
+        if op == " "
+          included << arg
+        else
+          excluded << arg
+        end
+      end
+      {:include => included, :exclude => excluded}
+    end # parse_path_string
+
+    def get_associated_files(source_file_or_package)
+      if package = pool.packages.detect {|pkg| pkg.name == source_file_or_package}
+        package.include_dependencies!
+        package.linked_external_dependencies.to_a + package.source_files.to_a
+      elsif source_file = pool.lookup(source_file_or_package)
+        pool.lookup_dependencies(source_file) << source_file
+      else
+        []
+      end
+    end # get_associated_files
 
     def not_found!
       [404, {"Content-Type" => "text/plain"}, ["Jsus doesn't anything know about this entity"]]
@@ -52,36 +94,6 @@ module Jsus
       [200, {"Content-Type" => "text/javascript"}, [text]]
     end # respond_with
 
-    def generate_package(package_name, options = {})
-      package = pool.packages.detect {|pkg| pkg.name.downcase == package_name.downcase }
-      if package
-        package.include_dependencies!
-        respond_with(package.compile(nil))
-      else
-        not_found!
-      end
-    end # generate_package
-
-    def generate_by_tag(tag, options = {})
-      components = tag.split("/")
-      components, directives = extract_directives(components, ["exclude"])
-      # p [components, directives]
-      tag = components.join("/")
-      source_file = pool.lookup(tag)
-      if source_file
-        result = ""
-        excluded_dependencies = []
-        Array(directives["exclude"]).each do |excluded|
-          excluded_dependencies.push(*[pool.lookup(excluded)].compact)
-          excluded_dependencies.push(*pool.lookup_dependencies(excluded).to_a)
-        end
-        dependencies = pool.lookup_dependencies(source_file) - excluded_dependencies
-        dependencies = Container.new(*dependencies)
-        respond_with(dependencies.map {|d| d.content}.join("\n") + source_file.content)
-      else
-        not_found!
-      end
-    end # generate_by_tag
 
     def handled_by_jsus?(path)
       path =~ path_prefix_regex
@@ -99,28 +111,5 @@ module Jsus
       self.class.pool
     end # pool
 
-    def extract_directives(components, directives)
-      resulting_directives = {}
-      resulting_components = []
-      i = 0
-      while i < components.size do
-        if !directives.include?(components[i])
-          resulting_components << components[i]
-        else
-          j = i + 1
-          directive_value = []
-          while j < components.size && !directives.include?(components[j]) do
-            directive_value << components[j]
-            j += 1
-          end
-          directive = components[i]
-          resulting_directives[directive] ||= []
-          resulting_directives[directive] << directive_value.join("/")
-          i = j - 1
-        end
-        i += 1
-      end
-      [resulting_components, resulting_directives]
-    end # extract_directives
   end # class Middleware
 end # module Jsus
