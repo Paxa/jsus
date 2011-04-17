@@ -21,6 +21,14 @@ module Jsus
       def pool
         @pool ||= Jsus::Pool.new(settings[:packages_dir])
       end # pool
+
+      def cache?
+        settings[:cache]
+      end # cache?
+
+      def cache
+        @cache ||= cache? ? Util::FileCache.new(settings[:cache_path]) : nil
+      end # cache
     end # class <<self
 
     def initialize(app)
@@ -34,7 +42,7 @@ module Jsus
       components = path.split("/")
       return @app.call(env) unless components.size >= 2
       if components[0] == "require"
-        generate(components[1].sub(/.js$/, ""))
+        generate(components[1])
       else
         not_found!
       end
@@ -43,13 +51,14 @@ module Jsus
     protected
 
     def generate(path_string)
-      path_args = parse_path_string(path_string)
-      # p path_args
+      path_args = parse_path_string(path_string.sub(/.js$/, ""))
       files = []
       path_args[:include].each {|tag| files += get_associated_files(tag).to_a }
       path_args[:exclude].each {|tag| files -= get_associated_files(tag).to_a }
       if !files.empty?
-        respond_with(Container.new(*files).map {|f| f.content }.join("\n"))
+        response = Container.new(*files).map {|f| f.content }.join("\n")
+        cache.write(path_string, response) if cache?
+        respond_with(response)
       else
         not_found!
       end
@@ -111,5 +120,12 @@ module Jsus
       self.class.pool
     end # pool
 
+    def cache?
+      self.class.cache?
+    end # cache?
+
+    def cache
+      self.class.cache
+    end # cache
   end # class Middleware
 end # module Jsus

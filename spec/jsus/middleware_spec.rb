@@ -201,4 +201,16 @@ describe Jsus::Middleware do
       end
     end
   end
+
+  describe "caching" do
+    let(:cache_path) { "spec/tmp" }
+    before(:each) { Jsus::Middleware.settings = {:cache => true, :cache_path => cache_path} }
+    after(:each) { FileUtils.rm_rf(cache_path) }
+    let(:path) { "/javascripts/jsus/require/Package.js" }
+    it "should save output of requests to files" do
+      result = get(path).body
+      File.exists?("#{cache_path}/Package.js").should be_true
+      File.read("#{cache_path}/Package.js").should == result
+    end
+  end
 end
