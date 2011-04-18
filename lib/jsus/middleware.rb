@@ -36,7 +36,7 @@ module Jsus
       @app = app
     end # initialize
 
-    def call(env)
+    def _call(env)
       path = Utils.unescape(env["PATH_INFO"])
       return @app.call(env) unless handled_by_jsus?(path)
       path.sub!(path_prefix_regex, "")
@@ -47,6 +47,10 @@ module Jsus
       else
         not_found!
       end
+    end # _call
+
+    def call(env)
+      dup._call(env)
     end # call
 
     protected
