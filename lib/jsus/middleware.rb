@@ -7,7 +7,8 @@ module Jsus
         :packages_dir     => ".",
         :cache            => false,
         :cache_path       => nil,
-        :prefix           => "jsus"
+        :prefix           => "jsus",
+        :cache_pool       => true
       }.freeze
 
       def settings
@@ -117,7 +118,11 @@ module Jsus
     end # path_prefix_regex
 
     def pool
-      self.class.pool
+      if cache_pool?
+        self.class.pool
+      else
+        @pool ||= Jsus::Pool.new(self.class.settings[:packages_dir])
+      end
     end # pool
 
     def cache?
@@ -127,5 +132,9 @@ module Jsus
     def cache
       self.class.cache
     end # cache
+
+    def cache_pool?
+      self.class.settings[:cache_pool]
+    end # cache_pool?
   end # class Middleware
 end # module Jsus
