@@ -96,7 +96,7 @@ module Jsus
     end # get_associated_files
 
     def not_found!
-      [404, {"Content-Type" => "text/plain"}, ["Jsus doesn't anything know about this entity"]]
+      [404, {"Content-Type" => "text/plain"}, ["Jsus doesn't know anything about this entity"]]
     end # not_found!
 
     def respond_with(text)
