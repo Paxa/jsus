@@ -40,7 +40,8 @@ module Jsus
       if File.exists?(filename)
         source = File.open(filename, 'r:utf-8') {|f| f.read }
         bom = RUBY_VERSION =~ /1.9/ ? "\uFEFF" : "\xEF\xBB\xBF"
-        yaml_data = source.match(%r(^(#{bom})?/\*\s*(---.*?)\*/)m)
+        source.gsub!(bom, "")
+        yaml_data = source.match(%r(^/\*\s*(---.*?)\*/)m)
         if (yaml_data && yaml_data[2] && header = YAML.load(yaml_data[2]))
           options[:header]            = header
           options[:relative_filename] = filename
