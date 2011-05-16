@@ -39,8 +39,8 @@ module Jsus
     def self.from_file(filename, options = {})
       if File.exists?(filename)
         source = File.open(filename, 'r:utf-8') {|f| f.read }
-        yaml_data = source.match(%r(^/\*\s*(---.*?)\*/)m)
-        if (yaml_data && yaml_data[1] && header = YAML.load(yaml_data[1]))
+        yaml_data = source.match(%r(^(\xEF\xBB\xBF)?/\*\s*(---.*?)\*/)m)
+        if (yaml_data && yaml_data[2] && header = YAML.load(yaml_data[2]))
           options[:header]            = header
           options[:relative_filename] = filename
           options[:filename]          = File.expand_path(filename)

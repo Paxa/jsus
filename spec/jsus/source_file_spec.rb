@@ -63,6 +63,12 @@ describe Jsus::SourceFile do
       source.header["authors"][1].should == "Sebastian Markbåge"
     end
 
+    it "should recognize and ignore BOM marker" do
+      source = nil
+      lambda { source = Jsus::SourceFile.from_file("spec/data/unicode_source_with_bom.js")  }.should_not raise_error
+      source.header["authors"][1].should == "Sebastian Markbåge"
+    end
+
     if defined?(Encoding) && Encoding.respond_to?(:default_external)
       it "should not break on unicode files even when external encoding is set to non-utf" do
         old_external = Encoding.default_external
