@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.2.7"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
-  s.date = %q{2011-03-10}
+  s.date = %q{2011-05-17}
   s.default_executable = %q{jsus}
   s.description = %q{Javascript packager and dependency resolver}
   s.email = %q{markizko@gmail.com}
@@ -21,9 +21,9 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
     ".rspec",
+    ".travis.yml",
     "CHANGELOG",
     "Gemfile",
-    "Gemfile.lock",
     "Manifest",
     "README",
     "Rakefile",
@@ -34,9 +34,11 @@ Gem::Specification.new do |s|
     "bin/jsus",
     "cucumber.yml",
     "features/command-line/basic_dependency_resolution.feature",
+    "features/command-line/compression.feature",
     "features/command-line/extensions.feature",
     "features/command-line/external_dependency_resolution.feature",
     "features/command-line/json_package.feature",
+    "features/command-line/mooforge_compatibility_layer.feature",
     "features/command-line/postproc.feature",
     "features/command-line/replacements.feature",
     "features/command-line/structure_json.feature",
@@ -46,6 +48,9 @@ Gem::Specification.new do |s|
     "features/data/BasicWrongOrder/Source/Library/Color.js",
     "features/data/BasicWrongOrder/Source/Widget/Input/Input.Color.js",
     "features/data/BasicWrongOrder/package.yml",
+    "features/data/Compression/Source/Library/Color.js",
+    "features/data/Compression/Source/Widget/Input/Input.Color.js",
+    "features/data/Compression/package.yml",
     "features/data/Extensions/Mootools/Source/Core.js",
     "features/data/Extensions/Mootools/package.yml",
     "features/data/Extensions/Source/Extensions/MootoolsCore.js",
@@ -66,6 +71,11 @@ Gem::Specification.new do |s|
     "features/data/JsonPackage/Source/Library/Color.js",
     "features/data/JsonPackage/Source/Widget/Input/Input.Color.js",
     "features/data/JsonPackage/package.json",
+    "features/data/MooforgePlugin/Core/Source/Core.js",
+    "features/data/MooforgePlugin/Core/package.yml",
+    "features/data/MooforgePlugin/Plugin/Source/plugin-support.js",
+    "features/data/MooforgePlugin/Plugin/Source/plugin.js",
+    "features/data/MooforgePlugin/Plugin/package.yml",
     "features/data/Postprocessing/MootoolsCompat12/Source/Core.js",
     "features/data/Postprocessing/MootoolsCompat12/package.yml",
     "features/data/Postprocessing/MootoolsLtIE8/Source/Core.js",
@@ -76,6 +86,7 @@ Gem::Specification.new do |s|
     "features/data/Replacements/MootoolsFork/package.yml",
     "features/data/Replacements/Source/Library/Color.js",
     "features/data/Replacements/package.yml",
+    "features/data/compression.min.js",
     "features/data/tmp2/package.js",
     "features/data/tmp2/scripts.json",
     "features/data/tmp2/tree.json",
@@ -84,6 +95,7 @@ Gem::Specification.new do |s|
     "jsus.gemspec",
     "lib/jsus.rb",
     "lib/jsus/container.rb",
+    "lib/jsus/middleware.rb",
     "lib/jsus/package.rb",
     "lib/jsus/packager.rb",
     "lib/jsus/pool.rb",
@@ -91,6 +103,8 @@ Gem::Specification.new do |s|
     "lib/jsus/tag.rb",
     "lib/jsus/util.rb",
     "lib/jsus/util/documenter.rb",
+    "lib/jsus/util/file_cache.rb",
+    "lib/jsus/util/inflection.rb",
     "lib/jsus/util/tree.rb",
     "lib/jsus/util/validator.rb",
     "lib/jsus/util/validator/base.rb",
@@ -112,6 +126,15 @@ Gem::Specification.new do |s|
     "spec/data/ChainDependencies/app/javascripts/Mash/package.yml",
     "spec/data/ClassReplacement/Source/Class.js",
     "spec/data/ClassReplacement/package.yml",
+    "spec/data/ComplexDependencies/Mootools/Source/Core.js",
+    "spec/data/ComplexDependencies/Mootools/package.yml",
+    "spec/data/ComplexDependencies/Output/package.js",
+    "spec/data/ComplexDependencies/Output/scripts.json",
+    "spec/data/ComplexDependencies/Output/tree.json",
+    "spec/data/ComplexDependencies/Source/Library/Color.js",
+    "spec/data/ComplexDependencies/Source/Widget/Input.js",
+    "spec/data/ComplexDependencies/Source/Widget/Input/Input.Color.js",
+    "spec/data/ComplexDependencies/package.yml",
     "spec/data/DependenciesWildcards/app/javascripts/Class/Source/Class.js",
     "spec/data/DependenciesWildcards/app/javascripts/Class/package.yml",
     "spec/data/DependenciesWildcards/app/javascripts/Hash/Source/Hash.js",
@@ -161,14 +184,20 @@ Gem::Specification.new do |s|
     "spec/data/OutsideDependencies/app/javascripts/Orwik/package.yml",
     "spec/data/bad_test_source_one.js",
     "spec/data/bad_test_source_two.js",
+    "spec/data/mooforge_quirky_source.js",
     "spec/data/test_source_one.js",
+    "spec/data/unicode_source.js",
+    "spec/data/unicode_source_with_bom.js",
     "spec/jsus/container_spec.rb",
+    "spec/jsus/middleware_spec.rb",
     "spec/jsus/package_spec.rb",
     "spec/jsus/packager_spec.rb",
     "spec/jsus/pool_spec.rb",
     "spec/jsus/source_file_spec.rb",
     "spec/jsus/tag_spec.rb",
     "spec/jsus/util/documenter_spec.rb",
+    "spec/jsus/util/file_cache_spec.rb",
+    "spec/jsus/util/inflection_spec.rb",
     "spec/jsus/util/tree_spec.rb",
     "spec/jsus/util/validator/base_spec.rb",
     "spec/jsus/util/validator/mooforge_spec.rb",
@@ -178,25 +207,10 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/markiz/jsus}
   s.licenses = ["Public Domain"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.7}
+  s.rubygems_version = %q{1.6.2}
   s.summary = %q{Javascript packager and dependency resolver}
-  s.test_files = [
-    "spec/jsus/container_spec.rb",
-    "spec/jsus/package_spec.rb",
-    "spec/jsus/packager_spec.rb",
-    "spec/jsus/pool_spec.rb",
-    "spec/jsus/source_file_spec.rb",
-    "spec/jsus/tag_spec.rb",
-    "spec/jsus/util/documenter_spec.rb",
-    "spec/jsus/util/tree_spec.rb",
-    "spec/jsus/util/validator/base_spec.rb",
-    "spec/jsus/util/validator/mooforge_spec.rb",
-    "spec/shared/class_stubs.rb",
-    "spec/spec_helper.rb"
-  ]
 
   if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
@@ -207,10 +221,13 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rspec>, [">= 0"])
       s.add_development_dependency(%q<cucumber>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
-      s.add_development_dependency(%q<murdoc>, [">= 0"])
+      s.add_development_dependency(%q<murdoc>, ["~> 0.1.11"])
       s.add_development_dependency(%q<ruby-debug19>, [">= 0"])
       s.add_development_dependency(%q<ruby-debug>, [">= 0"])
       s.add_development_dependency(%q<fssm>, [">= 0"])
+      s.add_development_dependency(%q<yui-compressor>, [">= 0"])
+      s.add_development_dependency(%q<sinatra>, [">= 0"])
+      s.add_development_dependency(%q<rack-test>, [">= 0"])
     else
       s.add_dependency(%q<activesupport>, [">= 0"])
       s.add_dependency(%q<json_pure>, [">= 0"])
@@ -219,10 +236,13 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<cucumber>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
-      s.add_dependency(%q<murdoc>, [">= 0"])
+      s.add_dependency(%q<murdoc>, ["~> 0.1.11"])
       s.add_dependency(%q<ruby-debug19>, [">= 0"])
       s.add_dependency(%q<ruby-debug>, [">= 0"])
       s.add_dependency(%q<fssm>, [">= 0"])
+      s.add_dependency(%q<yui-compressor>, [">= 0"])
+      s.add_dependency(%q<sinatra>, [">= 0"])
+      s.add_dependency(%q<rack-test>, [">= 0"])
     end
   else
     s.add_dependency(%q<activesupport>, [">= 0"])
@@ -232,10 +252,13 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rspec>, [">= 0"])
     s.add_dependency(%q<cucumber>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
-    s.add_dependency(%q<murdoc>, [">= 0"])
+    s.add_dependency(%q<murdoc>, ["~> 0.1.11"])
     s.add_dependency(%q<ruby-debug19>, [">= 0"])
     s.add_dependency(%q<ruby-debug>, [">= 0"])
     s.add_dependency(%q<fssm>, [">= 0"])
+    s.add_dependency(%q<yui-compressor>, [">= 0"])
+    s.add_dependency(%q<sinatra>, [">= 0"])
+    s.add_dependency(%q<rack-test>, [">= 0"])
   end
 end
 
