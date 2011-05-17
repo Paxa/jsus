@@ -1,4 +1,7 @@
 = Jsus Changelog
+== Version 0.3.0
+* Added Jsus::Middleware for rack middleware stuff. Yay!
+
 == Version 0.2.7
 * Brushed up CLI code
 * Added --watch option for cli (using fssm gem and fs backend for your operating system)
