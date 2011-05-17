@@ -16,7 +16,7 @@ describe Jsus::Util::FileCache do
 
     it "should not write to relative paths" do
       FileUtils.rm_f("/tmp/test")
-      key = "../../../../../../../../tmp/test"
+      key = "../../../../../../../../../../../../../../../../tmp/test"
       fn = subject.write(key, value)
       File.exists?("/tmp/test").should be_false
     end
@@ -29,6 +29,12 @@ describe Jsus::Util::FileCache do
     end
 
     it "should return nil if cache is empty" do
+      subject.read(key).should == nil
+    end
+
+    it "should not read from relative paths" do
+      key = "../../../../../../../../../../../../../../../../tmp/test"
+      File.open("/tmp/test", "w+") {|f| f.puts "Hello, world!" }
       subject.read(key).should == nil
     end
   end
