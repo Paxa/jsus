@@ -6,6 +6,17 @@ module Jsus
   # Just "use Jsus::Middleware" in your rack application and all the requests
   # to /javascripts/jsus/* are redirected to the middleware.
   #
+  # Configuration:
+  #
+  # Use Jsus::Middleware.settings= method to change some settings, such as:
+  # :packages_dir - path to where you store your packages
+  # :cache - enable simple file caching
+  # :cache_path - directory for file caching
+  # :prefix - change /jsus/ to something else or remove it altogether (set to nil)
+  # :cache_pool - cache js pool between requests. Can save you some time
+  #               between requests but annoys a lot during development.
+  #
+  #
   # Examples:
   #
   # GET /javascripts/jsus/Mootools.Core+Mootools.More
