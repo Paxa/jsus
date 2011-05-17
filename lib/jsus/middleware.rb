@@ -1,5 +1,28 @@
 require 'rack/utils'
 module Jsus
+  #
+  # Rack middleware
+  #
+  # Just "use Jsus::Middleware" in your rack application and all the requests
+  # to /javascripts/jsus/* are redirected to the middleware.
+  #
+  # Examples:
+  #
+  # GET /javascripts/jsus/Mootools.Core+Mootools.More
+  #     merges packages named Mootools.Core and Mootools.More with all the
+  #     dependencies and outputs the result.
+  #
+  # GET /javascripts/jsus/Mootools.More~Mootools.Core
+  #     returns package Mootools.More with all the dependencies MINUS any of
+  #     Mootools.Core dependencies.
+  #
+  # GET /javascripts/jsus/Mootools.Core:Class+Mootools.More:Fx
+  #     same thing but for source files providing Mootools.Core/Class and
+  #     Mootools.More/Fx
+  #
+  #
+  # Also see sinatra example https://github.com/jsus/jsus-sinatra-app
+  #
   class Middleware
     include Rack
     class <<self
