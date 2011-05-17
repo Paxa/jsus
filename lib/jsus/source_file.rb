@@ -42,7 +42,7 @@ module Jsus
         bom = RUBY_VERSION =~ /1.9/ ? "\uFEFF" : "\xEF\xBB\xBF"
         source.gsub!(bom, "")
         yaml_data = source.match(%r(^/\*\s*(---.*?)\*/)m)
-        if (yaml_data && yaml_data[2] && header = YAML.load(yaml_data[2]))
+        if (yaml_data && yaml_data[1] && header = YAML.load(yaml_data[1]))
           options[:header]            = header
           options[:relative_filename] = filename
           options[:filename]          = File.expand_path(filename)
