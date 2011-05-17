@@ -6,3 +6,4 @@ pkg/*
 rcov
 features/data/tmp
 rdoc/*
+Gemfile.lock
