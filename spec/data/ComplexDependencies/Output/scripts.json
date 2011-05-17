@@ -1,0 +1,14 @@
+{
+  "Package": {
+    "requires": [
+
+    ],
+    "desc": "Jsus package with external dependency",
+    "provides": [
+      "Input",
+      "Color",
+      "Input.Color",
+      "Mootools/Core"
+    ]
+  }
+}

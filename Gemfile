@@ -15,4 +15,6 @@ group :development do
   gem "ruby-debug",   :platforms => :ruby_18
   gem 'fssm'
   gem 'yui-compressor'
+  gem 'sinatra'
+  gem 'rack-test'
 end
