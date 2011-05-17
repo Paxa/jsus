@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'spec_helper'
+require 'fileutils'
 
 describe Jsus::Util::FileCache do
   subject { described_class.new(cache_dir) }
@@ -11,6 +12,13 @@ describe Jsus::Util::FileCache do
     it "should create a file with given contents and return the filename" do
       fn = subject.write(key, value)
       File.exists?(fn).should be_true
+    end
+
+    it "should not write to relative paths" do
+      FileUtils.rm_f("/tmp/test")
+      key = "../../../../../../../../tmp/test"
+      fn = subject.write(key, value)
+      File.exists?("/tmp/test").should be_false
     end
   end
 

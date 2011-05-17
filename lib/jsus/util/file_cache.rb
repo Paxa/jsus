@@ -32,6 +32,7 @@ module Jsus
       protected
 
       def generate_path(key)
+        key = key.gsub(File::SEPARATOR, ".")
         File.join(@path, key)
       end # generate_path
     end # class FileCache
