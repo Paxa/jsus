@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   s.date = %q{2011-05-17}
   s.default_executable = %q{jsus}
   s.description = %q{Javascript packager and dependency resolver}
-  s.email = %q{markizko@gmail.com}
   s.executables = ["jsus"]
+  s.email = %q{markizko@gmail.com}
   s.extra_rdoc_files = [
     "README",
     "TODO"
