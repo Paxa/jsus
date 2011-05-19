@@ -46,7 +46,7 @@ module Jsus
       }.freeze
 
       def settings
-        @settings ||= DEFAULT_SETTINGS.dup
+        @@settings ||= DEFAULT_SETTINGS.dup
       end # settings
 
       def settings=(new_settings)
@@ -54,7 +54,7 @@ module Jsus
       end # settings=
 
       def pool
-        @pool ||= Jsus::Pool.new(settings[:packages_dir])
+        @@pool ||= Jsus::Pool.new(settings[:packages_dir])
       end # pool
 
       def cache?
@@ -62,7 +62,7 @@ module Jsus
       end # cache?
 
       def cache
-        @cache ||= cache? ? Util::FileCache.new(settings[:cache_path]) : nil
+        @@cache ||= cache? ? Util::FileCache.new(settings[:cache_path]) : nil
       end # cache
     end # class <<self
 

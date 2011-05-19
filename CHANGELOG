@@ -2,8 +2,7 @@
 == Version 0.3.2
 * Fixed minor problem with middleware when package name and source file tag
   are the same
-
-
+* Settings are now shared between Jsus::Middleware and subclasses
 
 == Version 0.3.1
 * Added wildcard support for Jsus::Middleware
