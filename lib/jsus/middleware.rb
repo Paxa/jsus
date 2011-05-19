@@ -130,7 +130,14 @@ module Jsus
       elsif source_file = pool.lookup(source_file_or_package)
         pool.lookup_dependencies(source_file) << source_file
       else
-        []
+        # Try using arg as mask
+        mask = source_file_or_package.to_s
+        if !(mask =~ /^\s*$/) && !(source_files = pool.provides_tree.glob(mask)).empty?
+          source_files.map {|source| get_associated_files(source) }.flatten
+        else
+          # No dice
+          []
+        end
       end
     end # get_associated_files
 

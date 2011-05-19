@@ -1,4 +1,7 @@
 = Jsus Changelog
+== Version 0.3.1
+* Added wildcard support for Jsus::Middleware
+
 == Version 0.3.0
 * Added Jsus::Middleware for rack middleware stuff. Yay!
 

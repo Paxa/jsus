@@ -177,6 +177,34 @@ describe Jsus::Middleware do
         body.index("script: Color.js").should > body.index("script: Core.js")
       end
     end
+
+
+    describe "using wildcard /javascripts/jsus/require/Package:Input.*.js" do
+      let(:path) { "/javascripts/jsus/require/Package:Input.*.js" }
+
+      it "should be successful" do
+        get(path).should be_successful
+      end
+
+      it "should respond with type text/javascript" do
+        get(path).content_type.should == "text/javascript"
+      end
+
+      it "should respond with generated content" do
+        get(path).body.should include("script: Input.Color.js")
+      end
+
+      it "should include dependencies by default" do
+        get(path).body.should include("script: Color.js")
+        get(path).body.should include("script: Core.js")
+      end
+
+      it "should preserve correct order" do
+        body = get(path).body
+        body.index("script: Color.js").should < body.index("script: Input.Color.js")
+        body.index("script: Color.js").should > body.index("script: Core.js")
+      end
+    end
   end
 
   describe "for invalid paths" do
