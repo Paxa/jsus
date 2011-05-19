@@ -19,15 +19,15 @@ module Jsus
   #
   # Examples:
   #
-  # GET /javascripts/jsus/Mootools.Core+Mootools.More
+  # GET /javascripts/jsus/require/Mootools.Core+Mootools.More
   #     merges packages named Mootools.Core and Mootools.More with all the
   #     dependencies and outputs the result.
   #
-  # GET /javascripts/jsus/Mootools.More~Mootools.Core
+  # GET /javascripts/jsus/require/Mootools.More~Mootools.Core
   #     returns package Mootools.More with all the dependencies MINUS any of
   #     Mootools.Core dependencies.
   #
-  # GET /javascripts/jsus/Mootools.Core:Class+Mootools.More:Fx
+  # GET /javascripts/jsus/require/Mootools.Core:Class+Mootools.More:Fx
   #     same thing but for source files providing Mootools.Core/Class and
   #     Mootools.More/Fx
   #
