@@ -132,7 +132,7 @@ module Jsus
       else
         # Try using arg as mask
         mask = source_file_or_package.to_s
-        if !(mask =~ /^\s*$/) && !(source_files = pool.provides_tree.glob(mask)).empty?
+        if !(mask =~ /^\s*$/) && !(source_files = pool.provides_tree.glob(mask).compact).empty?
           source_files.map {|source| get_associated_files(source) }.flatten
         else
           # No dice
