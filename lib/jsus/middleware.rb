@@ -128,7 +128,7 @@ module Jsus
         package.include_dependencies!
         package.linked_external_dependencies.to_a + package.source_files.to_a
       elsif source_file = pool.lookup(source_file_or_package)
-        pool.lookup_dependencies(source_file) << source_file
+        pool.lookup_dependencies(source_file).to_a << source_file
       else
         # Try using arg as mask
         mask = source_file_or_package.to_s
