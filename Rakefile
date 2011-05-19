@@ -37,6 +37,7 @@ require 'cucumber'
 require 'cucumber/rake/task'
 
 Cucumber::Rake::Task.new(:features) do |t|
+  t.cucumber_opts = %w{--exclude compression\.feature} if RUBY_PLATFORM =~ /java/
 end
 
 task :default => [:spec, :features]
