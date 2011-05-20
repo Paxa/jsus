@@ -97,7 +97,7 @@ module Jsus
       files = path_string_to_files(path_string)
       if !files.empty?
         response = Container.new(*files).map {|f| f.content }.join("\n")
-        cache.write(path_string, response) if cache?
+        cache.write(escape_path_for_cache_key(path_string), response) if cache?
         respond_with(response)
       else
         not_found!
@@ -200,5 +200,9 @@ module Jsus
     def cache_pool?
       self.class.settings[:cache_pool]
     end # cache_pool?
+
+    def escape_path_for_cache_key(path)
+      path.gsub(" ", "+") # nginx hack, you may have to use your own function for your web-server
+    end # escape_path_for_cache_key
   end # class Middleware
 end # module Jsus
