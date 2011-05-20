@@ -15,7 +15,8 @@ module Jsus
   # :prefix - change /jsus/ to something else or remove it altogether (set to nil)
   # :cache_pool - cache js pool between requests. Can save you some time
   #               between requests but annoys a lot during development.
-  #
+  # :includes_root - when using /include/ it will generate relative paths from
+  #                  this directory to the source file.
   #
   # Examples:
   #
@@ -42,7 +43,8 @@ module Jsus
         :cache            => false,
         :cache_path       => nil,
         :prefix           => "jsus",
-        :cache_pool       => true
+        :cache_pool       => true,
+        :includes_root    => "."
       }.freeze
 
       def settings
@@ -77,7 +79,9 @@ module Jsus
       components = path.split("/")
       return @app.call(env) unless components.size >= 2
       if components[0] == "require"
-        generate(components[1])
+        generate_requires(components[1])
+      elsif components[0] == "include"
+        generate_includes(components[1])
       else
         not_found!
       end
@@ -89,11 +93,8 @@ module Jsus
 
     protected
 
-    def generate(path_string)
-      path_args = parse_path_string(path_string.sub(/.js$/, ""))
-      files = []
-      path_args[:include].each {|tag| files += get_associated_files(tag).to_a }
-      path_args[:exclude].each {|tag| files -= get_associated_files(tag).to_a }
+    def generate_requires(path_string)
+      files = path_string_to_files(path_string)
       if !files.empty?
         response = Container.new(*files).map {|f| f.content }.join("\n")
         cache.write(path_string, response) if cache?
@@ -101,7 +102,25 @@ module Jsus
       else
         not_found!
       end
-    end # generate
+    end # generate_requires
+
+    def generate_includes(path_string)
+      files = path_string_to_files(path_string)
+      if !files.empty?
+        paths = Container.new(*files).required_files(self.class.settings[:includes_root])
+        respond_with(Jsus::Util::CodeGenerator.generate_includes(paths))
+      else
+        not_found!
+      end
+    end # generate_includes
+
+    def path_string_to_files(path_string)
+      path_args = parse_path_string(path_string.sub(/.js$/, ""))
+      files = []
+      path_args[:include].each {|tag| files += get_associated_files(tag).to_a }
+      path_args[:exclude].each {|tag| files -= get_associated_files(tag).to_a }
+      files
+    end # path_string_to_files
 
     # Notice: + is a space after url decoding
     # input:

@@ -3,6 +3,8 @@
 * Fixed minor problem with middleware when package name and source file tag
   are the same
 * Settings are now shared between Jsus::Middleware and subclasses
+* Middleware now also supports /include/ directive (generates includes file),
+  like -g option of CLI utility
 
 == Version 0.3.1
 * Added wildcard support for Jsus::Middleware

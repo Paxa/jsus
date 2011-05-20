@@ -205,6 +205,31 @@ describe Jsus::Middleware do
         body.index("script: Color.js").should > body.index("script: Core.js")
       end
     end
+
+    describe "using /include/ pattern" do
+      let(:path) { "/javascripts/jsus/include/Package:Input.Color.js" }
+
+      it "should be successful" do
+        get(path).should be_successful
+      end
+
+      it "should respond with type text/javascript" do
+        get(path).content_type.should == "text/javascript"
+      end
+
+      it "should contain filenames for required files" do
+        get(path).body.should include("/Color.js")
+        get(path).body.should include("/Input.js")
+        get(path).body.should include("/Input.Color.js")
+      end
+
+      it "should respect :includes_root setting" do
+        old_settings = Jsus::Middleware.settings
+        Jsus::Middleware.settings = {:includes_root => File.expand_path("../../data/ComplexDependencies/Mootools/Source", __FILE__)}
+        get(path).body.should include("../../Source/Library/Color.js")
+        Jsus::Middleware.settings = old_settings
+      end
+    end
   end
 
   describe "for invalid paths" do
