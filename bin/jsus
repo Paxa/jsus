@@ -273,15 +273,8 @@ module Jsus
       includes_root = options[:includes_root] || @output_dir
       File.open(File.join(@output_dir, "includes.js"), "w") do |f|
         c = Jsus::Container.new(*(@package.source_files.to_a + @package.linked_external_dependencies.to_a))
-        script = %{
-        (function(prefix, loader) {
-          var sources = %sources%;
-          if (!loader) loader = function(path) {
-            document.write('<scr' + 'ipt src="' + (prefix || '') + path + '"></script>');
-          }
-          for (var i = 0, j = sources.length; i < j; i++) loader(sources[i]);
-        })(window.prefix, window.loader);}.sub("%sources%", JSON.pretty_generate(c.required_files(includes_root)))
-        f.puts script
+        paths = c.required_files(includes_root)
+        f.puts Jsus::Util::CodeGenerator.generate_includes(paths)
       end
       checkpoint(:includes)
     end
