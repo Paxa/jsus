@@ -246,7 +246,7 @@ module Jsus
 
     def display_package(package)
       puts "Package: #{package.name}"
-      package.source_files.each do |sf|
+      package.source_files.to_a.sort_by {|sf| sf.filename}.each do |sf|
         puts "    [#{sf.relative_filename}]"
         puts "        Provides: [#{sf.provides_names.join(", ")}]"
         puts "        Requires: [#{sf.requires_names.join(", ")}]"
