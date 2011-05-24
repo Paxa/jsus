@@ -1,11 +1,17 @@
 = Jsus Changelog
 == Version 0.3.2
+Middleware changes:
 * Fixed minor problem with middleware when package name and source file tag
   are the same
 * Settings are now shared between Jsus::Middleware and subclasses
 * Middleware now also supports /include/ directive (generates includes file),
   like -g option of CLI utility
 * Hack for cache output paths to be recognizable by nginx
+
+CLI changes:
+* --very-verbose mode, outputs tree of your packages, very useful when debugging
+  missing dependencies.
+
 
 == Version 0.3.1
 * Added wildcard support for Jsus::Middleware

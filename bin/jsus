@@ -77,6 +77,11 @@ module Jsus
             Jsus.verbose = true
           end
 
+          opts.on_tail('--very-verbose', 'very verbose mode, shows pool stats beside usual verbose stuff') do
+            Jsus.verbose = true
+            options[:display_pool_stats] = true
+          end
+
           opts.on_tail('-b', '--benchmark', 'shows time spent on various stages') do
             options[:benchmark] = true
           end
@@ -192,6 +197,7 @@ module Jsus
       setup_output_directory
       preload_pool
       load_package
+      display_pool_stats if options[:display_pool_stats]
       compile_package
       post_process if options[:postproc]
       compress_package if options[:compress]
@@ -222,6 +228,30 @@ module Jsus
       @package = Jsus::Package.new(options[:input_dir], :pool => @pool)
       @package.include_dependencies!
       checkpoint(:dependencies)
+    end
+
+    def display_pool_stats
+      checkpoint(:pool_stats)
+      puts ""
+      puts "Pool stats:"
+      puts ""
+      puts "Main package:"
+      display_package @package
+      puts "Supplementary packages:"
+      @pool.packages.each do |package|
+        display_package package
+      end
+      puts ""
+    end
+
+    def display_package(package)
+      puts "Package: #{package.name}"
+      package.source_files.each do |sf|
+        puts "    [#{sf.relative_filename}]"
+        puts "        Provides: [#{sf.provides_names.join(", ")}]"
+        puts "        Requires: [#{sf.requires_names.join(", ")}]"
+      end
+      puts ""
     end
 
     def compile_package
