@@ -41,4 +41,16 @@ module Jsus
   def self.version
     @version ||= File.read(File.dirname(__FILE__) + "/../VERSION")
   end
+
+
+  # Searches for circular dependencies in code.
+  # Enabled by default.
+  # Disable for more performance.
+  def self.look_for_cycles?
+    @look_for_cycles == nil ? true : @look_for_cycles
+  end
+
+  def self.look_for_cycles=(value)
+    @look_for_cycles = value
+  end
 end

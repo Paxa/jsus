@@ -98,6 +98,22 @@ module Jsus
         end
       end
       result = []
+      if Jsus.look_for_cycles?
+        cycles = graph.cycles
+        unless cycles.empty?
+          puts "*" * 30
+          puts "ACHTUNG! WARNING! ATTENTION!"
+          puts "*" * 30
+          puts "Jsus has discovered you have circular dependencies in your code."
+          puts "Please resolve them immediately!"
+          puts "List of circular dependencies:"
+          cycles.each do |cycle|
+            puts "-" * 30
+            puts (cycle + [cycle.first]).map {|sf| sf.filename}.join(" => ")
+          end
+          puts "*" * 30
+        end
+      end
       graph.topsort_iterator.each { |item| result << item }
       result
     end
@@ -162,8 +178,8 @@ module Jsus
 
     DELEGATED_METHODS = [
       "==", "to_a", "map", "map!", "each", "inject", "inject!",
-      "collect", "collect!", "reject", "reject!", "detect", "size", 
-      "length", "[]", "empty?", "index", "include?", "select", 
+      "collect", "collect!", "reject", "reject!", "detect", "size",
+      "length", "[]", "empty?", "index", "include?", "select",
       "delete_if", "delete", "-", "+", "|", "&"
     ] # :nodoc:
     # delegates most Enumerable methods to #sources

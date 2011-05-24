@@ -11,6 +11,8 @@ Middleware changes:
 CLI changes:
 * --very-verbose mode, outputs tree of your packages, very useful when debugging
   missing dependencies.
+* If you have circular dependencies in your code, jsus will detect them and issue
+  a huge warning message (WIP)
 
 
 == Version 0.3.1
