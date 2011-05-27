@@ -9,7 +9,7 @@ Why?
 As a javascript programmer, you often need to split your code into
 multiple files. When you have 50+ different modules / libraries, you
 need some way to resolve complex dependencies and package all you need
-and nil you don't. Jsus is an utility that allows you to do just that: 
+and nil you don't. Jsus is an utility that allows you to do just that:
 package your libraries into one piece with all dependencies included.
 
 Features
@@ -21,17 +21,17 @@ Features
   headers denoting their requirements and what they provide.
 * Jsus automatically resolves dependencies, so you don't have to worry about
   order issues or anything else.
-* Jsus allows you to make "extensions". Extension is a monkey-patch you can 
+* Jsus allows you to make "extensions". Extension is a monkey-patch you can
   apply to any other library. Because sometimes you want to make project-specific
   change to a library you don't have control over and you want to be able to
   update this library without applying manual patches from their source.
-* Jsus uses [murdoc](https://github.com/markiz/murdoc) for doccu style docs 
+* Jsus uses [murdoc](https://github.com/markiz/murdoc) for doccu style docs
   generation.
 * Jsus generates special json files denoting source and resulting project
   structure which can be useful for later introspection.
 * Jsus can also generate a special js file with loader for your dependencies,
   so that you don't need to repackage everything during development cycle.
-  
+
 Examples
 ========
 
@@ -41,6 +41,12 @@ Examples
   * `cd mootools-core`
   * `jsus . Output`
   * Look at what Output directory contains
+
+Using with Rails / Sinatra / Whatever
+=====================================
+
+Jsus comes with a middleware in its backpack. See [rails example](https://github.com/jsus/jsus-rails-app)
+and [sinatra example](https://github.com/jsus/jsus-sinatra-app).
 
 Plans
 =====
