@@ -2,7 +2,7 @@ name: Class
 filename: class.js
 description: Class class
 license: MIT-Style License, http://mootools.net/license
-copyright: Somebody
+copyright: © Somebody
 authors: Someone
 sources:
   - Source/Class.js

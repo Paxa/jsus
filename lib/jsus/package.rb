@@ -22,7 +22,7 @@ module Jsus
       if File.exists?(File.join(directory, 'package.yml'))
         self.header           = YAML.load_file(File.join(directory, 'package.yml'))
       elsif File.exists?(File.join(directory, 'package.json'))
-        self.header           = JSON.load(IO.read(File.join(directory, 'package.json')))
+        self.header           = JSON.load(File.open(File.join(directory, 'package.json'), 'r:utf-8') {|f| f.read })
       else
         raise "Directory #{directory} does not contain a valid package.yml / package.json file!"
       end
