@@ -19,7 +19,10 @@ module Jsus
     #
     def initialize(dir = nil)
       if dir
-        Dir[File.join(dir, '**', 'package.{yml,json}')].each do |package_path|
+        # '**{,/*/**}' thingie is to resolve problem with not following symlinks
+        # one level of symlinks
+        # See also: http://stackoverflow.com/questions/357754/can-i-traverse-symlinked-directories-in-ruby-with-a-glob
+        Dir[File.join(dir, '**{,/*/**}', 'package.{yml,json}')].each do |package_path|
           Package.new(File.dirname(package_path), :pool => self)
         end
       end
