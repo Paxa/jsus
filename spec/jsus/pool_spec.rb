@@ -10,7 +10,7 @@ describe Jsus::Pool do
   }
 
   let(:sources) {
-    packages.map {|p| p.source_files[0] }    
+    packages.map {|p| p.source_files[0] }
   }
 
   subject { Jsus::Pool.new }
@@ -66,7 +66,7 @@ describe Jsus::Pool do
     it "should allow tags" do
       subject.lookup(Jsus::Tag["Class/Class"]).should == sources[1]
     end
-    
+
     it "should return replacements whenever possible" do
       pkg = Jsus::Package.new("spec/data/ClassReplacement",  :pool => subject)
       subject << pkg.source_files
@@ -163,7 +163,7 @@ describe Jsus::Pool do
     it "should return a tree with all the source elements in it" do
       subject.provides_tree.glob("/Core/Class")[0].should == Jsus::Tag["Core/Class"]
     end
-        
+
     it "should allow wildcards" do
       subject.provides_tree.glob("/Core/*")[0].should == Jsus::Tag["Core/Class"]
     end
