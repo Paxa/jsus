@@ -6,7 +6,7 @@ gem "json_pure"
 gem "rgl"
 
 group :development do
-  gem "bundler"
+  gem "rake"
   gem "rspec"
   gem "cucumber"
   gem "jeweler"
