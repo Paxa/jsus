@@ -9,13 +9,13 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
-  s.date = %q{2011-05-19}
+  s.date = %q{2011-06-09}
   s.default_executable = %q{jsus}
   s.description = %q{Javascript packager and dependency resolver}
   s.email = %q{markizko@gmail.com}
   s.executables = ["jsus"]
   s.extra_rdoc_files = [
-    "README",
+    "README.md",
     "TODO"
   ]
   s.files = [
@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
     "CHANGELOG",
     "Gemfile",
     "Manifest",
-    "README",
+    "README.md",
     "Rakefile",
     "TODO",
     "UNLICENSE",
@@ -102,6 +102,7 @@ Gem::Specification.new do |s|
     "lib/jsus/source_file.rb",
     "lib/jsus/tag.rb",
     "lib/jsus/util.rb",
+    "lib/jsus/util/code_generator.rb",
     "lib/jsus/util/documenter.rb",
     "lib/jsus/util/file_cache.rb",
     "lib/jsus/util/inflection.rb",
@@ -217,7 +218,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<activesupport>, [">= 0"])
       s.add_runtime_dependency(%q<json_pure>, [">= 0"])
       s.add_runtime_dependency(%q<rgl>, [">= 0"])
-      s.add_development_dependency(%q<bundler>, [">= 0"])
+      s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<rspec>, [">= 0"])
       s.add_development_dependency(%q<cucumber>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
@@ -232,7 +233,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<activesupport>, [">= 0"])
       s.add_dependency(%q<json_pure>, [">= 0"])
       s.add_dependency(%q<rgl>, [">= 0"])
-      s.add_dependency(%q<bundler>, [">= 0"])
+      s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<cucumber>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
@@ -248,7 +249,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<activesupport>, [">= 0"])
     s.add_dependency(%q<json_pure>, [">= 0"])
     s.add_dependency(%q<rgl>, [">= 0"])
-    s.add_dependency(%q<bundler>, [">= 0"])
+    s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 0"])
     s.add_dependency(%q<cucumber>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
