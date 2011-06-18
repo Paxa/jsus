@@ -46,6 +46,11 @@ describe Jsus::Pool do
         pool = Jsus::Pool.new("spec/data/JsonPackage")
         pool.should have_exactly(1).packages
       end
+
+      it "should accept array of directories" do
+        pool = Jsus::Pool.new(["spec/data/JsonPackage", "spec/data/Basic"])
+        pool.should have_exactly(2).packages
+      end
     end
   end
 

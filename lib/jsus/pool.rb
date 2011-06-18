@@ -17,13 +17,16 @@ module Jsus
     #
     # Directory is considered a Package directory if it contains +package.yml+ file.
     #
-    def initialize(dir = nil)
-      if dir
-        # '**{,/*/**}' thingie is to resolve problem with not following symlinks
-        # one level of symlinks
-        # See also: http://stackoverflow.com/questions/357754/can-i-traverse-symlinked-directories-in-ruby-with-a-glob
-        Dir[File.join(dir, '**{,/*/**}', 'package.{yml,json}')].uniq.each do |package_path|
-          Package.new(File.dirname(package_path), :pool => self)
+    def initialize(dir_or_dirs = nil)
+      if dir_or_dirs
+        directories = Array(dir_or_dirs)
+        directories.each do |dir|
+          # '**{,/*/**}' thingie is to resolve problem with not following symlinks
+          # one level of symlinks
+          # See also: http://stackoverflow.com/questions/357754/can-i-traverse-symlinked-directories-in-ruby-with-a-glob
+          Dir[File.join(dir, '**{,/*/**}', 'package.{yml,json}')].uniq.each do |package_path|
+            Package.new(File.dirname(package_path), :pool => self)
+          end
         end
       end
       flush_cache!
