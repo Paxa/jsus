@@ -3,6 +3,7 @@ module Jsus
     # Code generation routines.
     module CodeGenerator
       class <<self
+        # @param [Array] paths list of paths
         # @return [String] javascript for includes for a list of given paths
         # @api public
         def generate_includes(paths)

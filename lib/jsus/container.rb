@@ -9,7 +9,7 @@ module Jsus
   class Container
     # Instantiates a container from given sources.
     #
-    # @param [SourceFile]
+    # @param [*SourceFile] sources
     def initialize(*sources)
       sources.each do |source|
         push(source)
@@ -20,7 +20,7 @@ module Jsus
 
     # Pushes an item to the container
     #
-    # @param [SourceFile] source pushed file
+    # @param [SourceFile] source source pushed file
     def push(source)
       if source
         if source.kind_of?(Array) || source.kind_of?(Container)
@@ -86,7 +86,7 @@ module Jsus
     #
     # Optionally accepts a filesystem point to calculate relative paths from.
     #
-    # @param [String] root point from which the relative paths are calculated.
+    # @param [String] root root point from which the relative paths are calculated.
     #   When omitted, full paths are returned.
     # @return [Array] ordered list of required files
     # @api public

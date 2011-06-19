@@ -24,7 +24,7 @@ module Jsus
 
       # Generates documentation tree into the given directory.
       #
-      # @param [String] output directory
+      # @param [String] doc_dir output directory
       # @api public
       def generate(doc_dir = Dir.pwd)
         #FileUtils.rm_rf(doc_dir)
@@ -49,7 +49,7 @@ module Jsus
 
       # Adds a source file to the documented source tree
       #
-      # @param [Jsus::SourceFile] pushed source
+      # @param [Jsus::SourceFile] source pushed source
       # @api public
       def <<(source) # :nodoc:
         filename = File.basename(source.filename)
@@ -88,7 +88,7 @@ module Jsus
 
       # Sets documenter to exclusive scope for documentation.
       # Exclusive scope overrides all the other scopes.
-      # @param [Array, String] documentation scope
+      # @param [Array, String] scope documentation scope
       # @api public
       def only(scope)
         result = clone
@@ -99,7 +99,7 @@ module Jsus
       # Sets documenter to additive scope for documentation.
       # Additive scopes match any of the pathspecs given
       #
-      # @param [Array, String] documentation scope
+      # @param [Array, String] scope documentation scope
       # @api public
       def or(scope)
         result = clone

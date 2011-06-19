@@ -32,7 +32,7 @@ module Jsus
     # Between all those, tags b,c,d and e are equal, meaning they all use
     # the same spot in Hash or wherever else.
     #
-    # @param [String] tag name
+    # @param [String] name tag name
     # @param [Hash] options
     # @option options [String] :package_name owner package name
     # @option options [Jsus::Package] :package :owner package

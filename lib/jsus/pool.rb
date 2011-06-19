@@ -12,7 +12,7 @@ module Jsus
     #
     # Basic constructor.
     #
-    # @param [Array, String, nil] directory or list of directories to load source
+    # @param [Array, String, nil] dir_or_dirs directory or list of directories to load source
     #   packages from.
     # @api public
     def initialize(dir_or_dirs = nil)
@@ -49,7 +49,7 @@ module Jsus
     #
     # If given a source file, returns the input.
     #
-    # @param [String, Jsus::Tag, Jsus::SourceFile]
+    # @param [String, Jsus::Tag, Jsus::SourceFile] source_or_key
     # @return [Jsus::SourceFile]
     # @api public
     def lookup(source_or_key)
@@ -70,7 +70,7 @@ module Jsus
     #
     # Looks up for dependencies for given file recursively.
     #
-    # @param [String, Jsus::Tag, Jsus::SourceFile]
+    # @param [String, Jsus::Tag, Jsus::SourceFile] source_or_source_key
     # @return [Jsus::Container] container with all the dependencies
     # @api public
     def lookup_dependencies(source_or_source_key)
@@ -87,7 +87,7 @@ module Jsus
       result.sort!
     end
 
-    # @param [String, Jsus::Tag]
+    # @param [String, Jsus::Tag] tag_or_tag_key
     # @return [Array] array with source files with extensions for given tag.
     # @api public
     def lookup_extensions(tag_or_tag_key)
@@ -98,7 +98,8 @@ module Jsus
     #
     # Pushes an item into a pool.
     #
-    # @param [Jsus::SourceFile, Jsus::Package, Array] items to push
+    # @param [Jsus::SourceFile, Jsus::Package, Array] source_or_sources_or_package
+    #    items to push
     # @return [self]
     # @api public
     def <<(source_or_sources_or_package)
@@ -147,7 +148,7 @@ module Jsus
     # You probably will find yourself using #include_dependencies instead.
     # This method caches results locally, use flush_cache! to drop.
     #
-    # @param [String, Jsus::Tag, Jsus::SourceFile]
+    # @param [String, Jsus::Tag, Jsus::SourceFile] source_or_source_key
     # @return [Array] array of direct dependencies for given entity
     # @api private
     def lookup_direct_dependencies(source_or_source_key)
@@ -158,7 +159,7 @@ module Jsus
     #
     # Performs the actual lookup for #lookup_direct_dependencies
     #
-    # @param [String, Jsus::Tag, Jsus::SourceFile]
+    # @param [String, Jsus::Tag, Jsus::SourceFile] source
     # @return [Array] array of direct dependencies for given entity
     # @api private
     def lookup_direct_dependencies!(source)
@@ -187,7 +188,7 @@ module Jsus
 
 
     # Registers the source in both trees
-    # @param [Jsus::SourceFile]
+    # @param [Jsus::SourceFile] source
     # @api private
     def add_source_to_trees(source)
       if source.package

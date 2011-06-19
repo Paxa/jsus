@@ -14,7 +14,7 @@ module Jsus
     #
     # Creates a package from given directory.
     #
-    # @param [String] path to directory containing a package
+    # @param [String] directory path to directory containing a package
     # @param [Hash] options
     # @option options [Jsus::Pool] :pool which pool the package should belong to.
     # @raise an error when the given directory doesn't contain a package.yml or package.json
@@ -130,7 +130,7 @@ module Jsus
     end
 
     # Compiles source files and linked external source files into a given category.
-    # @param [String, nil] directory to output the result into
+    # @param [String, nil] directory directory to output the result into
     # @return [String] content of merged source files
     # @api public
     def compile(directory = ".")
@@ -139,8 +139,8 @@ module Jsus
     end
 
     # Generates tree structure for files in package into a json file.
-    # @param [String] directory to output the result
-    # @param [String] resulting filename
+    # @param [String] directory directory to output the result
+    # @param [String] filename resulting filename
     # @return [Hash] hash with tree structure
     # @api public
     def generate_tree(directory = ".", filename = "tree.json")
@@ -162,8 +162,8 @@ module Jsus
     end
 
     # Generates info about resulting compiled package into a json file.
-    # @param [String] directory to output the result
-    # @param [String] resulting filename
+    # @param [String] directory directory to output the result
+    # @param [String] filename resulting filename
     # @return [Hash] hash with scripts info
     # @api public
     def generate_scripts_info(directory = ".", filename = "scripts.json")
@@ -228,13 +228,13 @@ module Jsus
     # Private API
 
 
-    # @param [Hash] parsed header
+    # @param [Hash] new_header parsed header
     # @api private
     def header=(new_header)
       @header = new_header
     end
 
-    # @param [Enumerable] external dependencies
+    # @param [Enumerable] new_value external dependencies
     # @api private
     def linked_external_dependencies=(new_value)
       @linked_external_dependencies = new_value

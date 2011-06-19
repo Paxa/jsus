@@ -18,7 +18,8 @@ module Jsus
         end
         alias_method :sources, :source_files
 
-        # @param [Jsus::Pool, Jsus::Container, Array] source files for validation
+        # @param [Jsus::Pool, Jsus::Container, Array] pool_or_array_or_container
+        #    source files for validation
         # @api public
         def source_files=(pool_or_array_or_container)
           case pool_or_array_or_container
@@ -45,7 +46,7 @@ module Jsus
         end
 
         # Shortcut for creating and validating a list of items
-        # @param [*Array] args for #new
+        # @param [*Array] args passed to #new
         # @api public
         def self.validate(*args)
           new(*args).validate

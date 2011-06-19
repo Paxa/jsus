@@ -12,7 +12,7 @@ module Jsus
     #
     # Inits packager with the given sources.
     #
-    # @param [SourceFile] source files
+    # @param [*SourceFile] sources source files
     # @api public
     def initialize(*sources)
       self.container = Container.new(*sources)
@@ -27,7 +27,7 @@ module Jsus
     # Concatenates all the sources' contents into a single string.
     # If given a filename, outputs into a file.
     #
-    # @param [String, nil] output file name
+    # @param [String, nil] output_file output file name
     # @return [String] concatenated source files
     # @api public
     def pack(output_file = nil)

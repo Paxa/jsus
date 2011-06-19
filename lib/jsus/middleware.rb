@@ -94,7 +94,7 @@ module Jsus
     end # class <<self
 
     # Default rack initialization routine
-    # @param [#call] rack chain caller
+    # @param [#call] app rack chain caller
     # @api public
     def initialize(app)
       @app = app
@@ -106,7 +106,7 @@ module Jsus
     # Jsus::Middleware#call method dups current rack app and executes
     # Jsus::Middleware#_call on it.
     #
-    # @param [Hash] rack env
+    # @param [Hash] env rack env
     # @return [#each] rack response
     # @api semipublic
     def _call(env)
@@ -126,7 +126,7 @@ module Jsus
 
     # Rack calling point
     #
-    # @param [Hash] rack env
+    # @param [Hash] env rack env
     # @return [#each] rack response
     # @api public
     def call(env)
@@ -137,7 +137,7 @@ module Jsus
 
     # Generates response for /require/ requests.
     #
-    # @param [String] path component to required sources
+    # @param [String] path_string path component to required sources
     # @return [#each] rack response
     # @api semipublic
     def generate_requires(path_string)
@@ -153,7 +153,7 @@ module Jsus
 
     # Generates response for /include/ requests.
     #
-    # @param [String] path component to included sources
+    # @param [String] path_string path component to included sources
     # @return [#each] rack response
     # @api semipublic
     def generate_includes(path_string)
@@ -168,7 +168,7 @@ module Jsus
 
     # Returns list of exlcuded and included source files for given path strings.
     #
-    # @param [String] string with + and ~
+    # @param [String] path_string string with + and ~
     # @return [Hash] hash with source files to include and to exclude
     # @api semipublic
     def path_string_to_files(path_string)
@@ -203,8 +203,9 @@ module Jsus
     end # parse_path_string
 
     # Returns a list of associated files for given source file or source package.
-    # @param [String] canonical source file or source package name or wildcard
-    #    e.g. "Mootools.Core", "Mootools.Core/*", "Mootools.Core/Class", "**/*"
+    # @param [String] source_file_or_package canonical source file or source
+    #    package name or wildcard. E.g. "Mootools.Core", "Mootools.Core/*",
+    #   "Mootools.Core/Class", "**/*"
     # @return [Array] list of source files for given input
     # @api semipublic
     def get_associated_files(source_file_or_package)
@@ -233,7 +234,7 @@ module Jsus
     end # not_found!
 
     # Respond with given text
-    # @param [String] text to respond with
+    # @param [String] text text to respond with
     # @return [#each] 200 response
     # @api semipublic
     def respond_with(text)
@@ -242,7 +243,7 @@ module Jsus
 
     # Check whether given path is handled by jsus middleware.
     #
-    # @param [String] path
+    # @param [String] path path
     # @return [Boolean]
     # @api semipublic
     def handled_by_jsus?(path)
@@ -292,7 +293,7 @@ module Jsus
     # You might or might not need to do some last minute conversions for your cache
     # key. Default behaviour is merely a nginx hack, you may have to use your own
     # function for your web-server.
-    # @param [String] request path minus the prefix
+    # @param [String] path request path minus the prefix
     # @return [String] normalized cache key for given request path
     # @api semipublic
     def escape_path_for_cache_key(path)

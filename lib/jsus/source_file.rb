@@ -39,7 +39,7 @@ module Jsus
     #
     # Initializes a SourceFile given the filename and options
     #
-    # @param [String]
+    # @param [String] filename
     # @param [Hash] options
     # @option options [Jsus::Pool] :pool owning pool
     # @option options [Jsus::Package] :package owning package
@@ -158,7 +158,7 @@ module Jsus
       extends && !extends.empty?
     end
 
-    # @return [Array] array of included extensions for given source.
+    # @return [Array] new_value array of included extensions for given source.
     # @api public
     def extensions
       @extensions ||= []
@@ -166,7 +166,7 @@ module Jsus
       @extensions
     end
 
-    # @param [Array] list of extensions for given file
+    # @param [Array] new_value list of extensions for given file
     # @api semipublic
     def extensions=(new_value)
       @extensions = new_value
@@ -219,7 +219,7 @@ module Jsus
     end
 
     # Parses header and gets info from it.
-    # @param [String] header content
+    # @param [String] new_header header content
     # @api private
     def header=(new_header)
       @header = new_header
@@ -242,7 +242,7 @@ module Jsus
       end
     end
 
-    # @param [String] file content
+    # @param [String] new_value file content
     # @api private
     def content=(new_value)
       @content = new_value
@@ -261,7 +261,7 @@ module Jsus
       @content
     end
 
-    # @param [Enumerable] list of tags
+    # @param [Enumerable] tag_list list of tags
     # @return [Array] normalized tags list
     # @api private
     def parse_tag_list(tag_list)
@@ -284,7 +284,7 @@ module Jsus
 
     # Assigns an instance of Jsus::Pool to the source file.
     # Also performs push to that pool.
-    # @param [Jsus::Pool]
+    # @param [Jsus::Pool] new_value
     # @api private
     def pool=(new_value)
       @pool = new_value
