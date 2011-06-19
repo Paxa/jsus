@@ -1,43 +1,40 @@
 require 'rack/utils'
 module Jsus
   #
-  # Rack middleware
+  # Jsus rack middleware.
   #
-  # Just "use Jsus::Middleware" in your rack application and all the requests
-  # to /javascripts/jsus/* are redirected to the middleware.
+  # Usage
+  # -----
   #
-  # Configuration:
+  # `use Jsus::Middleware` in your rack application and all the requests
+  # to /javascripts/jsus/* will be redirected to the middleware.
   #
-  # Use Jsus::Middleware.settings= method to change some settings, such as:
-  # :packages_dir - path to where you store your packages
-  # :cache - enable simple file caching
-  # :cache_path - directory for file caching
-  # :prefix - change /jsus/ to something else or remove it altogether (set to nil)
-  # :cache_pool - cache js pool between requests. Can save you some time
-  #               between requests but annoys a lot during development.
-  # :includes_root - when using /include/ it will generate relative paths from
-  #                  this directory to the source file.
+  # Example requests
+  # ----------------
   #
-  # Examples:
+  # <dt>`GET /javascripts/jsus/require/Mootools.Core+Mootools.More`</dt>
+  # <dd>merges packages named Mootools.Core and Mootools.More with all the
+  # dependencies and outputs the result.</dd>
   #
-  # GET /javascripts/jsus/require/Mootools.Core+Mootools.More
-  #     merges packages named Mootools.Core and Mootools.More with all the
-  #     dependencies and outputs the result.
+  # <dt>`GET /javascripts/jsus/require/Mootools.More~Mootools.Core`</dt>
+  # <dd>returns package Mootools.More with all the dependencies MINUS any of
+  # Mootools.Core dependencies.</dd>
   #
-  # GET /javascripts/jsus/require/Mootools.More~Mootools.Core
-  #     returns package Mootools.More with all the dependencies MINUS any of
-  #     Mootools.Core dependencies.
+  # <dt>`GET /javascripts/jsus/require/Mootools.Core:Class+Mootools.More:Fx`</dt>
+  # <dd>same thing but for source files providing Mootools.Core/Class and
+  # Mootools.More/Fx</dd>
   #
-  # GET /javascripts/jsus/require/Mootools.Core:Class+Mootools.More:Fx
-  #     same thing but for source files providing Mootools.Core/Class and
-  #     Mootools.More/Fx
+  # <dt>`GET /javascripts/jsus/include/Mootools.Core`</dt>
+  # <dd>generates js file with remote javascript fetching via ajax</dd>
   #
-  #
-  # Also see sinatra example https://github.com/jsus/jsus-sinatra-app
+  # @see .settings=
+  # @see https://github.com/jsus/jsus-sinatra-app Sinatra example (Github)
+  # @see https://github.com/jsus/jsus-rails-app Rails example (Github)
   #
   class Middleware
     include Rack
     class <<self
+      # Default settings for Middleware
       DEFAULT_SETTINGS = {
         :packages_dir     => ".",
         :cache            => false,
@@ -47,31 +44,71 @@ module Jsus
         :includes_root    => "."
       }.freeze
 
+      # @return [Hash] Middleware current settings
+      # @api public
       def settings
         @@settings ||= DEFAULT_SETTINGS.dup
       end # settings
 
+      # *Merges* given new settings into current settings.
+      #
+      # @param [Hash] new_settings
+      # @option new_settings [String, Array] :packages_dir directory (or array
+      #    of directories) containing source files.
+      # @option new_settings [Boolean] :cache enable file caching (every request
+      #    is written into corresponding file). Note, that it's write-only cache,
+      #    you will have to configure your webserver to serve these files.
+      # @option new_settings [String] :cache_path path to cache directory
+      # @option new_settings [String, nil] :prefix path prefix to use for
+      #    request. You can change default "jsus" to anything else or disable it
+      #    altogether.
+      # @option new_settings [Boolean] :cache_pool whether to cache pool between
+      #    requests. Cached pool means that updates to your source files will not
+      #    be visible until you restart webserver.
+      # @option new_settings [String] :includes_root when generating "includes"
+      #    lists, this is the point in filesystem used as relative root.
+      # @api public
       def settings=(new_settings)
         settings.merge!(new_settings)
       end # settings=
 
+      # Generates and caches a pool of source files and packages.
+      #
+      # @return [Jsus::Pool]
+      # @api public
       def pool
         @@pool ||= Jsus::Pool.new(settings[:packages_dir])
       end # pool
 
+      # @return [Boolean] whether caching is enabled
+      # @api public
       def cache?
         settings[:cache]
       end # cache?
 
+      # @return [Jsus::Util::FileCache] file cache to store results of requests.
+      # @api public
       def cache
         @@cache ||= cache? ? Util::FileCache.new(settings[:cache_path]) : nil
       end # cache
     end # class <<self
 
+    # Default rack initialization routine
+    # @param [#call] rack chain caller
+    # @api public
     def initialize(app)
       @app = app
     end # initialize
 
+    # Since rack apps are used as singletons and we store some state during
+    # request handling, we need to separate state between different calls.
+    #
+    # Jsus::Middleware#call method dups current rack app and executes
+    # Jsus::Middleware#_call on it.
+    #
+    # @param [Hash] rack env
+    # @return [#each] rack response
+    # @api semipublic
     def _call(env)
       path = Utils.unescape(env["PATH_INFO"])
       return @app.call(env) unless handled_by_jsus?(path)
@@ -87,12 +124,22 @@ module Jsus
       end
     end # _call
 
+    # Rack calling point
+    #
+    # @param [Hash] rack env
+    # @return [#each] rack response
+    # @api public
     def call(env)
       dup._call(env)
     end # call
 
     protected
 
+    # Generates response for /require/ requests.
+    #
+    # @param [String] path component to required sources
+    # @return [#each] rack response
+    # @api semipublic
     def generate_requires(path_string)
       files = path_string_to_files(path_string)
       if !files.empty?
@@ -104,6 +151,11 @@ module Jsus
       end
     end # generate_requires
 
+    # Generates response for /include/ requests.
+    #
+    # @param [String] path component to included sources
+    # @return [#each] rack response
+    # @api semipublic
     def generate_includes(path_string)
       files = path_string_to_files(path_string)
       if !files.empty?
@@ -114,6 +166,11 @@ module Jsus
       end
     end # generate_includes
 
+    # Returns list of exlcuded and included source files for given path strings.
+    #
+    # @param [String] string with + and ~
+    # @return [Hash] hash with source files to include and to exclude
+    # @api semipublic
     def path_string_to_files(path_string)
       path_args = parse_path_string(path_string.sub(/.js$/, ""))
       files = []
@@ -122,11 +179,14 @@ module Jsus
       files
     end # path_string_to_files
 
-    # Notice: + is a space after url decoding
-    # input:
-    # "Package:A~Package:C Package:B~Other:D"
-    # output:
-    # {:include => ["Package/A", "Package/B"], :exclude => ["Package/C", "Other/D"]}
+    # Parses human-readable string with + and ~ operations into a more usable hash.
+    # @note + is a space after url decoding
+    #
+    # @example
+    #     parse_path_string("Package:A~Package:C Package:B~Other:D")
+    #        => {:include => ["Package/A", "Package/B"],
+    #            :exclude => ["Package/C", "Other/D"]}
+    # @api semipublic
     def parse_path_string(path_string)
       path_string = " " + path_string unless path_string[0,1] =~ /\+\-/
       included = []
@@ -142,6 +202,11 @@ module Jsus
       {:include => included, :exclude => excluded}
     end # parse_path_string
 
+    # Returns a list of associated files for given source file or source package.
+    # @param [String] canonical source file or source package name or wildcard
+    #    e.g. "Mootools.Core", "Mootools.Core/*", "Mootools.Core/Class", "**/*"
+    # @return [Array] list of source files for given input
+    # @api semipublic
     def get_associated_files(source_file_or_package)
       if package = pool.packages.detect {|pkg| pkg.name == source_file_or_package}
         package.include_dependencies!
@@ -160,27 +225,44 @@ module Jsus
       end
     end # get_associated_files
 
+    # Rack response of not found
+    # @return [#each] 404 response
+    # @api semipublic
     def not_found!
       [404, {"Content-Type" => "text/plain"}, ["Jsus doesn't know anything about this entity"]]
     end # not_found!
 
+    # Respond with given text
+    # @param [String] text to respond with
+    # @return [#each] 200 response
+    # @api semipublic
     def respond_with(text)
       [200, {"Content-Type" => "text/javascript"}, [text]]
     end # respond_with
 
-
+    # Check whether given path is handled by jsus middleware.
+    #
+    # @param [String] path
+    # @return [Boolean]
+    # @api semipublic
     def handled_by_jsus?(path)
       path =~ path_prefix_regex
     end # handled_by_jsus?
 
+    # @return [String] Jsus request path prefix
+    # @api semipublic
     def path_prefix
       @path_prefix ||= self.class.settings[:prefix] ? "/javascripts/#{self.class.settings[:prefix]}/" : "/javascripts/"
     end # path_prefix
 
+    # @return [Regexp] Jsus request path regexp
+    # @api semipublic
     def path_prefix_regex
       @path_prefix_regex ||= %r{^#{path_prefix}}
     end # path_prefix_regex
 
+    # @return [Jsus::Pool] Jsus session pool
+    # @api semipublic
     def pool
       if cache_pool?
         self.class.pool
@@ -189,20 +271,32 @@ module Jsus
       end
     end # pool
 
+    # @return [Boolean] whether request is going to be cached
+    # @api semipublic
     def cache?
       self.class.cache?
     end # cache?
 
+    # @return [Jsus::Util::FileCache] file cache to store response
+    # @api semipublic
     def cache
       self.class.cache
     end # cache
 
+    # @return [Boolean] whether pool is shared between requests
+    # @api semipublic
     def cache_pool?
       self.class.settings[:cache_pool]
     end # cache_pool?
 
+    # You might or might not need to do some last minute conversions for your cache
+    # key. Default behaviour is merely a nginx hack, you may have to use your own
+    # function for your web-server.
+    # @param [String] request path minus the prefix
+    # @return [String] normalized cache key for given request path
+    # @api semipublic
     def escape_path_for_cache_key(path)
-      path.gsub(" ", "+") # nginx hack, you may have to use your own function for your web-server
+      path.gsub(" ", "+")
     end # escape_path_for_cache_key
   end # class Middleware
 end # module Jsus

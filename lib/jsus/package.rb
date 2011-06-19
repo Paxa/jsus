@@ -4,19 +4,22 @@ module Jsus
   # a javascript package.
   #
   class Package
-    attr_accessor :directory # directory which this package resides in (full path)
-    attr_accessor :pool      # an instance of Pool
+    # directory which this package resides in (full path)
+    attr_accessor :directory
+    # an instance of Jsus::Pool
+    attr_accessor :pool
+
     # Constructors
 
     #
     # Creates a package from given directory.
     #
-    # Accepts options:
-    # * +:pool:+ -- which pool the package should belong to.
-    #
-    # Raises an error when the given directory doesn't contain a package.yml or package.json
+    # @param [String] path to directory containing a package
+    # @param [Hash] options
+    # @option options [Jsus::Pool] :pool which pool the package should belong to.
+    # @raise an error when the given directory doesn't contain a package.yml or package.json
     # file with meta info.
-    #
+    # @api public
     def initialize(directory, options = {})
       self.directory          = File.expand_path(directory)
       if File.exists?(File.join(directory, 'package.yml'))
@@ -49,44 +52,52 @@ module Jsus
 
     # Public API
 
-    # Returns a package.yml header.
+    # @return [Hash] parsed package header.
+    # @api public
     def header
       @header ||= {}
     end
 
-    # Returns a package name.
+    # @return [String] a package name.
+    # @api public
     def name
       header["name"] ||= ""
     end
 
-    # Returns a package description.
+    # @return [String] a package description.
+    # @api public
     def description
       header["description"] ||= ""
     end
 
-    # Returns a filename for compiled package.
+    # @return [String] a filename for compiled package.
+    # @api public
     def filename
       header["filename"] ||= Jsus::Util::Inflection.snake_case(name) + ".js"
     end
 
-    # Returns a list of sources filenames.
+    # @return [Array] a list of sources filenames.
+    # @api public
     def files
       header["files"] = header["files"] || header["sources"] || []
     end
     alias_method :sources, :files
 
-    # Returns an array of provided tags including those provided by linked external dependencies.
+    # @return [Array] an array of provided tags including those provided by linked external dependencies.
+    # @api public
     def provides
       source_files.map {|s| s.provides }.flatten | linked_external_dependencies.map {|d| d.provides }.flatten
     end
 
-    # Returns an array of provided tags names including those provided by linked external dependencies.
+    # @return [Array] an array of provided tags names including those provided by linked external dependencies.
+    # @api public
     def provides_names
       source_files.map {|s| s.provides_names(:short => true) }.flatten |
       linked_external_dependencies.map {|d| d.provides_names }.flatten
     end
 
-    # Returns an array of unresolved dependencies' tags for the package.
+    # @return [Array] an array of unresolved dependencies' tags for the package.
+    # @api public
     def dependencies
       result = source_files.map {|source| source.dependencies }.flatten
       result |= linked_external_dependencies.map {|d| d.dependencies}.flatten
@@ -94,33 +105,44 @@ module Jsus
       result
     end
 
-    # Returns an array of unresolved dependencies' names.
+    # @return [Array] an array of unresolved dependencies' names.
+    # @api public
     def dependencies_names
       dependencies.map {|d| d.name(:short => true) }
     end
 
-    # Returns an array of external dependencies' tags (including resolved ones).
+    # @return [Array] an array of external dependencies' tags (including resolved ones).
+    # @api public
     def external_dependencies
       source_files.map {|s| s.external_dependencies }.flatten
     end
 
-    # Returns an array of external dependencies' names (including resolved ones).
+    # @return [Array] an array of external dependencies' names (including resolved ones).
+    # @api public
     def external_dependencies_names
       external_dependencies.map {|d| d.name }
     end
 
-    # Returns source files with external dependencies in correct order.
+    # @return [Jsus::Container] source files with external dependencies in correct order.
+    # @api public
     def linked_external_dependencies
       @linked_external_dependencies ||= Container.new
     end
 
     # Compiles source files and linked external source files into a given category.
+    # @param [String, nil] directory to output the result into
+    # @return [String] content of merged source files
+    # @api public
     def compile(directory = ".")
       fn = directory ? File.join(directory, filename) : nil
       Packager.new(*(source_files.to_a + linked_external_dependencies.to_a)).pack(fn)
     end
 
     # Generates tree structure for files in package into a json file.
+    # @param [String] directory to output the result
+    # @param [String] resulting filename
+    # @return [Hash] hash with tree structure
+    # @api public
     def generate_tree(directory = ".", filename = "tree.json")
       FileUtils.mkdir_p(directory)
       result = ActiveSupport::OrderedHash.new
@@ -140,6 +162,10 @@ module Jsus
     end
 
     # Generates info about resulting compiled package into a json file.
+    # @param [String] directory to output the result
+    # @param [String] resulting filename
+    # @return [Hash] hash with scripts info
+    # @api public
     def generate_scripts_info(directory = ".", filename = "scripts.json")
       FileUtils.mkdir_p directory
       File.open(File.join(directory, filename), "w") { |resulting_file| resulting_file << JSON.pretty_generate(self.to_hash) }
@@ -147,6 +173,7 @@ module Jsus
     end
 
     # Looks up all the external dependencies in the pool.
+    # @api semipublic
     def include_dependencies!
       source_files.each do |source|
         if pool
@@ -157,6 +184,7 @@ module Jsus
     end
 
     # Executes #include_extensions for all the source files.
+    # @api semipublic
     def include_extensions!
       source_files.each do |source|
         source.include_extensions!
@@ -164,11 +192,15 @@ module Jsus
     end
 
     # Lists the required files for the package.
+    # @return [Array] ordered list of full paths to required files.
+    # @api public
     def required_files
       source_files.map {|s| s.required_files }.flatten
     end
 
-    def to_hash # :nodoc:
+    # Hash representation of the package.
+    # @api public
+    def to_hash
       {
         name => {
           :desc => description,
@@ -178,26 +210,34 @@ module Jsus
       }
     end
 
+
     # Container with source files
+    # @return [Jsus::Container]
+    # @api semipublic
     def source_files
       @source_files ||= Container.new
     end
 
     # Container with extensions (they aren't compiled or included into #reqired_files list)
+    # @return [Jsus::Container]
+    # @api semipublic
     def extensions
       @extensions ||= Container.new
     end
 
     # Private API
 
-    def header=(new_header) # :nodoc:
+
+    # @param [Hash] parsed header
+    # @api private
+    def header=(new_header)
       @header = new_header
     end
 
-    def linked_external_dependencies=(new_value) # :nodoc:
+    # @param [Enumerable] external dependencies
+    # @api private
+    def linked_external_dependencies=(new_value)
       @linked_external_dependencies = new_value
     end
-
-    protected
   end
 end

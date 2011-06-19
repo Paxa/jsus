@@ -18,6 +18,7 @@ Shared changes:
 * Pool instantiation will now follow symlinks one level deep
 * Somewhat easier on eyes murdoc template
 * Pool instantiation now also accepts array of directories as its argument
+* YARD docs are now the default docs choice
 
 == Version 0.3.1
 * Added wildcard support for Jsus::Middleware

@@ -1,30 +1,35 @@
 module Jsus
   #
-  # Packager is a plain simple class accepting several source files 
+  # Packager is a plain simple class accepting several source files
   # and joining their contents.
   #
   # It uses Container for storage which means it automatically sorts sources.
   #
   class Packager
-    attr_accessor :container  # :nodoc:
+    # Container with source files
+    attr_accessor :container
 
-    # 
+    #
     # Inits packager with the given sources.
     #
+    # @param [SourceFile] source files
+    # @api public
     def initialize(*sources)
       self.container = Container.new(*sources)
     end
 
-    def sources # :nodoc:
+    # @return [Jsus::Container] container with source files
+    # @api public
+    def sources
       container
     end
 
-    # 
     # Concatenates all the sources' contents into a single string.
     # If given a filename, outputs into a file.
     #
-    # Returns the concatenation.
-    #
+    # @param [String, nil] output file name
+    # @return [String] concatenated source files
+    # @api public
     def pack(output_file = nil)
       result = sources.map {|s| s.content }.join("\n")
 
@@ -32,10 +37,10 @@ module Jsus
         FileUtils.mkdir_p(File.dirname(output_file))
         File.open(output_file, "w") {|f| f << result }
       end
-      
+
       result
     end
 
-    
+
   end
 end

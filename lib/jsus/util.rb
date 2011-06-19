@@ -1,4 +1,5 @@
 module Jsus
+  # Utility namespace.
   module Util
     autoload :Tree,          'jsus/util/tree'
     autoload :Documenter,    'jsus/util/documenter'

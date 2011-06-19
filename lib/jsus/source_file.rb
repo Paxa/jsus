@@ -5,22 +5,31 @@ module Jsus
   #
   # SourceFile is a base for any Jsus operation.
   #
-  # It contains basic info about source as well as file content.
+  # It contains general info about source as well as file content.
   #
   class SourceFile
-    attr_accessor :relative_filename, :filename, :package # :nodoc:
+    # Filename relative to package root
+    attr_accessor :relative_filename
+    # Full filename
+    attr_accessor :filename
+    # Package owning the sourcefile
+    attr_accessor :package
+
     # Constructors
 
     # Basic constructor.
     #
-    # You probably should use SourceFile.from_file instead.
+    # You probably should use SourceFile.from_file instead of this one.
     #
-    # But if you know what you are doing, it accepts the following values:
-    # * +package+ -- an instance of Package, normally passed by a parent
-    # * +relative_filename+ -- used in Package, for generating tree structure of the source files
-    # * +filename+ -- full filename for the given package
-    # * +content+ -- file content of the source file
-    # * +pool+ -- an instance of Pool
+    # @param [Hash] options
+    # @option options [Jsus::Package] :package package to assign source file to.
+    # @option options [String] :relative_filename used in Package to generate
+    #   tree structure of the source files
+    # @option options [String] :filename full filename for the given source file
+    # @option options [String] :content file content of the source file
+    # @option options [Jsus::Pool] :pool owner pool for that file
+    # @option options [String] :header header of the file
+    # @api semipublic
     def initialize(options = {})
       [:package, :header, :relative_filename, :filename, :content, :pool].each do |field|
         send("#{field}=", options[field]) if options[field]
@@ -30,12 +39,13 @@ module Jsus
     #
     # Initializes a SourceFile given the filename and options
     #
-    # options:
-    # * <tt>:pool:</tt> -- an instance of Pool
-    # * <tt>:package:</tt> -- an instance of Package
-    #
-    # returns either an instance of SourceFile or nil when it's not possible to parse the input
-    #
+    # @param [String]
+    # @param [Hash] options
+    # @option options [Jsus::Pool] :pool owning pool
+    # @option options [Jsus::Package] :package owning package
+    # @return [Jsus::SourceFile]
+    # @raise [Jsus::BadSourceFileException] when file cannot be parsed
+    # @api public
     def self.from_file(filename, options = {})
       if File.exists?(filename)
         source = File.open(filename, 'r:utf-8') {|f| f.read }
@@ -64,121 +74,116 @@ module Jsus
 
     # Public API
 
-    #
-    # Returns a header parsed from YAML-formatted source file first comment.
-    # Contains information about authorship, naming, source files, etc.
-    #
+    # @return [Hash] a header parsed from YAML-formatted source file first comment.
+    # @api public
     def header
       self.header = {} unless @header
       @header
     end
 
-    #
-    # A string containing the description of the source file.
-    #
+    # @return [String] description of the source file.
+    # @api public
     def description
       header["description"]
     end
 
-    #
-    # Returns an array of dependencies tags. Unordered.
-    #
+    # @return [Array] list of dependencies for given file
+    # @api public
     def dependencies
       @dependencies
     end
     alias_method :requires, :dependencies
 
     #
-    # Returns an array with names of dependencies. Unordered.
-    # Accepts options:
-    # * <tt>:short:</tt> -- whether inner dependencies should not prepend package name
-    #   e.g. 'Class' instead of 'Core/Class' when in package 'Core').
-    #   Doesn't change anything for external dependencies
+    # @param [Hash] options
+    # @option options [Boolean] :short whether inner dependencies should not
+    #   prepend package name, e.g. 'Class' instead of 'Core/Class' when in
+    #   package 'Core'.
     #
+    #   Note Doesn't change anything for external dependencies
+    #
+    # @return [Array] array with names of dependencies. Unordered.
+    # @api public
     def dependencies_names(options = {})
       dependencies.map {|d| d.name(options) }
     end
     alias_method :requires_names, :dependencies_names
 
-    #
-    # Returns an array of external dependencies tags. Unordered.
-    #
+    # @return [Array] array of external dependencies tags. Unordered.
+    # @api public
     def external_dependencies
       dependencies.select {|d| d.external? }
     end
 
-    #
-    # Returns an array with names for external dependencies. Unordered.
-    #
+    # @returns [Array] array with names for external dependencies. Unordered.
+    # @api public
     def external_dependencies_names
       external_dependencies.map {|d| d.name }
     end
 
-    #
-    # Returns an array with provides tags.
-    #
+    # @return [Array] array with provides tags.
+    # @api public
     def provides
       @provides
     end
 
-    #
-    # Returns an array with provides names.
-    # Accepts options:
-    # * <tt>:short:</tt> -- whether provides should not prepend package name
-    #   e.g. 'Class' instead of 'Core/Class' when in package 'Core')
+    # @param [Hash] options
+    # @option options [Boolean] :short whether provides should not prepend package
+    #   name, e.g. 'Class' instead of 'Core/Class' when in package 'Core'.
+    # @return [Array] array with provides names.
+    # @api public
     def provides_names(options = {})
       provides.map {|p| p.name(options)}
     end
 
-    #
-    # Returns a tag for replaced file, if any
-    #
+    # @return [Jsus::Tag] tag for replaced file, if any
+    # @api public
     def replaces
       @replaces
     end
 
 
-    #
-    # Returns a tag for source file, which this one is an extension for.
-    #
-    # E.g.: file Foo.js in package Core provides ['Class', 'Hash']. File Bar.js in package Bar
-    # extends 'Core/Class'. That means its contents would be appended to the Foo.js when compiling
-    # the result.
-    #
+    # @returns [Jsus::Tag] tag for source file, for which this one is an extension.
+    # @example file Foo.js in package Core provides ['Class', 'Hash']. File
+    # Bar.js in package Bar extends 'Core/Class'. That means its contents would be
+    # appended to the Foo.js when compiling the result.
+    # @api public
     def extends
       @extends
     end
 
-    #
-    # Returns whether the source file is an extension.
-    #
+    # @return [Boolean] whether the source file is an extension.
+    # @api public
     def extension?
       extends && !extends.empty?
     end
 
-    #
-    # Returns an array of included extensions for given source.
-    #
+    # @return [Array] array of included extensions for given source.
+    # @api public
     def extensions
       @extensions ||= []
       @extensions = @extensions.flatten.compact.uniq
       @extensions
     end
 
-    def extensions=(new_value) # :nodoc:
+    # @param [Array] list of extensions for given file
+    # @api semipublic
+    def extensions=(new_value)
       @extensions = new_value
     end
 
-    #
-    # Looks up for extensions in the #pool and then includes
+    # Looks up for extensions in the pool and then includes
     # extensions for all the provides tag this source file has.
     # Caches the result.
     #
+    # @api semipublic
     def include_extensions
       @included_extensions ||= include_extensions!
     end
 
-    def include_extensions! # :nodoc:
+    # @see #include_extensions
+    # @api semipublic
+    def include_extensions!
       if pool
         provides.each do |p|
           extensions << pool.lookup_extensions(p)
@@ -186,19 +191,18 @@ module Jsus
       end
     end
 
-    #
-    # Returns an array of files required by this files including all the filenames for extensions.
-    # SourceFile filename always goes first, all the extensions are unordered.
-    #
+    # @return [Array] array of files required by this files including all the filenames for extensions.
+    #    SourceFile filename always goes first, all the extensions are unordered.
+    # @api public
     def required_files
       include_extensions
       [filename, extensions.map {|e| e.filename}].flatten
     end
 
+    # @return [Hash] hash containing basic info with dependencies/provides tags' names
+    #   and description for source file.
     #
-    # Returns a hash containing basic info with dependencies/provides tags' names
-    # and description for source file.
-    #
+    # @api public
     def to_hash
       {
         "desc"     => description,
@@ -207,12 +211,17 @@ module Jsus
       }
     end
 
-    def inspect # :nodoc:
+    # Human readable description of source file.
+    # @return [String]
+    # @api public
+    def inspect
       self.to_hash.inspect
     end
-    # Private API
 
-    def header=(new_header) # :nodoc:
+    # Parses header and gets info from it.
+    # @param [String] header content
+    # @api private
+    def header=(new_header)
       @header = new_header
       # prepare defaults
       @header["description"] ||= ""
@@ -233,19 +242,28 @@ module Jsus
       end
     end
 
-    def content=(new_value) # :nodoc:
+    # @param [String] file content
+    # @api private
+    def content=(new_value)
       @content = new_value
     end
 
-    def content # :nodoc:
+    # @return [String] file contents, *including* extensions
+    # @api semipublic
+    def content
       include_extensions
       [@content, extensions.map {|e| e.content}].flatten.compact.join("\n")
     end
 
-    def original_content # :nodoc:
+    # @return [String] Original file contents
+    # @api semipublic
+    def original_content
       @content
     end
 
+    # @param [Enumerable] list of tags
+    # @return [Array] normalized tags list
+    # @api private
     def parse_tag_list(tag_list)
       tag_list.map do |tag_name|
         case tag_name
@@ -266,24 +284,31 @@ module Jsus
 
     # Assigns an instance of Jsus::Pool to the source file.
     # Also performs push to that pool.
+    # @param [Jsus::Pool]
+    # @api private
     def pool=(new_value)
       @pool = new_value
       @pool << self if @pool
     end
 
     # A pool which the source file is assigned to. Used in #include_extensions!
+    # @return [Jsus::Pool]
+    # @api semipublic
     def pool
       @pool
     end
 
-    def ==(other) # :nodoc:
+    # @api public
+    def ==(other)
       eql?(other)
     end
 
-    def eql?(other) # :nodoc:
+    # @api public
+    def eql?(other)
       other.kind_of?(SourceFile) && filename == other.filename
     end
 
+    # @api public
     def hash
       [self.class, filename].hash
     end

@@ -6,8 +6,7 @@ module Jsus
     # structure (with node names like /namespace/inner/item) and supporting
     # lookups via #glob method.
     #
-    # Example:
-    #
+    # @example
     #     tree = Jsus::Tree.new
     #     tree["/folder/item_0"] = "Hello"
     #     tree["/folder/item_1"] = "World"
@@ -29,6 +28,7 @@ module Jsus
 
         # Splits path into components
         #     Jsus::Tree.components_from_path("/hello/world") # => ["hello", "world"]
+        # @api semipublic
         def components_from_path(path)
           raise "Empty path given: #{path.inspect}" if !path || path == ""
           path = path.to_s.dup
@@ -68,23 +68,31 @@ module Jsus
         attr_reader :name
         # Assigns node's full path and automatically deduces path components,
         # basename etc.
+        # @api semipublic
         def full_path=(full_path)
           @full_path = full_path
           @path_components = Tree.get_path_components(full_path)
           @name = @path_components[-1]
         end
 
-        # Returns node's direct descendants
+        # @return [Array] node's direct descendants
+        # @api public
         def children
           @children ||= []
         end
 
-        # Finds a node child by basename
+        # @param [String] basename
+        # @return [Jsus::Util::Tree::Node] direct node child with given basename
+        # @api public
         def find_child(name)
           children.detect {|child| child.name == name }
         end
 
         # Creates a child with given name and value
+        # @param [String] node name
+        # @param [Object] value
+        # @return [Jsus::Util::Tree::Node]
+        # @api public
         def create_child(name, value = nil)
           full_path = Tree.path_from_components(path_components + [name])
           node = Node.new(full_path, value)
@@ -94,7 +102,11 @@ module Jsus
         end
 
         # Finds a child with given name or creates a child with given name and
-        # value
+        # value.
+        #
+        # @param [String] name
+        # @param [Object] value
+        # @api public
         def find_or_create_child(name, value = nil)
           find_child(name) || create_child(name, value)
         end
@@ -105,7 +117,10 @@ module Jsus
         #    'smth*' -- nodes beginning with smth
         #    'smth*else' -- nodes beginning with smth and ending with else
         #    <string without asterisks> -- plain node lookup by name
-        # Returns array with search results
+        #
+        # @param [String] pathspec
+        # @return [Array] array with search results
+        # @api public
         def find_children_matching(pathspec)
           case pathspec
             when "**"
@@ -118,18 +133,23 @@ module Jsus
           end
         end
 
-        # Returns whether this node has children
+        # @return [Boolean] whether this node has children
+        # @api public
         def has_children?
           !children.empty?
         end
       end
 
-      # Root node of the tree
+      # @return [Jsus::Util::Tree::Node] root node of the tree
+      # @api public
       def root
         @root ||= Node.new("/", nil)
       end
 
       # Looks up a node by direct path. Does not support wildcards
+      # @param [String] path
+      # @return [Jsus::Util::Tree::Node]
+      # @api public
       def lookup(path)
         path_components = self.class.get_path_components(path)
         path_components.inject(root) do |result, component|
@@ -139,6 +159,11 @@ module Jsus
         end
       end
 
+      # @see lookup
+      # @param [String] path
+      # @return [Jsus::Util::Tree::Node]
+      # @note returns nil when node has no assigned value
+      # @api public
       def [](path)
         node = lookup(path)
         node ? node.value : nil
@@ -147,20 +172,28 @@ module Jsus
 
 
       # Searches for nodes by a given pathspec
-      # See Jsus::Util::Tree::Node#find_children_matching for more details
+      # @see Jsus::Util::Tree::Node#find_children_matching for more details
+      # @param [String] pathspec
+      # @return [Array] nodes for given pathspec
+      # @api semipublic
       def find_nodes_matching(pathspec)
         self.class.get_path_components(pathspec).inject([root]) do |nodes, component|
           nodes.map {|node| node.find_children_matching(component) }.flatten
         end
       end
 
-      # Returns values for nodes matching given pathspec
-      # See Jsus::Util::Tree::Node#find_children_matching for more details
+      # @param [String] pathspec
+      # @return [Array] values for nodes matching given pathspec
+      # @see Jsus::Util::Tree::Node#find_children_matching for more details
+      # @api public
       def glob(pathspec)
         find_nodes_matching(pathspec).map {|node| node.value }
       end
 
       # Inserts a node with given value into the tree
+      # @param [String] full node path
+      # @param [Object] value
+      # @api public
       def insert(full_path, value = nil)
         node = create_all_nodes_if_needed(full_path)
         node.value = value
@@ -168,9 +201,10 @@ module Jsus
       end
       alias_method :[]=, :insert
 
-      # Traverses the tree.
-      # When given true as the argument, traverses all nodes.
-      # Otherwise, only leaves.
+      # Traverses the tree (BFS).
+      # @param [Boolean] whether to traverse non-leaves nodes
+      # @yield traversed node
+      # @api public
       def traverse(all_nodes = false)
         node_list = [root]
         while !node_list.empty?
@@ -180,8 +214,9 @@ module Jsus
         end
       end
 
-      # Returns a list of leaves.
-      # Returns only leaves with set values by default
+      # @param [Boolean] whether to return only leaves with values
+      # @return [Array] list of leaves
+      # @api public
       def leaves(only_with_value = true)
         result = []
         traverse {|node| result << node if !only_with_value || node.value }
@@ -190,7 +225,8 @@ module Jsus
 
       protected
 
-      def create_all_nodes_if_needed(full_path) # :nodoc:
+      # @api private
+      def create_all_nodes_if_needed(full_path)
         self.class.get_path_components(full_path).inject(root) do |result, component|
           result.find_or_create_child(component)
         end

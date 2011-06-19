@@ -1,7 +1,10 @@
 module Jsus
   module Util
+    # Code generation routines.
     module CodeGenerator
       class <<self
+        # @return [String] javascript for includes for a list of given paths
+        # @api public
         def generate_includes(paths)
           script = %{
           (function(prefix, loader) {

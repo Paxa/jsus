@@ -12,11 +12,9 @@ module Jsus
     #
     # Basic constructor.
     #
-    # Accepts an optional directory argument, when it is set, it looks up for
-    # packages from the given directory and if it finds any, adds them to the pool.
-    #
-    # Directory is considered a Package directory if it contains +package.yml+ file.
-    #
+    # @param [Array, String, nil] directory or list of directories to load source
+    #   packages from.
+    # @api public
     def initialize(dir_or_dirs = nil)
       if dir_or_dirs
         directories = Array(dir_or_dirs)
@@ -33,17 +31,14 @@ module Jsus
     end
 
 
-    #
-    # An array containing all the packages in the pool. Unordered.
-    #
+    # @return [Array] array containing all the packages in the pool. Unordered.
+    # @api public
     def packages
       @packages ||= []
     end
 
-    #
-    # Container with all the sources in the pool.
-    # Attention: the sources are no more ordered.
-    #
+    # @return [Array] array with all the sources in the pool. Unordered
+    # @api public
     def sources
       @sources ||= []
     end
@@ -54,6 +49,9 @@ module Jsus
     #
     # If given a source file, returns the input.
     #
+    # @param [String, Jsus::Tag, Jsus::SourceFile]
+    # @return [Jsus::SourceFile]
+    # @api public
     def lookup(source_or_key)
       case source_or_key
         when String
@@ -72,8 +70,9 @@ module Jsus
     #
     # Looks up for dependencies for given file recursively.
     #
-    # Returns an instance of Container which contains the needed files sorted.
-    #
+    # @param [String, Jsus::Tag, Jsus::SourceFile]
+    # @return [Jsus::Container] container with all the dependencies
+    # @api public
     def lookup_dependencies(source_or_source_key)
       source = lookup(source_or_source_key)
       result = Container.new
@@ -88,9 +87,9 @@ module Jsus
       result.sort!
     end
 
-    #
-    # Returns an array with SourceFile-s with extensions for given tag.
-    #
+    # @param [String, Jsus::Tag]
+    # @return [Array] array with source files with extensions for given tag.
+    # @api public
     def lookup_extensions(tag_or_tag_key)
       tag = Tag[tag_or_tag_key]
       extensions_map[tag]
@@ -99,12 +98,9 @@ module Jsus
     #
     # Pushes an item into a pool.
     #
-    # Can be given:
-    # * SourceFile
-    # * Package (pushing all the child source files into the pool)
-    # * Array or Container (pushing all the contained source files into the pool)
-    #
-    # returns self.
+    # @param [Jsus::SourceFile, Jsus::Package, Array] items to push
+    # @return [self]
+    # @api public
     def <<(source_or_sources_or_package)
       case
       when source_or_sources_or_package.kind_of?(SourceFile)
@@ -138,7 +134,7 @@ module Jsus
 
     #
     # Drops any cached info
-    #
+    # @api public
     def flush_cache!
       @cached_dependencies = {}
     end
@@ -151,6 +147,9 @@ module Jsus
     # You probably will find yourself using #include_dependencies instead.
     # This method caches results locally, use flush_cache! to drop.
     #
+    # @param [String, Jsus::Tag, Jsus::SourceFile]
+    # @return [Array] array of direct dependencies for given entity
+    # @api private
     def lookup_direct_dependencies(source_or_source_key)
       source = lookup(source_or_source_key)
       @cached_dependencies[source] ||= lookup_direct_dependencies!(source)
@@ -159,6 +158,9 @@ module Jsus
     #
     # Performs the actual lookup for #lookup_direct_dependencies
     #
+    # @param [String, Jsus::Tag, Jsus::SourceFile]
+    # @return [Array] array of direct dependencies for given entity
+    # @api private
     def lookup_direct_dependencies!(source)
       return [] unless source
 
@@ -171,24 +173,22 @@ module Jsus
       end.flatten.map {|tag| lookup(tag) }
     end
 
-    #
-    # Returs a tree, containing all the sources
-    #
+    # @return [Jsus::Util::Tree] tree containing all the sources
+    # @api private
     def source_tree
       @source_tree ||= Util::Tree.new
     end
 
-    #
-    # Returns a tree containing all the provides tags
-    #
+    # @return [Jsus::Util::Tree] tree containing all the provides tags
+    # @api private
     def provides_tree
       @provides_tree ||= Util::Tree.new
     end
 
 
-    #
     # Registers the source in both trees
-    #
+    # @param [Jsus::SourceFile]
+    # @api private
     def add_source_to_trees(source)
       if source.package
         source_tree.insert("/" + source.package.name + "/" + File.basename(source.filename), source)
@@ -202,15 +202,23 @@ module Jsus
 
     protected
 
-    def provides_map # :nodoc:
+    # @return [Hash] map of provided tags onto source files. Used to check
+    #    redeclaration.
+    # @api private
+    def provides_map
       @provides_map ||= {}
     end
 
-    def extensions_map # :nodoc:
+    # @return [Hash] map of extension tags onto source files. Used to check
+    #    redeclaration.
+    # @api private
+    def extensions_map
       @extensions_map ||= Hash.new{|hash, key| hash[key] = [] }
     end
 
-    def replacement_map # :nodoc:
+    # @return [Hash] map of replacement tags onto source files.
+    # @api private
+    def replacement_map
       @replacement_map ||= {}
     end
   end

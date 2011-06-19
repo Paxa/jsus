@@ -3,8 +3,13 @@ module Jsus
   # Tag is basically just a string that contains a package name and a name for class
   # (or not necessarily a class) which the given SourceFile provides/requires/extends/replaces.
   #
+  # @example
+  # "Core/Class" is a tag
   class Tag
-    attr_accessor :package, :external # :nodoc:
+    # Owner package
+    attr_accessor :package
+    # Whether tag is external
+    attr_accessor :external
 
     # Constructors
 
@@ -13,6 +18,8 @@ module Jsus
     #
     # The way it works may seem a bit tricky but actually it parses name/options
     # combinations in different ways and may be best described by examples:
+    #
+    # @example
     #
     #     a = Tag.new("Class")      # :package_name => "",     :name => "Class", :external => false
     #     b = Tag.new("Core/Class") # :package_name => "Core", :name => "Class", :external => true
@@ -23,8 +30,14 @@ module Jsus
     #     e = Tag.new("Core/Class", :package => mash) # :package_name => "Core", :name => "Class", :external => true
     #
     # Between all those, tags b,c,d and e are equal, meaning they all use
-    # the same spot in Hash or whatever else.
+    # the same spot in Hash or wherever else.
     #
+    # @param [String] tag name
+    # @param [Hash] options
+    # @option options [String] :package_name owner package name
+    # @option options [Jsus::Package] :package :owner package
+    # @option options [Boolean] :external whether tag is considered external
+    # @api public
     def initialize(name, options = {})
       normalized_options = Tag.normalize_name_and_options(name, options)
       [:name, :package, :package_name, :external].each do |field|
@@ -32,7 +45,9 @@ module Jsus
       end
     end
 
-    def self.new(tag_or_name, *args, &block) # :nodoc:
+    # When given a tag instead of tag name, just returns it.
+    # @api public
+    def self.new(tag_or_name, *args, &block)
       if tag_or_name.kind_of?(Tag)
         tag_or_name
       else
@@ -40,30 +55,29 @@ module Jsus
       end
     end
 
-    # alias for Tag.new
+    # Alias for Tag.new
+    # @api public
     def self.[](*args)
       new(*args)
     end
 
     # Public API
 
-    #
-    # Returns true if tag is external. See initialization for more info on cases.
-    #
+    # @returns [Boolean] whether tag is external
+    # @api public
     def external?
       !!external
     end
 
-    #
-    # Returns a well-formed name for the tag.
-    # Options:
-    # * +:short:+ -- whether the tag should try using short form
-    #
-    # Important note: only non-external tags support short forms.
-    #
-    #    Tag.new('Core/Class').name(:short => true) # => 'Core/Class'
-    #    core = Package.new(...) # let's consider its name is 'Core'
-    #    Tag.new('Core/Class', :package => core).name(:short => true) # => 'Class'
+    # @param [Hash] options
+    # @option options [Boolean] :short whether the tag should try using short form
+    # @note only non-external tags support short forms.
+    # @example
+    #     Tag.new('Core/Class').name(:short => true) # => 'Core/Class'
+    #     core = Package.new(...) # let's consider its name is 'Core'
+    #     Tag.new('Core/Class', :package => core).name(:short => true) # => 'Class'
+    # @return [String] a well-formed name for the tag.
+    # @api public
     def name(options = {})
       if !package_name || package_name.empty? || (options[:short] && !external?)
         @name
@@ -73,17 +87,19 @@ module Jsus
     end
     alias_method :to_s, :name
 
-    # Returns its package name or an empty string
+    # @returns [String] package name or an empty string
+    # @api public
     def package_name
       @package_name ||= (@package ? @package.name : "")
     end
 
-    # Returns true if its name is empty
+    # @return [Boolean] whether name is empty
+    # @api public
     def empty?
       @name.empty?
     end
 
-    # Returns true if it has the same name as other tag
+    # @api public
     def ==(other)
       if other.kind_of?(Tag)
         self.name == other.name
@@ -92,9 +108,26 @@ module Jsus
       end
     end
 
+    # @api semipublic
+    def eql?(other)
+      self.==(other)
+    end
+
+    # @api semipublic
+    def hash
+      self.name.hash
+    end
+
+    # @return [String] human-readable representation
+    # @api public
+    def inspect
+      "<Jsus::Tag: #{name}>"
+    end
+
     # Private API
 
-    def self.normalize_name_and_options(name, options = {}) # :nodoc:
+    # @api private
+    def self.normalize_name_and_options(name, options = {})
       result = {}
       name.gsub!(%r(^(\.)?/), "")
       if name.index("/")
@@ -112,39 +145,32 @@ module Jsus
       result
     end
 
-    def self.normalized_options_to_full_name(options) # :nodoc:
+    # @api private
+    def self.normalized_options_to_full_name(options)
       [options[:package_name], options[:name]].compact.join("/")
     end
 
-    def self.name_and_options_to_full_name(name, options = {}) # :nodoc:
+    # @api private
+    def self.name_and_options_to_full_name(name, options = {})
       normalized_options_to_full_name(normalize_name_and_options(name, options))
     end
 
-    def self.normalize_package_name(name) # :nodoc:
+    # @api private
+    def self.normalize_package_name(name)
       package_chunks = name.split("/")
       package_chunks.map do |pc|
         Jsus::Util::Inflection.random_case_to_mixed_case(pc)
       end.join("/")
     end # normalize_name
 
-    def package_name=(new_value) # :nodoc:
+    # @api private
+    def package_name=(new_value)
       @package_name = new_value
     end
 
-    def name=(new_value) # :nodoc:
+    # @api private
+    def name=(new_value)
       @name = new_value
-    end
-
-    def eql?(other) # :nodoc:
-      self.==(other)
-    end
-
-    def hash # :nodoc:
-      self.name.hash
-    end
-
-    def inspect # :nodoc
-      "<Jsus::Tag: #{name}>"
     end
   end
 end

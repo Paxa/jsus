@@ -17,4 +17,5 @@ group :development do
   gem 'yui-compressor'
   gem 'sinatra'
   gem 'rack-test'
+  gem 'yard'
 end

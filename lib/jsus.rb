@@ -11,10 +11,7 @@ require 'fileutils'
 require 'pathname'
 
 #
-# Jsus -- a library for packaging up your source files.
-#
-# For better understanding of jsus ideas start with http://github.com/Markiz/jsus-examples
-#
+# Jsus -- your better javascript packager.
 #
 module Jsus
   autoload :SourceFile, 'jsus/source_file'
@@ -26,30 +23,43 @@ module Jsus
   autoload :Util,       'jsus/util'
   autoload :Middleware, 'jsus/middleware'
 
-  # Returns whether or not jsus is in verbose mode
+  # In verbose mode jsus shows a lot of warnings like missing dependencies.
+  # Default: false
+  #
+  # @return [Boolean] jsus verbosity mode
+  # @api public
   def self.verbose?
     !!@verbose
   end
 
-  # Sets verbose mode to on. In verbose mode jsus shows a lot of warnings
-  # like missing dependencies.
+  # @see .verbose?
+  # @param [Boolean] verbose verbose verbosity mode
+  # @api public
   def self.verbose=(verbose)
     @verbose = verbose
   end
 
-  # Returns current version
+  # @return [String] Jsus version
+  # @api public
   def self.version
     @version ||= File.read(File.dirname(__FILE__) + "/../VERSION")
   end
 
 
-  # Searches for circular dependencies in code.
-  # Enabled by default.
-  # Disable for more performance.
+  # Circular dependencies cannot be resolved and lead to "impossible"
+  # situations and problems, like missing source files or incorrect ordering.
+  #
+  # However, checking for cycles is quite computationally expensive, which
+  # is why you may want to disable it in production mode.
+  #
+  # @return [Boolean]
+  # @api public
   def self.look_for_cycles?
     @look_for_cycles == nil ? true : @look_for_cycles
   end
 
+  # @see .look_for_cycles?
+  # @param [Boolean]
   def self.look_for_cycles=(value)
     @look_for_cycles = value
   end

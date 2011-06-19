@@ -6,7 +6,13 @@ module Jsus
       #   * Presence of authors field
       #   * Presence of license field
       class Mooforge < Base
-        def validation_errors # :nodoc:
+        # Mooforge validator checks every file for the following:
+        #   * Presence of header
+        #   * Presence of authors field
+        #   * Presence of license field
+        # @return [Array] list oferrors
+        # @api public
+        def validation_errors
           @validation_errors ||= sources.inject([]) do |result, sf|
             if !sf.header
               result << "#{sf.filename} is missing header"
