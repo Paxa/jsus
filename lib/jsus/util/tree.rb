@@ -57,6 +57,9 @@ module Jsus
         attr_accessor :path_components
 
         # Initializes full path and value for the node
+        # @param [String] full_path full path to node
+        # @param [Object] value
+        # @api public
         def initialize(full_path, value = nil)
           self.full_path = full_path
           self.value = value
@@ -81,7 +84,7 @@ module Jsus
           @children ||= []
         end
 
-        # @param [String] basename
+        # @param [String] name basename
         # @return [Jsus::Util::Tree::Node] direct node child with given basename
         # @api public
         def find_child(name)
@@ -89,7 +92,7 @@ module Jsus
         end
 
         # Creates a child with given name and value
-        # @param [String] node name
+        # @param [String] name node name
         # @param [Object] value
         # @return [Jsus::Util::Tree::Node]
         # @api public
