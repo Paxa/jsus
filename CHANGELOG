@@ -1,4 +1,7 @@
 = Jsus Changelog
+== Version 0.3.3
+* Unfortunate accident with rubygems
+
 == Version 0.3.2
 Middleware changes:
 * Fixed minor problem with middleware when package name and source file tag
