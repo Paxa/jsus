@@ -1,9 +1,7 @@
 --markup="markdown" lib/**/*.rb
 --no-private
---no-protected
 --main README.md
 --hide-tag todo
 -
-LICENSE
 CHANGELOG
 docs/*.textile
