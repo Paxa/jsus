@@ -3,5 +3,6 @@
 --main README.md
 --hide-tag todo
 -
+UNLICENSE
 CHANGELOG
 docs/*.textile
