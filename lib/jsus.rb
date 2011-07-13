@@ -22,6 +22,7 @@ module Jsus
   autoload :Pool,       'jsus/pool'
   autoload :Util,       'jsus/util'
   autoload :Middleware, 'jsus/middleware'
+  autoload :Compressor, 'jsus/compressor'
 
   # In verbose mode jsus shows a lot of warnings like missing dependencies.
   # Default: false
