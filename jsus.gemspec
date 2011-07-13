@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.3.3"
+  s.version = "0.3.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
@@ -102,6 +102,7 @@ Gem::Specification.new do |s|
     "lib/jsus/pool.rb",
     "lib/jsus/source_file.rb",
     "lib/jsus/tag.rb",
+    "lib/jsus/compressor.rb",
     "lib/jsus/util.rb",
     "lib/jsus/util/code_generator.rb",
     "lib/jsus/util/documenter.rb",

@@ -27,6 +27,7 @@ module Jsus
       elsif File.exists?(File.join(directory, 'package.json'))
         self.header           = JSON.load(File.open(File.join(directory, 'package.json'), 'r:utf-8') {|f| f.read })
       else
+        Jsus::Middleware.errors << "Directory #{directory} does not contain a valid package.yml / package.json file!"
         raise "Directory #{directory} does not contain a valid package.yml / package.json file!"
       end
       Dir.chdir(directory) do
@@ -39,7 +40,7 @@ module Jsus
               source_files << source_file
             end
           else
-            puts "Warning: #{source} is not found for #{name}" if Jsus.verbose?
+            Jsus::Middleware.errors << "Warning: #{source} is not found for #{name}".tap {|a| Jsus.verbose? && puts(a)}
           end
         end
       end

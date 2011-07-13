@@ -33,7 +33,7 @@ module Jsus
   #
   class Middleware
     include Rack
-    class <<self
+    class << self
       # Default settings for Middleware
       DEFAULT_SETTINGS = {
         :packages_dir     => ".",
@@ -41,9 +41,25 @@ module Jsus
         :cache_path       => nil,
         :prefix           => "jsus",
         :cache_pool       => true,
-        :includes_root    => "."
+        :includes_root    => ".",
+        :log_method       => nil # :alert, :html, :console, nil
       }.freeze
+      
+      @@errors = []
+      def errors; @@errors; end
 
+      def formated_errors
+        return '' unless settings[:log_method]
+        
+        self.errors.map do |error|
+          case settings[:log_method]
+            when :alert then "alert(#{error.inspect});"
+            when :console then "console.log(#{error.inspect});"
+            when :html then "document.body.innerHTML = '<font color=red>' + #{error.inspect} + '</font><br/>' + document.body.innerHTML;"
+          end
+        end.join("\n") + "\n"
+      end
+      
       # @return [Hash] Middleware current settings
       # @api public
       def settings
@@ -110,6 +126,8 @@ module Jsus
     # @return [#each] rack response
     # @api semipublic
     def _call(env)
+      self.class.errors.clear
+      
       path = Utils.unescape(env["PATH_INFO"])
       return @app.call(env) unless handled_by_jsus?(path)
       path.sub!(path_prefix_regex, "")
@@ -117,8 +135,10 @@ module Jsus
       return @app.call(env) unless components.size >= 2
       if components[0] == "require"
         generate_requires(components[1])
+      elsif components[0] == "compressed"
+        generate_requires(components[1], :compress => true, :prefix => components[0])
       elsif components[0] == "include"
-        generate_includes(components[1])
+        generate_includes(components[1], :prefix => components[0])
       else
         not_found!
       end
@@ -140,11 +160,14 @@ module Jsus
     # @param [String] path_string path component to required sources
     # @return [#each] rack response
     # @api semipublic
-    def generate_requires(path_string)
+    def generate_requires(path_string, options = {})
       files = path_string_to_files(path_string)
       if !files.empty?
         response = Container.new(*files).map {|f| f.content }.join("\n")
-        cache.write(escape_path_for_cache_key(path_string), response) if cache?
+        
+        response = Jsus::Compressor.new(response).result if options[:compress]
+
+        cache.write(escape_path_for_cache_key("#{options[:prefix]}/#{path_string}"), response) if cache?
         respond_with(response)
       else
         not_found!
@@ -178,6 +201,21 @@ module Jsus
       path_args[:exclude].each {|tag| files -= get_associated_files(tag).to_a }
       files
     end # path_string_to_files
+
+    def postproc(source)
+      [self.class.settings[:postproc]].flatten.each do |processor|
+        case processor.strip
+        when /^moocompat12$/i
+          source.gsub!(/\/\/<1.2compat>.*?\/\/<\/1.2compat>/m, '')
+          source.gsub!(/\/\*<1.2compat>\*\/.*?\/\*<\/1.2compat>\*\//m, '')
+        when /^mooltie8$/i
+          source.gsub!(/\/\/<ltIE8>.*?\/\/<\/ltIE8>/m, '')
+          source.gsub!(/\/\*<ltIE8>\*\/.*?\/\*<\/ltIE8>\*\//m, '')
+        else
+          self.class.errors << "Unknown post-processor: #{processor}"
+        end
+      end
+    end
 
     # Parses human-readable string with + and ~ operations into a more usable hash.
     # @note + is a space after url decoding
@@ -225,7 +263,9 @@ module Jsus
         end
       end
     end # get_associated_files
-
+    
+    
+    
     # Rack response of not found
     # @return [#each] 404 response
     # @api semipublic
@@ -238,7 +278,7 @@ module Jsus
     # @return [#each] 200 response
     # @api semipublic
     def respond_with(text)
-      [200, {"Content-Type" => "text/javascript"}, [text]]
+      [200, {"Content-Type" => "text/javascript"}, [self.class.formated_errors + text]]
     end # respond_with
 
     # Check whether given path is handled by jsus middleware.

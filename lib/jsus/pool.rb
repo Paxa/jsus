@@ -113,8 +113,9 @@ module Jsus
           extensions_map[source.extends] << source
         else
           source.provides.each do |p|
-            if provides_map[p] && provides_map[p] != source && provides_map[p].filename != source.filename && Jsus.verbose?
-              puts "Redeclared #{p.to_s} in #{source.filename} (previously declared in #{provides_map[p].filename})"
+            if provides_map[p] && provides_map[p] != source && provides_map[p].filename != source.filename
+              Jsus::Middleware.errors << "Redeclared #{p.to_s} in #{source.filename} (previously declared in #{provides_map[p].filename})"
+                .tap {|a| Jsus.verbose? && puts(a) }
             end
             provides_map[p] = source
           end
@@ -167,8 +168,9 @@ module Jsus
 
       source.dependencies.map do |dependency|
         result = provides_tree.glob("/#{dependency}")
-        if (!result || (result.is_a?(Array) && result.empty?)) && Jsus.verbose?
-          puts "#{source.filename} is missing #{dependency.is_a?(SourceFile) ? dependency.filename : dependency.to_s}"
+        if (!result || (result.is_a?(Array) && result.empty?))
+          Jsus::Middleware.errors << "#{source.filename} is missing #{dependency.is_a?(SourceFile) ? dependency.filename : dependency.to_s}"
+            .tap {|a| Jsus.verbose? && puts(a) }
         end
         result
       end.flatten.map {|tag| lookup(tag) }

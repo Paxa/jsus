@@ -276,9 +276,7 @@ module Jsus
     end
 
     def compress_package
-      require 'yui/compressor'
-      compressor = YUI::JavaScriptCompressor.new(:munge => true)
-      compressed_content = compressor.compress(@package_content)
+      compressed_content = Jsus::Compressor.new(@package_content).result
       if compressed_content != ""
         @compression_ratio = compressed_content.size.to_f / @package_content.size.to_f
         compressed_file_name = @package.filename.sub(/.js$/, ".min.js")
@@ -289,8 +287,6 @@ module Jsus
         puts "Compressor command used: #{compressor.command.join(' ')}"
       end
       checkpoint(:compress)
-    rescue LoadError
-      puts 'ERROR: You need "yui-compressor" gem in order to use --compress option'
     end
 
     def generate_supplemental_files
