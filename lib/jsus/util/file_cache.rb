@@ -56,11 +56,10 @@ module Jsus
 
       # Generates path by cache key.
       #
-      # Default strategy: append key to cache directory
-      # (slashes are replaced with dots)
+      # Default strategy: relative path references via ../ are escaped.
       # @api private
       def generate_path(key)
-        key = key.gsub(File::SEPARATOR, ".")
+        key = key.gsub(%r{(^|/)\.\./}, ".")
         File.join(@path, key)
       end # generate_path
     end # class FileCache
