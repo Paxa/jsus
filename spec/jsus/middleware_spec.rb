@@ -256,8 +256,9 @@ describe Jsus::Middleware do
   end
 
   describe "caching" do
+    let(:packages_dir) { File.expand_path("spec/data/ComplexDependencies") }
     let(:cache_path) { "spec/tmp" }
-    before(:each) { Jsus::Middleware.settings = {:cache => true, :cache_path => cache_path} }
+    before(:each) { Jsus::Middleware.settings = {:cache => true, :cache_path => cache_path, :packages_dir => packages_dir} }
     after(:each) { FileUtils.rm_rf(cache_path) }
     let(:path) { "/javascripts/jsus/require/Package.js" }
     it "should save output of requests to files" do
@@ -273,4 +274,31 @@ describe Jsus::Middleware do
       File.exists?("/tmp/testzor").should be_false
     end
   end
+
+  describe "post processing" do
+    let(:packages_dir) { File.expand_path("spec/data/ComplexDependencies") }
+    before(:each) { Jsus::Middleware.settings = {:packages_dir => packages_dir} }
+    let("path") { "/javascripts/jsus/require/Package.js" }
+    it "should not do anything if postprocs setting is empty" do
+      Jsus::Middleware.settings = {:postproc => []}
+      get(path).body.should include("//<ltIE8>")
+    end
+
+    it "should not do anything if postprocs setting is nil" do
+      Jsus::Middleware.settings = {:postproc => nil}
+      get(path).body.should include("//<ltIE8>")
+    end
+
+    it "should remove <ltIE8> tags if postproc setting contains mooltIE8" do
+      get(path).body.should include("//<ltIE8>")
+      Jsus::Middleware.settings = {:postproc => "mooltIE8"}
+      get(path).body.should_not include("//<ltIE8>")
+    end
+
+    it "should remove <1.2compat> tags if postproc setting contains moocompat12" do
+      get(path).body.should include("//<1.2compat>")
+      Jsus::Middleware.settings = {:postproc => "moocompat12"}
+      get(path).body.should_not include("//<1.2compat>")
+    end
+  end # describe "post processing"
 end

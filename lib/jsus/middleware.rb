@@ -42,7 +42,8 @@ module Jsus
         :prefix           => "jsus",
         :cache_pool       => true,
         :includes_root    => ".",
-        :log_method       => nil # :alert, :html, :console, nil
+        :log_method       => nil, # :alert, :html, :console, nil
+        :postproc         => []   # ["mooltie8", "moocompat12"]
       }.freeze
 
       @@errors = []
@@ -208,17 +209,22 @@ module Jsus
       files
     end # path_string_to_files
 
+    # Post-processes output (removes different compatibility tags)
+    #
+    # @param [String] source source to post-process
+    # @return [String] post-processed source
     def postproc(source)
-      [self.class.settings[:postproc]].flatten.each do |processor|
+      Array(self.class.settings[:postproc]).inject(source) do |result, processor|
         case processor.strip
         when /^moocompat12$/i
-          source.gsub!(/\/\/<1.2compat>.*?\/\/<\/1.2compat>/m, '')
-          source.gsub!(/\/\*<1.2compat>\*\/.*?\/\*<\/1.2compat>\*\//m, '')
+          result.gsub(/\/\/<1.2compat>.*?\/\/<\/1.2compat>/m, '').
+                 gsub(/\/\*<1.2compat>\*\/.*?\/\*<\/1.2compat>\*\//m, '')
         when /^mooltie8$/i
-          source.gsub!(/\/\/<ltIE8>.*?\/\/<\/ltIE8>/m, '')
-          source.gsub!(/\/\*<ltIE8>\*\/.*?\/\*<\/ltIE8>\*\//m, '')
+          result.gsub(/\/\/<ltIE8>.*?\/\/<\/ltIE8>/m, '').
+                 gsub(/\/\*<ltIE8>\*\/.*?\/\*<\/ltIE8>\*\//m, '')
         else
           self.class.errors << "Unknown post-processor: #{processor}"
+          result
         end
       end
     end
@@ -284,7 +290,7 @@ module Jsus
     # @return [#each] 200 response
     # @api semipublic
     def respond_with(text)
-      response = self.class.formated_errors + text
+      response = self.class.formated_errors + postproc(text)
       cache_response!(response) if cache?
       [200, {"Content-Type" => "text/javascript"}, [response]]
     end # respond_with
