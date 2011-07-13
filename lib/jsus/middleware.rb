@@ -133,10 +133,13 @@ module Jsus
       path.sub!(path_prefix_regex, "")
       components = path.split("/")
       return @app.call(env) unless components.size >= 2
+
+      request_options[:path] = path
       if components[0] == "require"
         generate_requires(components[1])
       elsif components[0] == "compressed"
-        generate_requires(components[1], :compress => true, :prefix => components[0])
+        request_options[:compress] = true
+        generate_requires(components[1])
       elsif components[0] == "include"
         generate_includes(components[1])
       else
@@ -155,19 +158,22 @@ module Jsus
 
     protected
 
+    # Current request options
+    # @return [Hash]
+    def request_options
+      @options ||= {}
+    end # request_options
+
     # Generates response for /require/ requests.
     #
     # @param [String] path_string path component to required sources
     # @return [#each] rack response
     # @api semipublic
-    def generate_requires(path_string, options = {})
+    def generate_requires(path_string)
       files = path_string_to_files(path_string)
       if !files.empty?
         response = Container.new(*files).map {|f| f.content }.join("\n")
-
-        response = Jsus::Compressor.new(response).result if options[:compress]
-
-        cache.write(escape_path_for_cache_key("#{options[:prefix]}/#{path_string}"), response) if cache?
+        response = Jsus::Compressor.new(response).result if request_options[:compress]
         respond_with(response)
       else
         not_found!
@@ -278,7 +284,9 @@ module Jsus
     # @return [#each] 200 response
     # @api semipublic
     def respond_with(text)
-      [200, {"Content-Type" => "text/javascript"}, [self.class.formated_errors + text]]
+      response = self.class.formated_errors + text
+      cache_response!(response) if cache?
+      [200, {"Content-Type" => "text/javascript"}, [response]]
     end # respond_with
 
     # Check whether given path is handled by jsus middleware.
@@ -323,6 +331,13 @@ module Jsus
     def cache
       self.class.cache
     end # cache
+
+    # Saves response into the filesystem
+    # @param [String] response text to store
+    # @return [String] filename
+    def cache_response!(response)
+      cache.write(escape_path_for_cache_key(request_options[:path]), response)
+    end # cache_response!
 
     # @return [Boolean] whether pool is shared between requests
     # @api semipublic

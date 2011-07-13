@@ -262,8 +262,15 @@ describe Jsus::Middleware do
     let(:path) { "/javascripts/jsus/require/Package.js" }
     it "should save output of requests to files" do
       result = get(path).body
-      File.exists?("#{cache_path}/Package.js").should be_true
-      File.read("#{cache_path}/Package.js").should == result
+      File.exists?("#{cache_path}/require/Package.js").should be_true
+      File.read("#{cache_path}/require/Package.js").should == result
+    end
+
+    it "should not allow relative file paths hacks" do
+      FileUtils.rm_f("/tmp/testzor")
+      new_path = path + "/../../../../../../../../../../../../../../../tmp/testzor"
+      result = get(new_path).body
+      File.exists?("/tmp/testzor").should be_false
     end
   end
 end
