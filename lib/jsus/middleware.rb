@@ -44,13 +44,13 @@ module Jsus
         :includes_root    => ".",
         :log_method       => nil # :alert, :html, :console, nil
       }.freeze
-      
+
       @@errors = []
       def errors; @@errors; end
 
       def formated_errors
         return '' unless settings[:log_method]
-        
+
         self.errors.map do |error|
           case settings[:log_method]
             when :alert then "alert(#{error.inspect});"
@@ -59,7 +59,7 @@ module Jsus
           end
         end.join("\n") + "\n"
       end
-      
+
       # @return [Hash] Middleware current settings
       # @api public
       def settings
@@ -127,7 +127,7 @@ module Jsus
     # @api semipublic
     def _call(env)
       self.class.errors.clear
-      
+
       path = Utils.unescape(env["PATH_INFO"])
       return @app.call(env) unless handled_by_jsus?(path)
       path.sub!(path_prefix_regex, "")
@@ -138,7 +138,7 @@ module Jsus
       elsif components[0] == "compressed"
         generate_requires(components[1], :compress => true, :prefix => components[0])
       elsif components[0] == "include"
-        generate_includes(components[1], :prefix => components[0])
+        generate_includes(components[1])
       else
         not_found!
       end
@@ -164,7 +164,7 @@ module Jsus
       files = path_string_to_files(path_string)
       if !files.empty?
         response = Container.new(*files).map {|f| f.content }.join("\n")
-        
+
         response = Jsus::Compressor.new(response).result if options[:compress]
 
         cache.write(escape_path_for_cache_key("#{options[:prefix]}/#{path_string}"), response) if cache?
@@ -263,9 +263,9 @@ module Jsus
         end
       end
     end # get_associated_files
-    
-    
-    
+
+
+
     # Rack response of not found
     # @return [#each] 404 response
     # @api semipublic
