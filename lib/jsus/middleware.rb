@@ -173,7 +173,7 @@ module Jsus
       files = path_string_to_files(path_string)
       if !files.empty?
         response = Container.new(*files).map {|f| f.content }.join("\n")
-        response = Jsus::Compressor.new(response).result if request_options[:compress]
+        response = Jsus::Util::Compressor.new(response).result if request_options[:compress]
         respond_with(response)
       else
         not_found!

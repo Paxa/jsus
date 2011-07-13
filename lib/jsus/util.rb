@@ -1,6 +1,7 @@
 module Jsus
   # Utility namespace.
   module Util
+    autoload :Compressor,    'jsus/util/compressor'
     autoload :Tree,          'jsus/util/tree'
     autoload :Documenter,    'jsus/util/documenter'
     autoload :Validator,     'jsus/util/validator'
