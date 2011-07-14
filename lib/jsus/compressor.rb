@@ -11,7 +11,8 @@ module Jsus
         compressor = YUI::JavaScriptCompressor.new(:munge => true)
         compressed_content = compressor.compress(source)
       rescue LoadError
-        puts 'ERROR: You need "yui-compressor" gem in order to use --compress option'
+        Jsus::Middleware.errors << 'ERROR: You need "yui-compressor" gem in order to use --compress option'
+          .tap {|a| puts a }
       end
       compressed_content
     end

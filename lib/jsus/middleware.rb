@@ -134,11 +134,11 @@ module Jsus
       components = path.split("/")
       return @app.call(env) unless components.size >= 2
       if components[0] == "require"
-        generate_requires(components[1])
+        generate_requires(components[1], :prefix => components[0])
       elsif components[0] == "compressed"
         generate_requires(components[1], :compress => true, :prefix => components[0])
       elsif components[0] == "include"
-        generate_includes(components[1], :prefix => components[0])
+        generate_includes(components[1])
       else
         not_found!
       end
@@ -181,6 +181,7 @@ module Jsus
     # @api semipublic
     def generate_includes(path_string)
       files = path_string_to_files(path_string)
+      
       if !files.empty?
         paths = Container.new(*files).required_files(self.class.settings[:includes_root])
         respond_with(Jsus::Util::CodeGenerator.generate_includes(paths))
@@ -278,7 +279,7 @@ module Jsus
     # @return [#each] 200 response
     # @api semipublic
     def respond_with(text)
-      [200, {"Content-Type" => "text/javascript"}, [self.class.formated_errors + text]]
+      [200, {"Content-Type" => "text/javascript"}, [self.class.formated_errors + text.to_s]]
     end # respond_with
 
     # Check whether given path is handled by jsus middleware.
