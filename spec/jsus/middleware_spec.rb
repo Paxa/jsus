@@ -7,6 +7,8 @@ describe Jsus::Middleware do
   def new_server
     Sinatra.new do
       use Jsus::Middleware
+      Jsus.logger  = Jsus::Util::Logger.new('/dev/null')
+      Jsus.verbose = true
       set :port, 4567
       set :raise_errors, true
       set :show_exceptions, false
@@ -24,6 +26,7 @@ describe Jsus::Middleware do
   before(:all) do
     @server = new_server
     @server_thread = Thread.new { suppress_output { @server.run! } }
+    Jsus::Middleware.settings = {:cache_pool => false}
   end
 
   after(:all) { @server_thread.kill }
@@ -301,4 +304,40 @@ describe Jsus::Middleware do
       get(path).body.should_not include("//<1.2compat>")
     end
   end # describe "post processing"
+
+  describe "errors logging" do
+    let(:packages_dir) { File.expand_path("spec/data/MissingDependencies") }
+    before(:each) { Jsus::Middleware.settings = {:packages_dir => packages_dir} }
+
+    let(:path) { "/javascripts/jsus/require/Package.js" }
+    context "by default" do
+      it "should not output errors" do
+        output = get(path).body
+        output.should_not include("console.log")
+        output.should_not include("alert")
+        output.should_not include("document.body.innerHTML")
+      end
+    end # context "by default"
+
+    context "with console log method" do
+      before(:each) { Jsus::Middleware.settings = {:log_method => [:console] } }
+      it "should output errors to js console" do
+        get(path).body.should include("console.log")
+      end
+    end # context "with console log method"
+
+    context "with alert method" do
+      before(:each) { Jsus::Middleware.settings = {:log_method => [:alert] } }
+      it "should output errors via js alerts" do
+        get(path).body.should include("alert")
+      end
+    end # context "with console log method"
+
+    context "with html method" do
+      before(:each) { Jsus::Middleware.settings = {:log_method => [:html] } }
+      it "should output errors via html modification" do
+        get(path).body.should include("document.body.innerHTML")
+      end
+    end # context "with console log method"
+  end # describe "errors logging"
 end

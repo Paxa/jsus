@@ -1,0 +1,9 @@
+name: Package
+filename: package.js
+web: http://github.com/jsus/jsus
+description: "Package with a missing dependency, raises an error"
+license: MIT-Style License, http://mootools.net/license
+copyright: "Mark Abramov"
+authors: "Mark Abramov"
+sources:
+  - "Source/Widget.js"
