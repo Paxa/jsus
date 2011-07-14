@@ -38,7 +38,7 @@ module Jsus
   # @api public
   def self.verbose=(verbose)
     @verbose = verbose
-    logger.level = Logger::DEBUG
+    logger.level = verbose ? Logger::DEBUG : Logger::ERROR
   end
 
   # @return [String] Jsus version
