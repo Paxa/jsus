@@ -351,8 +351,8 @@ module Jsus
     # @return [String] javascript code containing errors output for various methods
     # @api semipublic
     def formatted_errors
-      Array(self.class.settings[:log_method]).inject("") do |log_method|
-        errors.map do |severity, error|
+      Array(self.class.settings[:log_method]).inject("") do |result, log_method|
+        result << errors.map do |severity, error|
           case log_method
             when :alert   then "alert(#{error.inspect});"
             when :console then "console.log(#{error.inspect});"
