@@ -34,6 +34,7 @@ module Jsus
       [:package, :header, :relative_filename, :filename, :content, :pool].each do |field|
         send("#{field}=", options[field]) if options[field]
       end
+      
     end
 
     #
@@ -55,7 +56,7 @@ module Jsus
         if (yaml_data && yaml_data[1] && header = YAML.load(yaml_data[1]))
           options[:header]            = header
           options[:relative_filename] = filename
-          options[:filename]          = File.expand_path(filename)
+          options[:filename]          = options[:package].directory + filename
           options[:content]           = source
           new(options)
         else

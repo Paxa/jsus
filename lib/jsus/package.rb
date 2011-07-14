@@ -21,11 +21,11 @@ module Jsus
     # file with meta info.
     # @api public
     def initialize(directory, options = {})
-      self.directory          = File.expand_path(directory)
-      if File.exists?(File.join(directory, 'package.yml'))
-        self.header           = YAML.load_file(File.join(directory, 'package.yml'))
-      elsif File.exists?(File.join(directory, 'package.json'))
-        self.header           = JSON.load(File.open(File.join(directory, 'package.json'), 'r:utf-8') {|f| f.read })
+      self.directory          = directory.expand_path
+      if (directory + 'package.yml').exist?
+        self.header           = YAML.load_file(directory + 'package.yml')
+      elsif (directory + 'package.json').exist?
+        self.header           = JSON.load(File.open(directory + 'package.json', 'r:utf-8') {|f| f.read })
       else
         Jsus::Middleware.errors << "Directory #{directory} does not contain a valid package.yml / package.json file!"
         raise "Directory #{directory} does not contain a valid package.yml / package.json file!"

@@ -6,7 +6,7 @@ module Jsus
         # @param [Array] paths list of paths
         # @return [String] javascript for includes for a list of given paths
         # @api public
-        def generate_includes(paths)
+        def generate_includes(paths, options = {})
           script = %{
           (function(prefix, loader) {
             var sources = %sources%;
@@ -14,7 +14,7 @@ module Jsus
               document.write('<scr' + 'ipt src="' + (prefix || '') + path + '"></script>');
             }
             for (var i = 0, j = sources.length; i < j; i++) loader(sources[i]);
-          })(window.prefix, window.loader);}.sub("%sources%", JSON.pretty_generate(paths))
+          })(#{options[:prefix] || 'window.prefix'}, window.loader);}.sub("%sources%", JSON.pretty_generate(paths))
         end # generate_includes
       end # class <<self
     end # module CodeGenerator

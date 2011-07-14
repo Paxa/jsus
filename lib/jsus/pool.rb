@@ -23,7 +23,7 @@ module Jsus
           # one level of symlinks
           # See also: http://stackoverflow.com/questions/357754/can-i-traverse-symlinked-directories-in-ruby-with-a-glob
           Dir[File.join(dir, '**{,/*/**}', 'package.{yml,json}')].uniq.each do |package_path|
-            Package.new(File.dirname(package_path), :pool => self)
+            Package.new(Pathname.new(package_path).dirname, :pool => self)
           end
         end
       end

@@ -184,7 +184,7 @@ module Jsus
       
       if !files.empty?
         paths = Container.new(*files).required_files(self.class.settings[:includes_root])
-        respond_with(Jsus::Util::CodeGenerator.generate_includes(paths))
+        respond_with(Jsus::Util::CodeGenerator.generate_includes(paths, :prefix => %{"/"}))
       else
         not_found!
       end
