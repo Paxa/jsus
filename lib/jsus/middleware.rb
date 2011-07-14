@@ -165,6 +165,23 @@ module Jsus
       @options ||= {}
     end # request_options
 
+    # Rack response of not found
+    # @return [#each] 404 response
+    # @api semipublic
+    def not_found!
+      [404, {"Content-Type" => "text/plain"}, ["Jsus doesn't know anything about this entity"]]
+    end # not_found!
+
+    # Respond with given text
+    # @param [String] text text to respond with
+    # @return [#each] 200 response
+    # @api semipublic
+    def respond_with(text)
+      response = self.class.formated_errors + postproc(text)
+      cache_response!(response) if cache?
+      [200, {"Content-Type" => "text/javascript"}, [response]]
+    end # respond_with
+
     # Generates response for /require/ requests.
     #
     # @param [String] path_string path component to required sources
@@ -275,25 +292,6 @@ module Jsus
         end
       end
     end # get_associated_files
-
-
-
-    # Rack response of not found
-    # @return [#each] 404 response
-    # @api semipublic
-    def not_found!
-      [404, {"Content-Type" => "text/plain"}, ["Jsus doesn't know anything about this entity"]]
-    end # not_found!
-
-    # Respond with given text
-    # @param [String] text text to respond with
-    # @return [#each] 200 response
-    # @api semipublic
-    def respond_with(text)
-      response = self.class.formated_errors + postproc(text)
-      cache_response!(response) if cache?
-      [200, {"Content-Type" => "text/javascript"}, [response]]
-    end # respond_with
 
     # Check whether given path is handled by jsus middleware.
     #
