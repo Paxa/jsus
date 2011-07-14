@@ -8,5 +8,6 @@ module Jsus
     autoload :Inflection,    'jsus/util/inflection'
     autoload :FileCache,     'jsus/util/file_cache'
     autoload :CodeGenerator, 'jsus/util/code_generator'
+    autoload :Logger,        'jsus/util/logger'
   end # Util
 end # Jsus

@@ -42,24 +42,9 @@ module Jsus
         :prefix           => "jsus",
         :cache_pool       => true,
         :includes_root    => ".",
-        :log_method       => nil, # :alert, :html, :console, nil
+        :log_method       => nil, # [:alert, :html, :console]
         :postproc         => []   # ["mooltie8", "moocompat12"]
       }.freeze
-
-      @@errors = []
-      def errors; @@errors; end
-
-      def formated_errors
-        return '' unless settings[:log_method]
-
-        self.errors.map do |error|
-          case settings[:log_method]
-            when :alert then "alert(#{error.inspect});"
-            when :console then "console.log(#{error.inspect});"
-            when :html then "document.body.innerHTML = '<font color=red>' + #{error.inspect} + '</font><br/>' + document.body.innerHTML;"
-          end
-        end.join("\n") + "\n"
-      end
 
       # @return [Hash] Middleware current settings
       # @api public
@@ -127,8 +112,7 @@ module Jsus
     # @return [#each] rack response
     # @api semipublic
     def _call(env)
-      self.class.errors.clear
-
+      Jsus.logger.buffer.clear
       path = Utils.unescape(env["PATH_INFO"])
       return @app.call(env) unless handled_by_jsus?(path)
       path.sub!(path_prefix_regex, "")
@@ -177,7 +161,7 @@ module Jsus
     # @return [#each] 200 response
     # @api semipublic
     def respond_with(text)
-      response = self.class.formated_errors + postproc(text)
+      response = formatted_errors + postproc(text)
       cache_response!(response) if cache?
       [200, {"Content-Type" => "text/javascript"}, [response]]
     end # respond_with
@@ -240,7 +224,7 @@ module Jsus
           result.gsub(/\/\/<ltIE8>.*?\/\/<\/ltIE8>/m, '').
                  gsub(/\/\*<ltIE8>\*\/.*?\/\*<\/ltIE8>\*\//m, '')
         else
-          self.class.errors << "Unknown post-processor: #{processor}"
+          Jsus.logger.error "Unknown post-processor: #{processor}"
           result
         end
       end
@@ -358,5 +342,28 @@ module Jsus
     def escape_path_for_cache_key(path)
       path.gsub(" ", "+")
     end # escape_path_for_cache_key
+
+    # Outputs errors in one or multiple ways.
+    # Set middleware setting :log_method to array with a combination of any of the following:
+    #   :alert   -- generates javascript alert with warning text
+    #   :console -- generates console logging entry
+    #   :html    -- injects error / warning messages directly into html body
+    # @return [String] javascript code containing errors output for various methods
+    # @api semipublic
+    def formatted_errors
+      Array(self.class.settings[:log_method]).inject("") do |log_method|
+        errors.map do |severity, error|
+          case log_method
+            when :alert   then "alert(#{error.inspect});"
+            when :console then "console.log(#{error.inspect});"
+            when :html    then "document.body.innerHTML = '<font color=red>' + #{error.inspect} + '</font><br/>' + document.body.innerHTML;"
+          end
+        end.compact.join("\n") + "\n"
+      end
+    end # formatted_errors
+
+    def errors
+      Jsus.logger.buffer
+    end # errors
   end # class Middleware
 end # module Jsus

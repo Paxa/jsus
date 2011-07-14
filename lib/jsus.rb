@@ -38,6 +38,7 @@ module Jsus
   # @api public
   def self.verbose=(verbose)
     @verbose = verbose
+    logger.level = Logger::DEBUG
   end
 
   # @return [String] Jsus version
@@ -64,4 +65,27 @@ module Jsus
   def self.look_for_cycles=(value)
     @look_for_cycles = value
   end
+
+  # Jsus logger used for all the output. By default uses Logger::ERROR level
+  # severity and screen as output device.
+  #
+  # @return [Jsus::Util::Logger]
+  def self.logger
+    Thread.current[:jsus_logger] ||= Jsus::Util::Logger.new(STDOUT).tap do |logger|
+      logger.level = Logger::ERROR
+      logger.formatter = lambda {|severity, time, progname, msg|
+        "[#{time.strftime("%Y-%m-%d %H:%M:%S")}] [JSUS:#{severity}] #{msg}\n"
+      }
+    end
+  end # self.logger
+
+  # Reassign jsus logger whenever needed (E.g. use rails logger)
+  #
+  # @param value Logger responding to #info, #warn, #debug, #error, #fatal,
+  #              and #buffer
+  # @note In case you use non-jsus logger, you might want to extend it with
+  #       Jsus::Util::Logger::Buffering module.
+  def self.logger=(value)
+    Thread.current[:jsus_logger] = value
+  end # self.logger=
 end
