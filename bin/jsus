@@ -225,7 +225,7 @@ module Jsus
     end
 
     def load_package
-      @package = Jsus::Package.new(options[:input_dir], :pool => @pool)
+      @package = Jsus::Package.new(Pathname.new(options[:input_dir]), :pool => @pool)
       @package.include_dependencies!
       checkpoint(:dependencies)
     end
