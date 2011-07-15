@@ -5,6 +5,10 @@ Middleware changes:
   compresses the result in the end.
 * Cache result is now stored in subfolders of cache directory (easier to manage
   with nginx and alike)
+* Improved error reporting (choice of one of multiple modes in middleware settings)
+
+CLI changes:
+* --no-cycle-search option for CLI to improve compilation times
 
 Other changes:
 * Compression routines moved out to Jsus::Util::Compressor class. For now, only
