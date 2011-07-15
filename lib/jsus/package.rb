@@ -40,7 +40,7 @@ module Jsus
               source_files << source_file
             end
           else
-            Jsus::Middleware.errors << "Warning: #{source} is not found for #{name}".tap {|a| Jsus.verbose? && puts(a)}
+            Jsus.logger.warn "#{source} is not found for #{name}"
           end
         end
       end

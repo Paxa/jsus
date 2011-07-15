@@ -42,7 +42,8 @@ module Jsus
         :prefix           => "jsus",
         :cache_pool       => true,
         :includes_root    => ".",
-        :log_method       => nil # :alert, :html, :console, nil
+        :log_method       => nil, # [:alert, :html, :console]
+        :postproc         => []   # ["mooltie8", "moocompat12"]
       }.freeze
       
       @@errors = []
@@ -126,17 +127,19 @@ module Jsus
     # @return [#each] rack response
     # @api semipublic
     def _call(env)
-      self.class.errors.clear
-      
+      Jsus.logger.buffer.clear
       path = Utils.unescape(env["PATH_INFO"])
       return @app.call(env) unless handled_by_jsus?(path)
       path.sub!(path_prefix_regex, "")
       components = path.split("/")
       return @app.call(env) unless components.size >= 2
+
+      request_options[:path] = path
       if components[0] == "require"
-        generate_requires(components[1], :prefix => components[0])
+        generate_requires(components[1])
       elsif components[0] == "compressed"
-        generate_requires(components[1], :compress => true, :prefix => components[0])
+        request_options[:compress] = true
+        generate_requires(components[1])
       elsif components[0] == "include"
         generate_includes(components[1])
       else
@@ -155,6 +158,29 @@ module Jsus
 
     protected
 
+    # Current request options
+    # @return [Hash]
+    def request_options
+      @options ||= {}
+    end # request_options
+
+    # Rack response of not found
+    # @return [#each] 404 response
+    # @api semipublic
+    def not_found!
+      [404, {"Content-Type" => "text/plain"}, ["Jsus doesn't know anything about this entity"]]
+    end # not_found!
+
+    # Respond with given text
+    # @param [String] text text to respond with
+    # @return [#each] 200 response
+    # @api semipublic
+    def respond_with(text)
+      response = formatted_errors + postproc(text)
+      cache_response!(response) if cache?
+      [200, {"Content-Type" => "text/javascript"}, [response]]
+    end # respond_with
+
     # Generates response for /require/ requests.
     #
     # @param [String] path_string path component to required sources
@@ -164,10 +190,7 @@ module Jsus
       files = path_string_to_files(path_string)
       if !files.empty?
         response = Container.new(*files).map {|f| f.content }.join("\n")
-        
-        response = Jsus::Compressor.new(response).result if options[:compress]
-
-        cache.write(escape_path_for_cache_key("#{options[:prefix]}/#{path_string}"), response) if cache?
+        response = Jsus::Util::Compressor.new(response).result if request_options[:compress]
         respond_with(response)
       else
         not_found!
@@ -203,17 +226,22 @@ module Jsus
       files
     end # path_string_to_files
 
+    # Post-processes output (removes different compatibility tags)
+    #
+    # @param [String] source source to post-process
+    # @return [String] post-processed source
     def postproc(source)
-      [self.class.settings[:postproc]].flatten.each do |processor|
+      Array(self.class.settings[:postproc]).inject(source) do |result, processor|
         case processor.strip
         when /^moocompat12$/i
-          source.gsub!(/\/\/<1.2compat>.*?\/\/<\/1.2compat>/m, '')
-          source.gsub!(/\/\*<1.2compat>\*\/.*?\/\*<\/1.2compat>\*\//m, '')
+          result.gsub(/\/\/<1.2compat>.*?\/\/<\/1.2compat>/m, '').
+                 gsub(/\/\*<1.2compat>\*\/.*?\/\*<\/1.2compat>\*\//m, '')
         when /^mooltie8$/i
-          source.gsub!(/\/\/<ltIE8>.*?\/\/<\/ltIE8>/m, '')
-          source.gsub!(/\/\*<ltIE8>\*\/.*?\/\*<\/ltIE8>\*\//m, '')
+          result.gsub(/\/\/<ltIE8>.*?\/\/<\/ltIE8>/m, '').
+                 gsub(/\/\*<ltIE8>\*\/.*?\/\*<\/ltIE8>\*\//m, '')
         else
-          self.class.errors << "Unknown post-processor: #{processor}"
+          Jsus.logger.error "Unknown post-processor: #{processor}"
+          result
         end
       end
     end
@@ -264,23 +292,6 @@ module Jsus
         end
       end
     end # get_associated_files
-    
-    
-    
-    # Rack response of not found
-    # @return [#each] 404 response
-    # @api semipublic
-    def not_found!
-      [404, {"Content-Type" => "text/plain"}, ["Jsus doesn't know anything about this entity"]]
-    end # not_found!
-
-    # Respond with given text
-    # @param [String] text text to respond with
-    # @return [#each] 200 response
-    # @api semipublic
-    def respond_with(text)
-      [200, {"Content-Type" => "text/javascript"}, [self.class.formated_errors + text.to_s]]
-    end # respond_with
 
     # Check whether given path is handled by jsus middleware.
     #
@@ -325,6 +336,13 @@ module Jsus
       self.class.cache
     end # cache
 
+    # Saves response into the filesystem
+    # @param [String] response text to store
+    # @return [String] filename
+    def cache_response!(response)
+      cache.write(escape_path_for_cache_key(request_options[:path]), response)
+    end # cache_response!
+
     # @return [Boolean] whether pool is shared between requests
     # @api semipublic
     def cache_pool?
@@ -340,5 +358,28 @@ module Jsus
     def escape_path_for_cache_key(path)
       path.gsub(" ", "+")
     end # escape_path_for_cache_key
+
+    # Outputs errors in one or multiple ways.
+    # Set middleware setting :log_method to array with a combination of any of the following:
+    #   :alert   -- generates javascript alert with warning text
+    #   :console -- generates console logging entry
+    #   :html    -- injects error / warning messages directly into html body
+    # @return [String] javascript code containing errors output for various methods
+    # @api semipublic
+    def formatted_errors
+      Array(self.class.settings[:log_method]).inject("") do |result, log_method|
+        result << errors.map do |severity, error|
+          case log_method
+            when :alert   then "alert(#{error.inspect});"
+            when :console then "console.log(#{error.inspect});"
+            when :html    then "document.body.innerHTML = '<font color=red>' + #{error.inspect} + '</font><br/>' + document.body.innerHTML;"
+          end
+        end.compact.join("\n") + "\n"
+      end
+    end # formatted_errors
+
+    def errors
+      Jsus.logger.buffer
+    end # errors
   end # class Middleware
 end # module Jsus

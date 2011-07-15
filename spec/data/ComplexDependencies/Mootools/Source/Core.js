@@ -14,3 +14,11 @@ provides: [Core]
 
 ...
 */
+
+//<ltIE8>
+var IE7 = true;
+//</ltIE8>
+
+//<1.2compat>
+var compatibilityMode = true;
+//</1.2compat>

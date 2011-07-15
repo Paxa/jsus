@@ -20,6 +20,13 @@ describe Jsus::Util::FileCache do
       fn = subject.write(key, value)
       File.exists?("/tmp/test").should be_false
     end
+
+    it "should allow creation of subfolders" do
+      key = "test/hello"
+      fn = subject.write(key, value)
+      File.exists?("#{cache_dir}/#{key}").should be_true
+      File.read("#{cache_dir}/#{key}").should == value
+    end
   end
 
   describe "#read" do
@@ -36,6 +43,11 @@ describe Jsus::Util::FileCache do
       key = "../../../../../../../../../../../../../../../../tmp/test"
       File.open("/tmp/test", "w+") {|f| f.puts "Hello, world!" }
       subject.read(key).should == nil
+    end
+
+    it "should allow to read from subfolders" do
+      fn = subject.write("test/hello", value)
+      subject.read("test/hello").should == fn
     end
   end
 

@@ -133,9 +133,6 @@ module Jsus
         cycles = graph.cycles
         error_msg = []
         unless cycles.empty?
-          error_msg << "*" * 30
-          error_msg << "ACHTUNG! WARNING! ATTENTION!"
-          error_msg << "*" * 30
           error_msg << "Jsus has discovered you have circular dependencies in your code."
           error_msg << "Please resolve them immediately!"
           error_msg << "List of circular dependencies:"
@@ -143,9 +140,8 @@ module Jsus
             error_msg << "-" * 30
             error_msg << (cycle + [cycle.first]).map {|sf| sf.filename}.join(" => ")
           end
-          error_msg << "*" * 30
-          puts error_msg
-          Jsus::Middleware.errors << error_msg.join("\n")
+          error_msg = error_msg.join("\n")
+          Jsus.logger.fatal(error_msg)
         end
       end
       graph.topsort_iterator.each { |item| result << item }

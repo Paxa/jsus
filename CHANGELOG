@@ -1,4 +1,15 @@
 = Jsus Changelog
+== Version 0.3.4
+Middleware changes:
+* support for /compressed/ path component, which acts like /require/, but
+  compresses the result in the end.
+* Cache result is now stored in subfolders of cache directory (easier to manage
+  with nginx and alike)
+
+Other changes:
+* Compression routines moved out to Jsus::Util::Compressor class. For now, only
+  yui-compressor method is available
+
 == Version 0.3.3
 * Unfortunate accident with rubygems
 
