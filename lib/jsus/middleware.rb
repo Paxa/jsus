@@ -43,7 +43,8 @@ module Jsus
         :cache_pool       => true,
         :includes_root    => ".",
         :log_method       => nil, # [:alert, :html, :console]
-        :postproc         => []   # ["mooltie8", "moocompat12"]
+        :postproc         => [],  # ["mooltie8", "moocompat12"]
+        :compression      => :yui # [:yui, :uglifier, :frontcompiler, :closure]
       }.freeze
       
       @@errors = []
@@ -190,7 +191,9 @@ module Jsus
       files = path_string_to_files(path_string)
       if !files.empty?
         response = Container.new(*files).map {|f| f.content }.join("\n")
-        response = Jsus::Util::Compressor.new(response).result if request_options[:compress]
+        if request_options[:compress]
+          response = Jsus::Util::Compressor.new(response, :method => self.class.settings[:compression]).result
+        end
         respond_with(response)
       else
         not_found!
