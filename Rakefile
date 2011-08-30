@@ -13,7 +13,7 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "jsus"
-  gem.homepage = "http://github.com/markiz/jsus"
+  gem.homepage = "http://github.com/jsus/jsus"
   gem.license = "Public Domain"
   gem.summary = "Javascript packager and dependency resolver"
   gem.description = "Javascript packager and dependency resolver"
