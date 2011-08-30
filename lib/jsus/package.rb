@@ -27,7 +27,7 @@ module Jsus
       elsif File.exists?(File.join(directory, 'package.json'))
         self.header           = JSON.load(File.open(File.join(directory, 'package.json'), 'r:utf-8') {|f| f.read })
       else
-        Jsus::Middleware.errors << "Directory #{directory} does not contain a valid package.yml / package.json file!"
+        Jsus.logger.fatal "Directory #{directory} does not contain a valid package.yml / package.json file!"
         raise "Directory #{directory} does not contain a valid package.yml / package.json file!"
       end
       Dir.chdir(directory) do
