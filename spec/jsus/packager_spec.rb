@@ -26,7 +26,7 @@ describe Jsus::Packager do
     end
 
     it "should output to file if given a filename" do
-      simple_package.pack("spec/tmp/test.js")
+      simple_package.pack(Pathname.new("spec/tmp/test.js"))
       IO.read("spec/tmp/test.js").should include(simple_source.content, another_simple_source.content)
     end
 

@@ -94,8 +94,8 @@ module Jsus
       sort!
       files = sources.map {|s| s.required_files }.flatten
       if root
-        root = Pathname.new(File.expand_path(root))
-        files = files.map {|f| Pathname.new(File.expand_path(f)).relative_path_from(root).to_s }
+        root = Pathname.new(root).expand_path
+        files = files.map {|f| Pathname.new(f).expand_path.relative_path_from(root).to_s }
       end
       files
     end

@@ -34,8 +34,8 @@ module Jsus
       result = sources.map {|s| s.content }.join("\n")
 
       if output_file
-        FileUtils.mkdir_p(File.dirname(output_file))
-        File.open(output_file, "w") {|f| f << result }
+        output_file.dirname.mkpath
+        output_file.open('w') {|f| f << result }
       end
 
       result

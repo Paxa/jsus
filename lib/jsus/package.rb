@@ -20,16 +20,18 @@ module Jsus
     # @raise an error when the given directory doesn't contain a package.yml or package.json
     # file with meta info.
     # @api public
-    def initialize(directory, options = {})
-      self.directory          = directory.expand_path
-      if (directory + 'package.yml').exist?
-        self.header           = YAML.load_file(directory + 'package.yml')
-      elsif (directory + 'package.json').exist?
-        self.header           = JSON.load(File.open(directory + 'package.json', 'r:utf-8') {|f| f.read })
+    def initialize(dir, options = {})
+      @directory = Pathname.new(dir).expand_path
+      
+      if directory.join('package.yml').exist?
+        self.header = YAML.load_file(directory + 'package.yml')
+      elsif directory.join('package.json').exist?
+        self.header = JSON.load(directory.join('package.json').open('r:utf-8', &:read))
       else
         Jsus.logger.fatal "Directory #{directory} does not contain a valid package.yml / package.json file!"
         raise "Directory #{directory} does not contain a valid package.yml / package.json file!"
       end
+      
       Dir.chdir(directory) do
         files.each do |source|
           source_file = SourceFile.from_file(source, :package => self)
@@ -135,7 +137,7 @@ module Jsus
     # @return [String] content of merged source files
     # @api public
     def compile(directory = ".")
-      fn = directory ? File.join(directory, filename) : nil
+      fn = directory ? directory + filename : nil
       Packager.new(*(source_files.to_a + linked_external_dependencies.to_a)).pack(fn)
     end
 
@@ -144,8 +146,8 @@ module Jsus
     # @param [String] filename resulting filename
     # @return [Hash] hash with tree structure
     # @api public
-    def generate_tree(directory = ".", filename = "tree.json")
-      FileUtils.mkdir_p(directory)
+    def generate_tree(directory = Pathname.new("."), filename = "tree.json")
+      directory.mkpath
       result = ActiveSupport::OrderedHash.new
       source_files.each do |source|
         components = File.dirname(source.relative_filename).split(File::SEPARATOR)
@@ -156,9 +158,9 @@ module Jsus
           node[component] ||= ActiveSupport::OrderedHash.new
           node = node[component]
         end
-        node[File.basename(source.filename, ".js")] = source.to_hash
+        node[source.filename.basename(".js")] = source.to_hash
       end
-      File.open(File.join(directory, filename), "w") { |resulting_file| resulting_file << JSON.pretty_generate(result) }
+      directory.join(filename).open("w") { |resulting_file| resulting_file << JSON.pretty_generate(result) }
       result
     end
 
@@ -168,8 +170,8 @@ module Jsus
     # @return [Hash] hash with scripts info
     # @api public
     def generate_scripts_info(directory = ".", filename = "scripts.json")
-      FileUtils.mkdir_p directory
-      File.open(File.join(directory, filename), "w") { |resulting_file| resulting_file << JSON.pretty_generate(self.to_hash) }
+      directory.mkpath
+      directory.join(filename).open("w") { |resulting_file| resulting_file << JSON.pretty_generate(self.to_hash) }
       self.to_hash
     end
 

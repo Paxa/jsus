@@ -4,7 +4,7 @@ describe Jsus::Util::Validator::Mooforge do
   describe "#validate" do
     let(:input_dir) { "spec/data/MooforgeValidation/app/javascripts/Orwik/Source/Library" }
     let!(:sources) {
-      ["Valid.js", "InvalidNoAuthors.js", "InvalidNoLicense.js"].map {|fn| Jsus::SourceFile.from_file("#{input_dir}/#{fn}") }
+      ["Valid.js", "InvalidNoAuthors.js", "InvalidNoLicense.js"].map {|fn| Jsus::SourceFile.from_file("#{input_dir}/#{fn}", :package => Package.new(:name => "Core")) }
     }
 
     it "should return true for valid files" do
@@ -14,12 +14,12 @@ describe Jsus::Util::Validator::Mooforge do
 
     it "should return false for files without authors" do
       described_class.validate([sources[1]]).should be_false
-      described_class.new([sources[1]]).validation_errors[0].should include(sources[1].filename)
+      described_class.new([sources[1]]).validation_errors[0].should include(sources[1].filename.to_s)
     end
 
     it "should return false for files without license" do
       described_class.validate([sources[2]]).should be_false
-      described_class.new([sources[2]]).validation_errors[0].should include(sources[2].filename)
+      described_class.new([sources[2]]).validation_errors[0].should include(sources[2].filename.to_s)
     end
 
     it "should return false when some of the files fail" do

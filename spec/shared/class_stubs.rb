@@ -21,11 +21,13 @@ end
 
 class Package
   attr_accessor :name
+  attr_accessor :directory
 
   def initialize(options = {})
     options.each do |attr, value|
       send("#{attr}=", value)
     end
+    @directory = Pathname.new(__FILE__).join("../..").expand_path.dirname
   end
 end
 

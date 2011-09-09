@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{jsus}
-  s.version = "0.3.3"
+  s.version = "0.3.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mark Abramov"]
-  s.date = %q{2011-06-19}
+  s.date = %q{2011-08-30}
   s.default_executable = %q{jsus}
   s.description = %q{Javascript packager and dependency resolver}
   s.email = %q{markizko@gmail.com}
@@ -102,12 +102,13 @@ Gem::Specification.new do |s|
     "lib/jsus/pool.rb",
     "lib/jsus/source_file.rb",
     "lib/jsus/tag.rb",
-    "lib/jsus/compressor.rb",
     "lib/jsus/util.rb",
     "lib/jsus/util/code_generator.rb",
+    "lib/jsus/util/compressor.rb",
     "lib/jsus/util/documenter.rb",
     "lib/jsus/util/file_cache.rb",
     "lib/jsus/util/inflection.rb",
+    "lib/jsus/util/logger.rb",
     "lib/jsus/util/tree.rb",
     "lib/jsus/util/validator.rb",
     "lib/jsus/util/validator/base.rb",
@@ -167,6 +168,8 @@ Gem::Specification.new do |s|
     "spec/data/JsonPackage/Source/SheetParser.CSS.js",
     "spec/data/JsonPackage/Source/sg-regex-tools.js",
     "spec/data/JsonPackage/package.json",
+    "spec/data/MissingDependencies/Source/Widget.js",
+    "spec/data/MissingDependencies/package.yml",
     "spec/data/MooforgeValidation/README",
     "spec/data/MooforgeValidation/app/javascripts/Orwik/Source/Library/InvalidNoAuthors.js",
     "spec/data/MooforgeValidation/app/javascripts/Orwik/Source/Library/InvalidNoLicense.js",
@@ -201,6 +204,7 @@ Gem::Specification.new do |s|
     "spec/jsus/util/documenter_spec.rb",
     "spec/jsus/util/file_cache_spec.rb",
     "spec/jsus/util/inflection_spec.rb",
+    "spec/jsus/util/logger_spec.rb",
     "spec/jsus/util/tree_spec.rb",
     "spec/jsus/util/validator/base_spec.rb",
     "spec/jsus/util/validator/mooforge_spec.rb",

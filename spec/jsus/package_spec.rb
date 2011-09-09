@@ -3,8 +3,8 @@ require 'json'
 
 describe Jsus::Package do
   subject { Jsus::Package.new(input_dir) }
-  let(:input_dir) { "spec/data/Basic/app/javascripts/Orwik"}
-  let(:output_dir) { "spec/data/Basic/public/javascripts/Orwik" }
+  let(:input_dir) { Pathname.new "spec/data/Basic/app/javascripts/Orwik"}
+  let(:output_dir) { Pathname.new "spec/data/Basic/public/javascripts/Orwik" }
   before(:each) { cleanup }
   after(:all) { cleanup }
   context "initialization" do
@@ -35,7 +35,7 @@ describe Jsus::Package do
         end
 
         it "should set directory field" do
-          subject.directory.should == File.expand_path(input_dir)
+          subject.directory.to_s.should == File.expand_path(input_dir)
         end
       end
 
@@ -111,7 +111,7 @@ describe Jsus::Package do
 
   describe "#generate_tree" do
     it "should create a json file containing tree information and dependencies" do
-      subject.generate_tree(output_dir)
+      subject.generate_tree(Pathname.new(output_dir))
       File.exists?("#{output_dir}/tree.json").should be_true
       tree = JSON.parse(IO.read("#{output_dir}/tree.json"))
       tree["Library"]["Color"]["provides"].should == ["Color"]
@@ -134,9 +134,9 @@ describe Jsus::Package do
   describe "#required_files" do
    it "should list required files in correct order" do
      required_files = subject.required_files
-     input_index = required_files.index {|s| s=~ /\/Input.js$/}
-     color_index = required_files.index {|s| s=~ /\/Color.js$/}
-     input_color_index = required_files.index {|s| s=~ /\/Input.Color.js$/}
+     input_index = required_files.index {|file| file.to_s =~ /\/Input.js$/}
+     color_index = required_files.index {|file| file.to_s =~ /\/Color.js$/}
+     input_color_index = required_files.index {|file| file.to_s =~ /\/Input.Color.js$/}
      input_index.should < input_color_index
      color_index.should < input_color_index
    end
