@@ -1,4 +1,4 @@
-module Jsus::Compiller
+module Jsus::Compiler
   # Handles main features of jsus
   extend self
   

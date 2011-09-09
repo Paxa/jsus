@@ -22,7 +22,6 @@ require 'jsus'
 require "optparse"
 require "logger"
 
-Jsus::Cli
 Jsus.logger = Logger.new(STDOUT)
 
 options = {}

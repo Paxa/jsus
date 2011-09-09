@@ -6,11 +6,11 @@ describe Jsus::SourceFile do
   after(:all) { cleanup }
   let(:package) { Package.new(:name => "Core") }
   subject {
-    Jsus::SourceFile.from_file("spec/data/OutsideDependencies/app/javascripts/Core/Source/Class/Class.Extras.js", :package => Package.new(:name => "Core"))
+    Jsus::SourceFile.from_file("spec/data/OutsideDependencies/app/javascripts/Core/Source/Class/Class.Extras.js", :package => package)
   }
   context "initialization" do
     context "from file" do
-      subject { Jsus::SourceFile.from_file('spec/data/test_source_one.js', :package => Package.new(:name => "Core")) }
+      subject { Jsus::SourceFile.from_file('spec/data/test_source_one.js', :package => package) }
       it "should parse json header" do
         subject.dependencies_names.should == ["Class"]
         subject.provides_names.should == ["Color"]
@@ -61,13 +61,13 @@ describe Jsus::SourceFile do
 
     it "should not break on unicode files" do
       source = nil
-      lambda { source = Jsus::SourceFile.from_file("spec/data/unicode_source.js", :package => Package.new(:name => "Core")) }.should_not raise_error
+      lambda { source = Jsus::SourceFile.from_file("spec/data/unicode_source.js", :package => package) }.should_not raise_error
       source.header["authors"][1].should == "Sebastian Markbåge"
     end
 
     it "should recognize and ignore BOM marker" do
       source = nil
-      lambda { source = Jsus::SourceFile.from_file("spec/data/unicode_source_with_bom.js", :package => Package.new(:name => "Core"))  }.should_not raise_error
+      lambda { source = Jsus::SourceFile.from_file("spec/data/unicode_source_with_bom.js", :package => package)  }.should_not raise_error
       source.header["authors"][1].should == "Sebastian Markbåge"
     end
 
@@ -76,7 +76,7 @@ describe Jsus::SourceFile do
         old_external = Encoding.default_external
         Encoding.default_external = 'us-ascii'
         source = nil
-        lambda { source = Jsus::SourceFile.from_file("spec/data/unicode_source.js", :package => Package.new(:name => "Core")) }.should_not raise_error
+        lambda { source = Jsus::SourceFile.from_file("spec/data/unicode_source.js", :package => package) }.should_not raise_error
         source.header["authors"][1].should == "Sebastian Markbåge"
         Encoding.default_external = old_external
       end
@@ -84,7 +84,7 @@ describe Jsus::SourceFile do
   end
 
   context "when no package set, " do
-    subject { Jsus::SourceFile.from_file("spec/data/test_source_one.js", :package => Package.new(:name => "Core")) }
+    subject { Jsus::SourceFile.from_file("spec/data/test_source_one.js", :package => package) }
     describe "#package" do
       it "should return nil" do
         subject.package.should be_nil
@@ -176,7 +176,7 @@ describe Jsus::SourceFile do
   end
 
   context "when pool is not set, " do
-    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Core/Source/Class.js", :package => Package.new(:name => "Core")) }
+    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Core/Source/Class.js", :package => package) }
     describe "#pool" do
       it "should return nil" do
         subject.pool.should be_nil
@@ -194,7 +194,7 @@ describe Jsus::SourceFile do
 
   context "when pool is set, " do
     let(:pool) { Jsus::Pool.new("spec/data/Extensions/app/javascripts") }
-    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Core/Source/Class.js", :pool => pool, :package => Package.new(:name => "Core")) }
+    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Core/Source/Class.js", :pool => pool, :package => package) }
     describe "#pool" do
       it "should return the pool" do
         subject.pool.should == pool
@@ -224,7 +224,7 @@ describe Jsus::SourceFile do
   end
 
   context "when it is not an extension, " do
-    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Core/Source/Class.js", :package => Package.new(:name => "Core")) }
+    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Core/Source/Class.js", :package => package) }
 
     describe "#extension?" do
       it "should return false" do
@@ -234,7 +234,7 @@ describe Jsus::SourceFile do
   end
 
   context "when it is an extension, " do
-    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js", :package => Package.new(:name => "Core")) }
+    subject { Jsus::SourceFile.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js", :package => package) }
 
     describe "#extension?" do
       it "should return true" do
@@ -245,7 +245,7 @@ describe Jsus::SourceFile do
 
   context "when there are no extensions, " do
     let(:input_dir) { "spec/data/Extensions/app/javascripts" }
-    subject { Jsus::SourceFile.from_file("#{input_dir}/Core/Source/Class.js", :package => Package.new(:name => "Core"))}
+    subject { Jsus::SourceFile.from_file("#{input_dir}/Core/Source/Class.js", :package => package)}
 
     describe "#required_files" do
       it "should have only the filename itself" do
@@ -256,8 +256,8 @@ describe Jsus::SourceFile do
 
   context "when there are extensions, " do
     let(:input_dir) { "spec/data/Extensions/app/javascripts" }
-    let(:extension) { Jsus::SourceFile.from_file("#{input_dir}/Orwik/Extensions/Class.js", :package => Package.new(:name => "Core")) }
-    subject { Jsus::SourceFile.from_file("#{input_dir}/Core/Source/Class.js", :package => Package.new(:name => "Core"))}
+    let(:extension) { Jsus::SourceFile.from_file("#{input_dir}/Orwik/Extensions/Class.js", :package => package) }
+    subject { Jsus::SourceFile.from_file("#{input_dir}/Core/Source/Class.js", :package => package)}
     let(:initial_content) { subject.content }
     before(:each) { initial_content; subject.extensions << extension }
 
@@ -286,21 +286,21 @@ describe Jsus::SourceFile do
   end
 
   it "should allow quirky mooforge dependencies syntax" do
-    subject = described_class.from_file("spec/data/mooforge_quirky_source.js", :package => Package.new(:name => "Core"))
+    subject = described_class.from_file("spec/data/mooforge_quirky_source.js", :package => package)
     subject.dependencies_names.should == ["MootoolsCore/Core"]
   end
 
   describe "#==, eql, hash" do
     it "should return true for source files pointing to the same physical file" do
-      subject.should == described_class.from_file(subject.filename, :package => Package.new(:name => "Core"))
-      subject.should eql(described_class.from_file(subject.filename, :package => Package.new(:name => "Core")))
-      subject.hash.should == described_class.from_file(subject.filename, :package => Package.new(:name => "Core")).hash
+      subject.should == described_class.from_file(subject.filename, :package => package)
+      subject.should eql(described_class.from_file(subject.filename, :package => package))
+      subject.hash.should == described_class.from_file(subject.filename, :package => package).hash
     end
 
     it "should return false for source files pointing to different physical files" do
-      subject.should_not == described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js", :package => Package.new(:name => "Core"))
-      subject.should_not eql(described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js", :package => Package.new(:name => "Core")))
-      subject.hash.should_not == described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js", :package => Package.new(:name => "Core")).hash
+      subject.should_not == described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js", :package => package)
+      subject.should_not eql(described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js", :package => package))
+      subject.hash.should_not == described_class.from_file("spec/data/Extensions/app/javascripts/Orwik/Extensions/Class.js", :package => package).hash
     end
   end
 end

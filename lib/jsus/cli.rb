@@ -99,7 +99,7 @@ module Jsus
 
     # Modificate content string
     def post_process!(content, postproc)
-      Compiller.post_process!(content, postproc)
+      Compiler.post_process!(content, postproc)
       checkpoint(:postproc)
     end
 
@@ -125,7 +125,7 @@ module Jsus
 
     def generate_includes
       includes_root = Pathname.new(options[:includes_root]) || @output_dir
-      Compiller.generate_includes(@package, includes_root, @output_dir + "includes.js")
+      Compiler.generate_includes(@package, includes_root, @output_dir + "includes.js")
       checkpoint(:includes)
     end
 
